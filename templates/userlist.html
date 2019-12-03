@@ -1,0 +1,14 @@
+{% extends "base.html" %} 
+
+<div class = 'col-12 col-md-10 mb-6 mx-auto'>
+    {% block content %}
+    <h3>cantidad de usuarios: {{user_list.count}}</h3>
+        {%for u in user_list%}
+    <div class = 'card-body'>   
+        <li>
+            <p>{{u.instaaccount}}</p>
+        </li>
+    </div>    
+        {%endfor%}
+    {% endblock %}
+</div>

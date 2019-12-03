@@ -1,0 +1,21 @@
+
+{% extends "base.html" %} 
+
+<div class = 'col-12 col-md-10 mb-6 mx-auto'>
+    {% block content %}
+        {%for i in BarEvento_list%}
+    <div class = 'card-body'>   
+        </li>
+            <h4>Slug Evento: {{i.slug}}<h4/>
+            <h4>Cant Users por evento: {{i.users.count}}</h4>
+            <h4>InstaAccount: 
+            {% for j in i.users.all %} 
+                <li>
+                    User{{ j.instaaccount }}<h4/>
+                </li>                
+            {% endfor %}             
+        </li>
+    </div>    
+        {%endfor%}
+    {% endblock %}
+</div>

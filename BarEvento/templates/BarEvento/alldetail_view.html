@@ -1,0 +1,17 @@
+{% extends "base.html" %} 
+
+<h2>total: {{cant_de_posts}}</h2>
+<div class = 'col-12 col-10 mb-6 mx-auto'>
+    {% block content %}
+        {%for o in object_list%}
+    <div class = 'card-body'>   
+        <h1 class = 'card-title'><a href= '{{o.get_event_url}}'>{{o.title}}</a></h1>
+        <h2>{{o.company}}</h2>
+        <p>Cuando: {{o.createTime}}</p>
+       <!--- <p>slug: {{o.slug}}</p> -->
+        <p>cantidad de usuarios: {{o.users.count}}</p>
+        <p><a href= '{{o.get_delete_url}}'>delete</a> or <a href = '{{o.get_edit_url}}'>edit</a></p>
+    </div>    
+        {%endfor%}
+    {% endblock %}
+</div>
