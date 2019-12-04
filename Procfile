@@ -1,3 +1,2 @@
-release: python manage.py makemigrations BarEvento
-release: python manage.py migrate BarEvento
+release: python manage.py migrate
 web: gunicorn backBone_Bianca.wsgi
