@@ -21,7 +21,7 @@ class BarPost(models.Model):
     posts = models.ManyToManyField(Fotos, blank = True, verbose_name="publicaciones")
     dia = models.TextField()
     code = models.CharField(max_length = 5,null=True)
-    is_finalized = models.BooleanField(default=False)
+    is_finalized = models.BooleanField(default=False,blank=True)
     users_winners = models.ManyToManyField(User,blank=True,verbose_name="list of users Winners",related_name="+")
     
     
