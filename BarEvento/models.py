@@ -36,6 +36,12 @@ class BarPost(models.Model):
 
     def get_delete_url(self):
         return f"delete/{self.slug}"       
+    
+    #Overrides Call of object by its title
+    def __str__(self):
+        return self.title
+
+
 
     #override save method to define a unique slug
    # def save(self, *args, **kwargs):
