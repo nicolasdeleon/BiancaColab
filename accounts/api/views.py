@@ -114,11 +114,13 @@ class ObtainAuthTokenView(APIView):
 @api_view(['GET', ])
 @permission_classes((IsAuthenticated, ))
 def account_properties_view(request):
-
+	context = {}
 	try:
 		user = request.user
 	except User.DoesNotExist:
-		return Response(status=status.HTTP_404_NOT_FOUND)
+		context['response'] = 'Error'
+		context['error_message'] = 'User does not exist'
+		return Response(context,status=status.HTTP_404_NOT_FOUND)
 
 	if request.method == 'GET':
 		serializer = AccountPropertiesSerializer(user)
@@ -128,11 +130,13 @@ def account_properties_view(request):
 @api_view(['PUT',])
 @permission_classes((IsAuthenticated, ))
 def update_account_view(request):
-
+	context = {}
 	try:
 		user = request.user
 	except User.DoesNotExist:
-		return Response(status=status.HTTP_404_NOT_FOUND)
+		context['response'] = 'Error'
+		context['error_message'] = 'User does not exist'
+		return Response(context,status=status.HTTP_404_NOT_FOUND)
 		
 	if request.method == 'PUT':
 		serializer = AccountPropertiesSerializer(user, data=request.data)
