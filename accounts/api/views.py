@@ -12,6 +12,11 @@ from accounts.api.serializers import RegistrationSerializer, AccountPropertiesSe
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 
+##Cosas para manejar mail
+import os
+import smtplib
+
+
 @api_view(['POST', ])
 @permission_classes([])
 @authentication_classes([]) #Esto overridea mi settings default authentication
@@ -146,3 +151,39 @@ def update_account_view(request):
 			data['response'] = 'Account update success'
 			return Response(data=data)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#Obtengo las credenciales ya verificadas del mail configurado para mandar mails
+EMAIL_ADDRESS = "ndeleon@biancaapp.com"
+EMAIL_PASSWORD = 'Delion47921'
+
+@api_view(['GET', ])
+@permission_classes((IsAuthenticated, ))
+def send_feedback_view(request):
+	context = {}
+	#CHECK QUE EFECTIVAMENTE ESTA MI USER
+	try:
+		user = request.user
+	except User.DoesNotExist:
+		context['response'] = 'Error'
+		context['error_message'] = 'User does not exist'
+		return Response(context,status=status.HTTP_404_NOT_FOUND)
+	
+	#Tengo mi user
+	with smtplib.SMTP('smtp.gmail.com',587) as smtp:
+		smtp.ehlo()
+		smtp.starttls()
+		smtp.ehlo()
+		
+		smtp.login(EMAIL_ADDRESS,EMAIL_PASSWORD)
+
+		subject = "HOla"
+		body = f'{user.full_name} te manda un saludo'
+
+		msg = f'Subject: {subject}\n\n{body}'
+		context['Mensaje Enviado'] = msg
+		context['Enviado desde'] = EMAIL_ADDRESS
+		context['Enviado a'] = EMAIL_ADDRESS
+		context['User'] = user.full_name
+
+		smtp.sendmail(EMAIL_ADDRESS,EMAIL_ADDRESS,msg)
+	return Response(context)
