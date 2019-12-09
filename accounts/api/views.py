@@ -153,8 +153,8 @@ def update_account_view(request):
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #Obtengo las credenciales ya verificadas del mail configurado para mandar mails
-EMAIL_ADDRESS = "ndeleon@biancaapp.com"
-EMAIL_PASSWORD = 'Delion47921'
+EMAIL_ADDRESS = "nicolasmatiasdeleon@gmail.com" #ACA HAY Q PONER LA CUENTA DE SUPPORT DE BIANCA Y DARLE LOS PERMISOS CORRESPONDIENTES
+EMAIL_PASSWORD = 'bvbzvkelrbpbyegj'
 
 @api_view(['GET', ])
 @permission_classes((IsAuthenticated, ))
@@ -176,7 +176,7 @@ def send_feedback_view(request):
 		
 		smtp.login(EMAIL_ADDRESS,EMAIL_PASSWORD)
 
-		subject = "HOla"
+		subject = "Hola, Esto es un Mensaje de Prueba"
 		body = f'{user.full_name} te manda un saludo'
 
 		msg = f'Subject: {subject}\n\n{body}'
@@ -184,6 +184,7 @@ def send_feedback_view(request):
 		context['Enviado desde'] = EMAIL_ADDRESS
 		context['Enviado a'] = EMAIL_ADDRESS
 		context['User'] = user.full_name
+		context['response'] = "Success"
 
 		smtp.sendmail(EMAIL_ADDRESS,EMAIL_ADDRESS,msg)
 	return Response(context)
