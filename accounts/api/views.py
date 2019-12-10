@@ -187,14 +187,7 @@ def send_feedback_view(request):
 		else:
 			subject = f'Feedback, {user.full_name}, BIEN'
 		
-		body = """ 
-				f'{user.full_name} t' te graduo asi..
-				Fluidez: {puntaje_fluidez}
-				Atencion: {puntaje_atencion}
-				Pago: {puntaje_pago}
-				General: {puntaje_general}
-				Obteniendo un promedio: {puntaje_promedio}
-				"""
+		body = f'{user.full_name} te te graduo asi..\nFluidez: {puntaje_fluidez}\nAtencion: {puntaje_atencion}\nPago: {puntaje_pago}\nGeneral: {puntaje_general}\nObteniendo un promedio: {puntaje_promedio}'
 		msg = f'Subject: {subject}\n\n{body}'
 		
 		context['response'] = "Success"
