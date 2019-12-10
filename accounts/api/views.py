@@ -156,7 +156,7 @@ def update_account_view(request):
 EMAIL_ADDRESS = "nicolasmatiasdeleon@gmail.com" #ACA HAY Q PONER LA CUENTA DE SUPPORT DE BIANCA Y DARLE LOS PERMISOS CORRESPONDIENTES
 EMAIL_PASSWORD = 'bvbzvkelrbpbyegj'
 
-@api_view(['GET', ])
+@api_view(['POST', ])
 @permission_classes((IsAuthenticated, ))
 def send_feedback_view(request):
 	context = {}
@@ -168,6 +168,12 @@ def send_feedback_view(request):
 		context['error_message'] = 'User does not exist'
 		return Response(context,status=status.HTTP_404_NOT_FOUND)
 	
+	puntaje_promedio = request.data.get('puntaje_promedio')
+	puntaje_fluidez = request.data.get('puntaje_fluidez')
+	puntaje_atencion = request.data.get('puntaje_atencion')
+	puntaje_pago = request.data.get('puntaje_pago')
+	puntaje_general = request.data.get('puntaje_general')
+	
 	#Tengo mi user
 	with smtplib.SMTP('smtp.gmail.com',587) as smtp:
 		smtp.ehlo()
@@ -176,14 +182,21 @@ def send_feedback_view(request):
 		
 		smtp.login(EMAIL_ADDRESS,EMAIL_PASSWORD)
 
-		subject = "Hola, Esto es un Mensaje de Prueba"
-		body = f'{user.full_name} te manda un saludo'
-
+		if(puntaje_promedio<=3):
+			subject = f'Feedback, {user.full_name}, MAL'
+		else:
+			subject = f'Feedback, {user.full_name}, BIEN'
+		
+		body = """ 
+				f'{user.full_name} t' te graduo asi..
+				Fluidez: {puntaje_fluidez}
+				Atencion: {puntaje_atencion}
+				Pago: {puntaje_pago}
+				General: {puntaje_general}
+				Obteniendo un promedio: {puntaje_promedio}
+				"""
 		msg = f'Subject: {subject}\n\n{body}'
-		context['Mensaje Enviado'] = msg
-		context['Enviado desde'] = EMAIL_ADDRESS
-		context['Enviado a'] = EMAIL_ADDRESS
-		context['User'] = user.full_name
+		
 		context['response'] = "Success"
 
 		smtp.sendmail(EMAIL_ADDRESS,EMAIL_ADDRESS,msg)
