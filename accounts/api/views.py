@@ -15,6 +15,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.generics import UpdateAPIView
 
+##Cosas para manejar mail
+import os
+import smtplib
+
+
 @api_view(['POST', ])
 @permission_classes([])
 @authentication_classes([]) #Esto overridea mi settings default authentication
@@ -183,3 +188,47 @@ class ChangePasswordView(UpdateAPIView):
 			return Response({"response":"successfully changed password"}, status=status.HTTP_200_OK)
 
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+#Obtengo las credenciales ya verificadas del mail configurado para mandar mails
+EMAIL_ADDRESS = "nicolasmatiasdeleon@gmail.com" #ACA HAY Q PONER LA CUENTA DE SUPPORT DE BIANCA Y DARLE LOS PERMISOS CORRESPONDIENTES
+EMAIL_PASSWORD = 'bvbzvkelrbpbyegj'
+
+@api_view(['POST', ])
+@permission_classes((IsAuthenticated, ))
+def send_feedback_view(request):
+	context = {}
+	#CHECK QUE EFECTIVAMENTE ESTA MI USER
+	try:
+		user = request.user
+	except User.DoesNotExist:
+		context['response'] = 'Error'
+		context['error_message'] = 'User does not exist'
+		return Response(context,status=status.HTTP_404_NOT_FOUND)
+	
+	puntaje_promedio = request.data.get('puntaje_promedio')
+	puntaje_fluidez = request.data.get('puntaje_fluidez')
+	puntaje_atencion = request.data.get('puntaje_atencion')
+	puntaje_pago = request.data.get('puntaje_pago')
+	puntaje_general = request.data.get('puntaje_general')
+	
+	#Tengo mi user
+	with smtplib.SMTP('smtp.gmail.com',587) as smtp:
+		smtp.ehlo()
+		smtp.starttls()
+		smtp.ehlo()
+		
+		smtp.login(EMAIL_ADDRESS,EMAIL_PASSWORD)
+
+		if(puntaje_promedio<=3):
+			subject = f'Feedback, {user.full_name}, MAL'
+		else:
+			subject = f'Feedback, {user.full_name}, BIEN'
+		
+		body = f'{user.full_name} te te graduo asi..\nFluidez: {puntaje_fluidez}\nAtencion: {puntaje_atencion}\nPago: {puntaje_pago}\nGeneral: {puntaje_general}\nObteniendo un promedio: {puntaje_promedio}'
+		msg = f'Subject: {subject}\n\n{body}'
+		
+		context['response'] = "Success"
+
+		smtp.sendmail(EMAIL_ADDRESS,EMAIL_ADDRESS,msg)
+	return Response(context)

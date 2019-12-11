@@ -7,6 +7,7 @@ from accounts.api.views import (
 	account_properties_view,
 	update_account_view,
     ChangePasswordView,
+    send_feedback_view,
 )
 
 urlpatterns = [
