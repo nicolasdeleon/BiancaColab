@@ -6,6 +6,7 @@ from accounts.api.views import (
     ObtainAuthTokenView,
 	account_properties_view,
 	update_account_view,
+    ChangePasswordView,
 )
 
 urlpatterns = [
@@ -13,4 +14,5 @@ urlpatterns = [
     path('login',ObtainAuthTokenView.as_view(),name= 'login'),
 	path('properties', account_properties_view, name="properties"),
 	path('properties/update', update_account_view, name="update"),
+    path('change_password', ChangePasswordView.as_view(), name="change_password"),
 ]
