@@ -37,3 +37,9 @@ class AccountPropertiesSerializer(serializers.ModelSerializer):
     class Meta: #Requerido para mapear campos form a campos modelo
         model = User
         fields = ['email','full_name','instaaccount']
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password                = serializers.CharField(required=True)
+    new_password                = serializers.CharField(required=True)
+    confirm_new_password        = serializers.CharField(required=True)
