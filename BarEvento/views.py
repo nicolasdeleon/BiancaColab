@@ -2,6 +2,7 @@ from django.shortcuts import render, Http404, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import BarPost
+from .models import PostRelations
 from .forms import EventoModelForm
 
 
@@ -45,12 +46,13 @@ def blog_post_create_view(request):
     form = EventoModelForm(request.POST or None)
     if form.is_valid():
         form.save()
-        form = EventoModelForm()
+        form = EventoModelForm()    
     template_name = "BarEvento/create_evento.html"
     context = {
         "title": "create event",
         'form' : form
     }
+
     return render(request, template_name,context)
 
 
