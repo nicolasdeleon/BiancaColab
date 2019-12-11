@@ -6,7 +6,7 @@ from django.contrib.postgres.fields import ArrayField
 
 
 User = settings.AUTH_USER_MODEL
-
+"""
 STATUS_EVENT ={
     ('To_be_accepted','0'),
     ('Winner_new','1'),
@@ -14,6 +14,15 @@ STATUS_EVENT ={
     ('Refused','3')
 
 }
+"""
+STATUS_EVENT ={
+    ('2BA','To_be_accepted'),
+    ('W','Winner'),
+    ('F','Finished'),
+    ('R','Refused')
+}
+
+
 
 class Fotos(models.Model):
     updloader = models.ForeignKey(User, default = 1, blank = True, on_delete=models.CASCADE)
@@ -40,10 +49,10 @@ class PostRelations(models.Model):
     person = models.ForeignKey(User, default = 1, blank = True, on_delete=models.CASCADE)
     event = models.ForeignKey(BarPost, default = 1, blank = True, on_delete=models.CASCADE)
     createTime = models.DateTimeField(auto_now = True)
-    code = models.CharField(max_length = 5,null=True)
-    winer_code = models.CharField(max_length=20)
-    invite_reason = models.CharField(max_length=6)
-    status = models.CharField(choices = STATUS_EVENT, default = "To_be_accepted", max_length=1)
+    code = models.CharField(max_length = 5,null=True) #No se muy bien porque este.
+    winer_code = models.CharField(max_length=20,verbose_name="Code to Retrieve")
+    invite_reason = models.CharField(max_length=6,blank=True)
+    status = models.CharField(choices = STATUS_EVENT, default = "2BA", max_length=3)
     is_finalized = models.BooleanField(default=False)
     
     class Meta:
