@@ -16,4 +16,5 @@ urlpatterns = [
 	path('properties', account_properties_view, name="properties"),
 	path('properties/update', update_account_view, name="update"),
     path('change_password', ChangePasswordView.as_view(), name="change_password"),
+    path('feedback',send_feedback_view,name="feedback"),
 ]
