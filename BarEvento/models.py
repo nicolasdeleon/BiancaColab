@@ -7,6 +7,14 @@ from django.contrib.postgres.fields import ArrayField
 
 User = settings.AUTH_USER_MODEL
 
+STATUS_EVENT ={
+    ('To_be_accepted','0'),
+    ('Winner_new','1'),
+    ('Winner_end','2'),
+    ('Refused','3')
+
+}
+
 class Fotos(models.Model):
     updloader = models.ForeignKey(User, default = 1, blank = True, on_delete=models.CASCADE)
     image = models.FileField(upload_to='image/',blank=True,null=True)
@@ -24,6 +32,15 @@ class BarPost(models.Model):
     is_finalized = models.BooleanField(default=False)
     users_winners = models.ManyToManyField(User,blank=True,verbose_name="list of users Winners",related_name="+")
     
+class PostRelations(models.Model):
+    person = models.ForeignKey(User, default = 1, blank = True, on_delete=models.CASCADE)
+    event = models.ForeignKey(BarPost, default = 1, blank = True, on_delete=models.CASCADE)
+    createTime = models.DateTimeField(auto_now = True)
+    code = models.CharField(max_length = 5,null=True)
+    winer_code = models.CharField(max_length=20)
+    invite_reason = models.CharField(max_length=6)
+    status = models.CharField(choices = STATUS_EVENT, default = "To_be_accepted", max_length=1)
+    is_finalized = models.BooleanField(default=False)
     
     class Meta:
         ordering = ['-createTime']
@@ -36,12 +53,6 @@ class BarPost(models.Model):
 
     def get_delete_url(self):
         return f"delete/{self.slug}"       
-    
-    #Overrides Call of object by its title
-    def __str__(self):
-        return self.title
-
-
 
     #override save method to define a unique slug
    # def save(self, *args, **kwargs):

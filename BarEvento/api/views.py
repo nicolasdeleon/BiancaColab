@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from accounts.models import User
 from BarEvento.models import BarPost
+from BarEvento.models import PostRelations
 from BarEvento.api.serializers import BarPostSerializer
 
 @api_view(['GET',])
@@ -74,6 +75,13 @@ def api_addUser_BarPost_view(request):
         obj.users.add(user)
         qs = obj.users.all()
         serializer = BarPostSerializer(obj)
+
+        newPR = PostRelations()
+        newPR.person = user
+        newPR.event = obj
+        newPR.code = obj.code
+        newPR.save()
+
         if qs.filter(pk=user.pk).exists():
             data["success"] = "user belongs to the field"
         else:
@@ -128,6 +136,7 @@ def api_won_events_view(request):
     user = request.user
     bodyResp = {}
     codesW = ""
+    codesWArray = []
 #Busco todos los eventos que tiene el user y no están finalizados.
 #Person.objects.filter(
 #...     group__name='The Beatles',
@@ -137,24 +146,26 @@ def api_won_events_view(request):
    #http://mrsenko.com/blog/atodorov/2016/08/30/loading-initial-data-for-many-to-many-fields/
    #https://stackoverflow.com/questions/24894961/django-meta-many-to-many
     if BarPost.objects.filter(is_finalized= False).count()> 0:
-        bodyResp["mayor"] ="True" 
-        bodyResp["count "] =  BarPost.objects.filter(is_finalized= False).count()
+        #bodyResp["mayor"] ="True" 
+        #bodyResp["count "] =  BarPost.objects.filter(is_finalized= False).count()
         barPostsOpen = BarPost.objects.filter(is_finalized= False)
-        bodyResp["barpostOpen"] = barPostsOpen[0].code
-        i=0
-        bodyResp["indice0"] = i
+        #bodyResp["barpostOpen"] = barPostsOpen[0].code
+        #i=0
+        #bodyResp["indice0"] = i
 
         for each in barPostsOpen:
          #   bodyResp["barpostOpeninFOR"] = barPostsOpen[2].code
          #   bodyResp["indicefor"] = i
             if each.users_winners.filter(pk=user.pk).exists():
-                    codesW += each.code+","
-                
+                    codesWArray.append(each.code)
+                    #codesW += each.code+","
+                    
          
     else:
         bodyResp["mayor"]   = "False"
      
 
  # bodyResp["codeWinner"] = codeWinner
-    bodyResp["codesW"]   = codesW
+    #bodyResp["codesW"]   = codesW
+    bodyResp["codesWinners"] = codesWArray
     return Response(data=bodyResp)
