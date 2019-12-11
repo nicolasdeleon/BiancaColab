@@ -63,17 +63,19 @@ def api_delete_BarPost_view(request, slug):
 @permission_classes((IsAuthenticated,))
 def api_addUser_BarPost_view(request):
     data={}
-    code = request.data["code"]    
+    code = request.data["code"]  
+    user = request.user
+
     try:
-        obj = BarPost.objects.get(code=code)
+        obj = BarPost.objects.get(code=code) #CHEQUEO CODIGO DEL EVENTO VS EL QUE ME MANDA EL USUARIO
     except BarPost.DoesNotExist or user.DoesNotExist:
         data["failed"] = "Wrong Event Code"
         return Response(data=data,status= status.HTTP_404_NOT_FOUND)
 
-    user = request.user
     if request.method == 'POST':
+        #?¿?¿Ojo que se podria creear dos veces?¿?¿
         obj.users.add(user)
-        qs = obj.users.all()
+        qs = obj.users.all() #Esto el dia de mañana se podria sacar, siento que es ineficiente
         serializer = BarPostSerializer(obj)
 
         newPR = PostRelations()
