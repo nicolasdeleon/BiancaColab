@@ -31,7 +31,11 @@ class BarPost(models.Model):
     code = models.CharField(max_length = 5,null=True)
     is_finalized = models.BooleanField(default=False)
     users_winners = models.ManyToManyField(User,blank=True,verbose_name="list of users Winners",related_name="+")
-    
+      
+    #Overrides Call of object by its title
+    def __str__(self):
+        return self.title
+
 class PostRelations(models.Model):
     person = models.ForeignKey(User, default = 1, blank = True, on_delete=models.CASCADE)
     event = models.ForeignKey(BarPost, default = 1, blank = True, on_delete=models.CASCADE)
@@ -53,6 +57,12 @@ class PostRelations(models.Model):
 
     def get_delete_url(self):
         return f"delete/{self.slug}"       
+    
+    #Overrides Call of object by its EVENT_TITLE - INSTAACCOUNT
+    def __str__(self):
+        return (self.event.title + ' - ' + self.person.instaaccount)
+
+
 
     #override save method to define a unique slug
    # def save(self, *args, **kwargs):
