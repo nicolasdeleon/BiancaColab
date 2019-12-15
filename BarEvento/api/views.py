@@ -8,6 +8,8 @@ from BarEvento.models import BarPost
 from BarEvento.models import PostRelations
 from BarEvento.api.serializers import BarPostSerializer
 
+from django.core.exceptions import ObjectDoesNotExist
+
 @api_view(['GET',])
 @permission_classes((IsAuthenticated,))
 def api_detail_BarPost_view(request, slug):
@@ -76,16 +78,21 @@ def api_addUser_BarPost_view(request):
         #?¿?¿Ojo que se podria creear dos veces?¿?¿
         obj.users.add(user)
         qs = obj.users.all() #Esto el dia de mañana se podria sacar, siento que es ineficiente
-        serializer = BarPostSerializer(obj)
-
-        newPR = PostRelations()
-        newPR.person = user
-        newPR.event = obj
-        newPR.code = obj.code
-        newPR.save()
+        serializer = BarPostSerializer(obj) 
 
         if qs.filter(pk=user.pk).exists():
-            data["success"] = "user belongs to the field"
+            try:
+                sPRbyU = PostRelations.objects.get(person = user, code = code)
+
+                data["failed"] = "Duplicate association."
+                    
+            except ObjectDoesNotExist:
+                    newPR = PostRelations()
+                    newPR.person = user
+                    newPR.event = obj
+                    newPR.code = obj.code
+                    newPR.save()
+                    data["success"] = "users belong to the event"
         else:
             data["failed"] = "could not add user to event"
         return Response(data=data)
