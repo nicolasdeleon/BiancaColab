@@ -2,11 +2,14 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
 
 from accounts.models import User
-from BarEvento.models import BarPost
-from BarEvento.models import PostRelations
-from BarEvento.api.serializers import BarPostSerializer
+from BarEvento.models import BarPost, PostRelations
+from BarEvento.api.serializers import BarPostSerializer, PostRelationsSerializer
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 @api_view(['GET',])
 @permission_classes((IsAuthenticated,))
@@ -171,3 +174,28 @@ def api_won_events_view(request):
     #bodyResp["codesW"]   = codesW
     bodyResp["codesWinners"] = codesWArray
     return Response(data=bodyResp)
+
+
+class api_PostRelations_view(ListAPIView):
+    serializer_class = PostRelationsSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+    pagination_class = PageNumberPagination
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ['status']    
+    
+
+    def get_queryset(self):
+
+        try:
+            user = self.request.user     
+        except User.DoesNotExist:
+            context['response'] = 'Error'
+            context['error_message'] = 'User does not exist'
+            return Response(context,status=status.HTTP_404_NOT_FOUND)
+ #       if user is not None:
+        queryset = PostRelations.objects.filter(person=user)
+ #       else:
+ #           queryset = PostRelations.objects.all()   
+        return queryset
+
