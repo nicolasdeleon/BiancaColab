@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 #modelo a serializar
-from BarEvento.models import BarPost, Fotos
+from BarEvento.models import BarPost, Fotos, PostRelations
 
 
 class BarPostSerializer(serializers.ModelSerializer):
@@ -43,3 +43,23 @@ class CommentSerializer(serializers.Serializer):
         instance.created = validated_data.get('created', instance.created)
         return instance
 """
+
+class PostRelationsSerializer(serializers.ModelSerializer):
+
+    instaaccount = serializers.SerializerMethodField('get_instaaccount_from_person')
+    eventTitle = serializers.SerializerMethodField('get_eventTitle_from_event')
+    
+
+    def get_instaaccount_from_person(self, PostRelations):
+      instaaccount = PostRelations.person.instaaccount
+      return instaaccount
+
+    def get_eventTitle_from_event(self, PostRelations):
+      eventTitle = PostRelations.event.title
+      return eventTitle
+
+    class Meta:
+        model = PostRelations
+        fields = ['instaaccount','eventTitle','createTime','status'] 
+
+   
