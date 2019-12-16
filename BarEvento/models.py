@@ -49,7 +49,7 @@ class PostRelations(models.Model):
     person = models.ForeignKey(User, default = 1, blank = True, on_delete=models.CASCADE)
     event = models.ForeignKey(BarPost, default = 1, blank = True, on_delete=models.CASCADE)
     createTime = models.DateTimeField(auto_now = True)
-    winner_code = models.CharField(max_length=20,verbose_name="Code to Retrieve")
+ #   winner_code = models.CharField(max_length=20,verbose_name="Code to Retrieve")
     status = models.CharField(choices = STATUS_EVENT, default = "2BA", max_length=3)
     
     class Meta:
