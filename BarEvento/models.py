@@ -43,6 +43,7 @@ class PostRelations(models.Model):
     createTime = models.DateTimeField(auto_now = True)
     winer_code = models.CharField(max_length=20,verbose_name="Code to Retrieve")
     status = models.CharField(choices = STATUS_EVENT, default = "2BA", max_length=3)
+    code = models.CharField(max_length = 5,null=True)
 
     class Meta:
         ordering = ['-createTime']
@@ -60,7 +61,8 @@ class PostRelations(models.Model):
     def __str__(self):
         return (self.event.title + ' - ' + self.person.instaaccount)
 
-
+    def instaaccount(self):
+        return self.person.instaaccount
 
     #override save method to define a unique slug
    # def save(self, *args, **kwargs):
