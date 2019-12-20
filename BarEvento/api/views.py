@@ -195,7 +195,7 @@ class api_PostRelations_view(ListAPIView):
     
 
     def get_queryset(self):
-
+        context = {}
         try:
             user = self.request.user     
         except User.DoesNotExist:
@@ -206,4 +206,4 @@ class api_PostRelations_view(ListAPIView):
         queryset = PostRelations.objects.filter(person=user)
  #       else:
  #           queryset = PostRelations.objects.all()   
-        return Response(queryset)
+        return queryset
