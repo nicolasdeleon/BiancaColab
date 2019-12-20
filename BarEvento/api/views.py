@@ -206,4 +206,4 @@ class api_PostRelations_view(ListAPIView):
         queryset = PostRelations.objects.filter(person=user)
  #       else:
  #           queryset = PostRelations.objects.all()   
-        return queryset
+        return Response(queryset)
