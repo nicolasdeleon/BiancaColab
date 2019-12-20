@@ -8,10 +8,10 @@
         </li>
             <h4>Slug Evento: {{i.slug}}<h4/>
             <h4>Cant Users por evento: {{i.users.count}}</h4>
-            <h4>InstaAccount: 
+            <h4>InstaAccounts: 
             {% for j in i.users.all %} 
                 <li>
-                    User{{ j.instaaccount }}<h4/>
+                    {{ j.instaaccount }}<h4/>
                 </li>                
             {% endfor %}             
         </li>
