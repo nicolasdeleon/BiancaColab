@@ -19,3 +19,6 @@ urlpatterns = [
     path('change_password', ChangePasswordView.as_view(), name="change_password"),
     path('feedback',send_feedback_view,name="feedback"),
 ]
+
+#Probando un segundo commit para ver como es que se anidan en mi branch 
+#Y consecuentemente en mi pullrequest para ser monitoreado por mis compañeros de trabajo
