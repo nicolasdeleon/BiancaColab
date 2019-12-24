@@ -9,6 +9,7 @@ from accounts.api.views import (
     ChangePasswordView,
     send_feedback_view,
 )
+#Probando algo de git
 
 urlpatterns = [
     path('register',api_registration_view,name= 'register'),
