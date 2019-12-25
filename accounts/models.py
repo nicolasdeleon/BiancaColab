@@ -65,6 +65,7 @@ class user(AbstractBaseUser):
 	admin = models.BooleanField(default = False) #superuser
 	instaaccount = models.CharField(max_length= 255,unique=True)
 	timestamp = models.DateTimeField(auto_now_add=True)
+	scoring = models.IntegerField(default = 0)
 	
 #	scoring = models.IntegerField(default = 1)
 	#confirm  = models.BolleanField(defalut=False)

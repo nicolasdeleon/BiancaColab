@@ -33,10 +33,11 @@ class eventpost(models.Model):
     users = models.ManyToManyField(user,blank=True,verbose_name="list of users",related_name="+")
     createTime = models.DateTimeField(auto_now = True)
     posts = models.ManyToManyField(fotos, blank = True, verbose_name="publicaciones")
-    dia = models.TextField()
     code = models.CharField(max_length = 5,null=True)
     users_winners = models.ManyToManyField(user,blank=True,verbose_name="list of users Winners",related_name="+")
-    status =  models.CharField(choices = STATUS_EVENTPOST, default = "O", max_length=3)  
+    status =  models.CharField(choices = STATUS_EVENTPOST, default = "O", max_length=3)
+    stock = models.IntegerField(default = 0)
+    scoring = models.IntegerField(default = 0)
     #Overrides Call of object by its title
     def __str__(self):
         return self.title
