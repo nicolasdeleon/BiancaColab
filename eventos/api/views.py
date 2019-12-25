@@ -115,21 +115,24 @@ def api_won_event_view(request):
         return Response(data=data,status= status.HTTP_404_NOT_FOUND)
 
     #data["Vacio"] = "Vacio"
-    if obj.is_finalized == False:
+    #if obj.is_finalized == False:
+    statusE = obj.status
+    if statusE == "O" or statusE == "2BO":    
         user = request.user
         if request.method == 'GET':
          winners = obj.users_winners.all()
          if winners.filter(pk=user.pk).exists():
               data["user_win"] = "True" # El usuario ganó
-              data["is_finalized"] = "False"
+              data["statusEvent"] = statusE 
          else:
                 data["user_win"] = "False" #El usuario no ganó
-                data["is_finalized"] = "False"
+                data["statusEvent"] = statusE 
            # data["Gano"] = winners[0].email #cuidado con el index out of range
         # return Response(data=data)
        # return Response("hello:")
     else:
         data["is_finalized"] = "True"
+        data["status"] = statusE
         Response("finalizo")
     return Response(data=data)
 
@@ -159,15 +162,16 @@ def api_won_events_view(request):
    # zero = 0
    #http://mrsenko.com/blog/atodorov/2016/08/30/loading-initial-data-for-many-to-many-fields/
    #https://stackoverflow.com/questions/24894961/django-meta-many-to-many
-    if evenptpost.objects.filter(is_finalized= False).count()> 0:
+    #if eventpost.objects.filter(is_finalized= False).count()> 0:
+    if eventpost.objects.filter(status= "O").count()> 0:    
         #bodyResp["mayor"] ="True" 
         #bodyResp["count "] =  BarPost.objects.filter(is_finalized= False).count()
-        PostsOpen = eventpost.objects.filter(is_finalized= False)
+        PostsOpen = eventpost.objects.filter(status= "O")
         #bodyResp["barpostOpen"] = barPostsOpen[0].code
         #i=0
         #bodyResp["indice0"] = i
 
-        for each in bPostsOpen:
+        for each in PostsOpen:
          #   bodyResp["barpostOpeninFOR"] = barPostsOpen[2].code
          #   bodyResp["indicefor"] = i
             if each.users_winners.filter(pk=user.pk).exists():
@@ -176,7 +180,7 @@ def api_won_events_view(request):
                     
          
     else:
-        bodyResp["mayor"]   = "False"
+        bodyResp["eventsOpen"]   = "False"
      
 
  # bodyResp["codeWinner"] = codeWinner

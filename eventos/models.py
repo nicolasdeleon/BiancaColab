@@ -13,7 +13,12 @@ STATUS_EVENT ={
     ('F','Finished'),
     ('R','Refused')
 }
-
+STATUS_EVENTPOST ={
+    ('2BO','To_be_open'),
+    ('O','Open'),
+    ('C','Close'),
+    ('F','Finished')
+}
 
 
 class fotos(models.Model):
@@ -30,9 +35,8 @@ class eventpost(models.Model):
     posts = models.ManyToManyField(fotos, blank = True, verbose_name="publicaciones")
     dia = models.TextField()
     code = models.CharField(max_length = 5,null=True)
-    is_finalized = models.BooleanField(default=False)
     users_winners = models.ManyToManyField(user,blank=True,verbose_name="list of users Winners",related_name="+")
-    
+    status =  models.CharField(choices = STATUS_EVENTPOST, default = "O", max_length=3)  
     #Overrides Call of object by its title
     def __str__(self):
         return self.title
