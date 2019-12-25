@@ -50,11 +50,11 @@ class PostRelationsSerializer(serializers.ModelSerializer):
     eventTitle = serializers.SerializerMethodField('get_eventTitle_from_event')
     
 
-    def get_instaaccount_from_person(self, PostRelations):
+    def get_instaaccount_from_person(self, postrelations):
       instaaccount = postrelations.person.instaaccount
       return instaaccount
 
-    def get_eventTitle_from_event(self, PostRelations):
+    def get_eventTitle_from_event(self, postrelations):
       eventTitle = postrelations.event.title
       return eventTitle
 
