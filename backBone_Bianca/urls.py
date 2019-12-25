@@ -24,7 +24,7 @@ from .views import (
     usersToBeAccepted_view,
 )
 
-from BarEvento.views import (
+from eventos.views import (
     blog_post_create_view,
     
 )
@@ -34,14 +34,14 @@ urlpatterns = [
     path('', home_view),
     path('contacto', contacto_view),
     path('quienes-somos', quienes_somos_view),
-    path('BarEvento/',include('BarEvento.urls')),
+    path('eventos/',include('eventos.urls')),
     path('Create-Event',blog_post_create_view),
     path('Users',user_list_view),
     path('users-to-be-accepted', usersToBeAccepted_view),
 
 
     #REST FRAMEWORK URLS
-    path('api/BarEvento/',include('BarEvento.api.urls')),
+    path('api/eventos/',include('eventos.api.urls')),
     path('api/accounts/',include('accounts.api.urls'))
 
 ]

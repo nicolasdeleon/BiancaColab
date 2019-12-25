@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from BarEvento.models import BarPost
+from eventos.models import eventpost
 User = get_user_model()
 
 def home_view(request):
@@ -36,7 +36,7 @@ def user_list_view(request):
 def usersToBeAccepted_view(request):
  
 
-    qs = BarPost.objects.all()
+    qs = eventpost.objects.all()
 
 #    for x in qs:
 #        variable = x.users.exclude(x.users_winners)
@@ -46,6 +46,6 @@ def usersToBeAccepted_view(request):
     title = "users to be accepted"
     context = {
         "title": title,
-        "BarEvento_list" : qs
+        "postevents_list" : qs
         }
     return render(request, "users-to-be-accepted.html",context)

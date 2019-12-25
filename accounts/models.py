@@ -11,7 +11,7 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
 
-class UserManager(BaseUserManager):
+class usermanager(BaseUserManager):
 	def create_user(self, email, instaaccount=None,full_name=None, password = None, is_active =True,is_staff=False, is_admin=False):
 		if not email:
 			raise ValueError("Users must have an email address")
@@ -54,7 +54,7 @@ class UserManager(BaseUserManager):
 		return user
 
 
-class User(AbstractBaseUser):
+class user(AbstractBaseUser):
 	#id
 	#pass
 	#lastlogin
@@ -65,6 +65,8 @@ class User(AbstractBaseUser):
 	admin = models.BooleanField(default = False) #superuser
 	instaaccount = models.CharField(max_length= 255,unique=True)
 	timestamp = models.DateTimeField(auto_now_add=True)
+	scoring = models.IntegerField(default = 0)
+	
 #	scoring = models.IntegerField(default = 1)
 	#confirm  = models.BolleanField(defalut=False)
 	#
@@ -74,7 +76,7 @@ class User(AbstractBaseUser):
 
 	REQUIRED_FIELDS = ['full_name','instaaccount'] #cualquier otro field q si o si sea necesario
 
-	objects = UserManager()
+	objects = usermanager()
 
 	def __str__(self):
 		return self.email
@@ -104,8 +106,8 @@ class User(AbstractBaseUser):
 	def is_active(self):
 		return self.active
 	
-class Profile(models.Model):
-	user = models.OneToOneField(User,on_delete=models.CASCADE)
+class profile(models.Model):
+	user = models.OneToOneField(user,on_delete=models.CASCADE)
 	#extends extra field of user with other info
 	#tiene que tener la menor cantidad de cambios posibles user model}
 
