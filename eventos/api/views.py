@@ -83,7 +83,7 @@ def api_addUser_eventpost_view(request):
         #?¿?¿Ojo que se podria creear dos veces?¿?¿
         obj.users.add(user)
         qs = obj.users.all() #Esto el dia de mañana se podria sacar, siento que es ineficiente
-        serializer = BarPostSerializer(obj) 
+        serializer = eventpostSerializer(obj) 
 
         if qs.filter(pk=user.pk).exists():
             try:
