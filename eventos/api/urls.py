@@ -6,6 +6,7 @@ from eventos.api.views import (
     api_won_event_view,
     api_won_events_view,    
     api_PostRelations_view,
+    api_all_events_view,
 )
 
 urlpatterns = [
@@ -15,6 +16,6 @@ urlpatterns = [
     #path('wonEvents/<slug:slug>',api_won_events_view,name='wonEvents'),
     path('wonEvents/',api_won_events_view,name='wonEvents'),
     path('post_relations/',api_PostRelations_view.as_view(),name="post_relations"),
-
+    path('all_events/',api_all_events_view.as_view(),name="all_events"),
 ]
 

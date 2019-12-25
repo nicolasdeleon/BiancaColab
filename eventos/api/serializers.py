@@ -63,3 +63,8 @@ class PostRelationsSerializer(serializers.ModelSerializer):
         fields = ['instaaccount','eventTitle','createTime','status'] 
 
    
+class EventsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+      model = eventpost
+      fields = ['title','company','desc','createTime','code','status'] 

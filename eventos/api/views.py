@@ -7,9 +7,8 @@ from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 
 from accounts.models import user
-from eventos.models import eventpost
-from eventos.models import postrelations
-from eventos.api.serializers import eventpostSerializer, PostRelationsSerializer
+from eventos.models import eventpost, postrelations
+from eventos.api.serializers import eventpostSerializer, PostRelationsSerializer, EventsSerializer
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 
@@ -188,12 +187,18 @@ def api_won_events_view(request):
     bodyResp["codesWinners"] = codesWArray
     return Response(data=bodyResp)
 
-
+'''
+Se muestran todas las relaciones de mi usuario
+En params se coloca 
+    - search = 2BA (o cualquier otro status - opcional)
+    - orderedring = -create_time
+En headers se coloca el Token Authorization
+'''
 class api_PostRelations_view(ListAPIView):
     serializer_class = PostRelationsSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
-    pagination_class = PageNumberPagination
+#    pagination_class = PageNumberPagination
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ['status']    
     
@@ -211,3 +216,21 @@ class api_PostRelations_view(ListAPIView):
  #       else:
  #           queryset = PostRelations.objects.all()   
         return queryset
+
+'''
+Se muestran todos los eventos de a 30 por pÃ¡gina (se setea en settings)
+Se puede enviar filtro por is_finalized para obtener los activos
+En params se coloca:
+    - search = 0 (0 = false del campo is_finalized)
+    - orderering = -create_time
+    - En el caso que sean mas de 30 resultados agregar page = 1,2,3...
+'''
+
+class api_all_events_view(ListAPIView):
+    serializer_class = EventsSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+    pagination_class = PageNumberPagination
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ['status']    
+    queryset = eventpost.objects.all()
