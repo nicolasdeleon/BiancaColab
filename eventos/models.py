@@ -38,6 +38,7 @@ class eventpost(models.Model):
     status =  models.CharField(choices = STATUS_EVENTPOST, default = "O", max_length=3)
     stock = models.IntegerField(default = 0)
     scoring = models.IntegerField(default = 0)
+    stockW = models.IntegerField(default = 0)
     #Overrides Call of object by its title
     def __str__(self):
         return self.title
