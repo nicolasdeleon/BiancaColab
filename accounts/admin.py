@@ -5,12 +5,12 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class useradmin(admin.ModelAdmin):
+class UserAdmin(admin.ModelAdmin):
 	search_fields = ['email']
 	class Meta:
 		model = User
 
 
 
-admin.site.register(user,UserAdmin)
+admin.site.register(User,UserAdmin)
 
