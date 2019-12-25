@@ -6,8 +6,8 @@ from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 
 
-from accounts.models import User
-from BarEvento.models import BarPost
+from accounts.models import user
+from eventos.models import eventpost
 from accounts.api.serializers import RegistrationSerializer, AccountPropertiesSerializer, ChangePasswordSerializer
 
 from rest_framework.authtoken.models import Token
@@ -76,7 +76,7 @@ def validate_email(email):
 def validate_instaacount(instaaccount):
 	user = None
 	try:
-		user = User.objects.get(instaaccount=instaaccount)
+		user = user.objects.get(instaaccount=instaaccount)
 	except User.DoesNotExist:
 		return None
 	if user != None:
@@ -159,7 +159,7 @@ def update_account_view(request):
 class ChangePasswordView(UpdateAPIView):
 
 	serializer_class = ChangePasswordSerializer
-	model = User
+	model = user
 	permission_classes = (IsAuthenticated,)
 	authentication_classes = (TokenAuthentication,)
 

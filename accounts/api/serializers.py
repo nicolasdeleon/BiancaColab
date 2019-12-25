@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 #modelo a serializar
-from accounts.models import User
+from accounts.models import user
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -9,14 +9,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type':'password'},write_only = True) #campo extra al form
 
     class Meta: #Requerido para mapear campos form a campos modelo
-        model = User
+        model = user
         fields = ['email','full_name','instaaccount','password','password2']
         extra_kwargs = { #esta propiedad ni idea que hace
             "password" : {'write_only' : True}
         }
 
     def save(self):
-        ObjUser = User(
+        ObjUser = user(
             email = self.validated_data['email'],
 		    instaaccount = self.validated_data['instaaccount'],
 		    full_name = self.validated_data['full_name'],
@@ -35,7 +35,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class AccountPropertiesSerializer(serializers.ModelSerializer):
 
     class Meta: #Requerido para mapear campos form a campos modelo
-        model = User
+        model = user
         fields = ['email','full_name','instaaccount']
 
 
