@@ -29,7 +29,7 @@ def eventpost_alldetail_view(request):
 @staff_member_required 
 def eventpost_event_view(request,slug):
     #lista de todos los eventos que tenemos:
-    obj = get_object_or_404(BarPost,slug = slug) #obtengo el post del bar cuyo slug es unico
+    obj = get_object_or_404(eventpost,slug = slug) #obtengo el post del bar cuyo slug es unico
     template_name = 'eventos/event_view.html' #esto lo tengo que asociar a un html creo 
     users = obj.users.all()      
     context = {
@@ -59,7 +59,7 @@ def blog_post_create_view(request):
 #update one
 @staff_member_required
 def blog_post_update_view(request,slug):
-    obj = BarPost.objects.get(slug = slug)
+    obj = eventpost.objects.get(slug = slug)
     if obj == None:
         raise Http404
     form = EventoModelForm(request.POST or None,instance=obj)
@@ -76,7 +76,7 @@ def blog_post_update_view(request,slug):
 #delete one
 @staff_member_required
 def blog_post_delete_view(request,slug):
-    obj = get_object_or_404(BarPost,slug = slug)
+    obj = get_object_or_404(eventpost,slug = slug)
     if request.method == "POST":
         obj.delete()
         return redirect("/eventos/") 
