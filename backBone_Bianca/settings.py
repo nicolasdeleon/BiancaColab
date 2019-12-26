@@ -100,6 +100,8 @@ WSGI_APPLICATION = 'backBone_Bianca.wsgi.application'
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }'''
+
+#El dia de mañana esto tiene que importar las credenciales de un archivo .env el cual propio de cada uno
 DATABASES =  {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
