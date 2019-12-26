@@ -191,6 +191,10 @@ def api_won_events_view(request):
 Se muestran todas las relaciones de mi usuario
 En params se coloca 
     - search = 2BA (o cualquier otro status - opcional)
+    Si se busca tanto por status y event__status se deben colocar los filtros en ese orden
+    ej:
+    search = 2BA
+    search = F
     - orderedring = -create_time
 En headers se coloca el Token Authorization
 '''
@@ -200,9 +204,9 @@ class api_PostRelations_view(ListAPIView):
     authentication_classes = (TokenAuthentication,)
 #    pagination_class = PageNumberPagination
     filter_backends = (SearchFilter, OrderingFilter)
-    search_fields = ['status']    
-    
 
+    search_fields = ['status','event__status']    
+    
     def get_queryset(self):
         context = {}
         try:
@@ -216,6 +220,7 @@ class api_PostRelations_view(ListAPIView):
  #       else:
  #           queryset = PostRelations.objects.all()   
         return queryset
+
 
 '''
 Se muestran todos los eventos de a 30 por pÃ¡gina (se setea en settings)

@@ -48,6 +48,7 @@ class PostRelationsSerializer(serializers.ModelSerializer):
 
     instaaccount = serializers.SerializerMethodField('get_instaaccount_from_person')
     eventTitle = serializers.SerializerMethodField('get_eventTitle_from_event')
+    eventStatus = serializers.SerializerMethodField('get_event_status')
     
 
     def get_instaaccount_from_person(self, postrelations):
@@ -58,9 +59,13 @@ class PostRelationsSerializer(serializers.ModelSerializer):
       eventTitle = postrelations.event.title
       return eventTitle
 
+    def get_event_status(self,postrelations):
+      eventstatus = postrelations.event.status
+      return eventstatus
+
     class Meta:
         model = postrelations
-        fields = ['instaaccount','eventTitle','createTime','status'] 
+        fields = ['instaaccount','eventTitle','createTime','status','eventStatus'] 
 
    
 class EventsSerializer(serializers.ModelSerializer):
