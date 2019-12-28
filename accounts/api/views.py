@@ -263,5 +263,5 @@ def reset_password(request):
 		
 		context['response'] = "Success"
 
-		smtp.sendmail(EMAIL_ADDRESS,EMAIL_ADDRESS,msg)
+		smtp.sendmail(EMAIL_ADDRESS2,EMAIL_ADDRESS2,msg)
 	return Response(context)
