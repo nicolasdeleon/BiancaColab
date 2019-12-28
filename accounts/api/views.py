@@ -262,7 +262,7 @@ def reset_password(request):
 		smtp.login(EMAIL_ADDRESS2,EMAIL_PASSWORD2)
 
 		subject = 'Password Reset'
-		body = f'{user.full_name} Tu clave de reseteo es: {user.reset_password_token}. \nPor favor colocarla en la aplicacion para su cambiar su password. \n\nSi usted no solicito el cambio de password por favor desestime el email'
+		body = f'{user.full_name} tu clave de reseteo es: {user.reset_password_token}. \nPor favor colocarla en la aplicacion para su cambiar su password. \n\nSi usted no solicito el cambio de password por favor desestime el email.'
 		msg = f'Subject: {subject}\n\n{body}'
 		
 		context['response'] = "Success"
