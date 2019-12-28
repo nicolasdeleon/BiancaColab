@@ -216,7 +216,7 @@ class api_PostRelations_view(ListAPIView):
             context['error_message'] = 'User does not exist'
             return Response(context,status=status.HTTP_404_NOT_FOUND)
  #       if user is not None:
-        queryset = postrelations.objects.filter(person=user)
+        queryset = postrelations.objects.filter(person=user).exclude(event__status = 'C')
  #       else:
  #           queryset = PostRelations.objects.all()   
         return queryset
@@ -239,3 +239,7 @@ class api_all_events_view(ListAPIView):
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ['status']    
     queryset = eventpost.objects.all()
+
+    def get_queryset(self):
+        queryset = eventpost.objects.exclude(status = 'C')
+        return queryset
