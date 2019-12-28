@@ -236,7 +236,7 @@ def send_feedback_view(request):
 #Obtengo las credenciales ya verificadas del mail configurado para mandar mails
 EMAIL_ADDRESS2 = 'flororsi@gmail.com' #ACA HAY Q PONER LA CUENTA DE SUPPORT DE BIANCA Y DARLE LOS PERMISOS CORRESPONDIENTES
 EMAIL_PASSWORD2 = 'ozdktmppasgklser'
-'''
+
 @api_view(['POST', ])
 @permission_classes((IsAuthenticated, ))
 def reset_password(request):
@@ -248,7 +248,10 @@ def reset_password(request):
 		context['response'] = 'Error'
 		context['error_message'] = 'User does not exist'
 		return Response(context,status=status.HTTP_404_NOT_FOUND)
-		
+	
+	user.token = RandomStringTokenGenerator
+	user.object.save()
+
 	#Tengo mi user
 	with smtplib.SMTP('smtp.gmail.com',587) as smtp:
 		smtp.ehlo()
@@ -258,12 +261,11 @@ def reset_password(request):
 		smtp.login(EMAIL_ADDRESS2,EMAIL_PASSWORD2)
 
 		subject = 'Password Reset'
-		body = f'{user.full_name} Tu password es: {user.password}. Sugerimos cambiar la password para mayor seguridad.'
+		body = f'{user.full_name} Tu password es: {user.password}. \n Sugerimos cambiar la password para mayor seguridad.'
 		msg = f'Subject: {subject}\n\n{body}'
 		
 		context['response'] = "Success"
 
 		smtp.sendmail(EMAIL_ADDRESS2,EMAIL_ADDRESS2,msg)
 	return Response(context)
-	'''
 	
