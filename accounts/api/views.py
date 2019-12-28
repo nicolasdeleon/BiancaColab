@@ -258,7 +258,7 @@ def reset_password(request):
 		smtp.login(EMAIL_ADDRESS2,EMAIL_PASSWORD2)
 
 		subject = 'Password Reset'
-		body = f'{user.full_name} Tu contraseÃ±a es: {user.password}. Sugerimos cambiar la contraseÃ±a para mayor seguridad.'
+		body = f'{user.full_name} Tu password es: {user.password}. Sugerimos cambiar la password para mayor seguridad.'
 		msg = f'Subject: {subject}\n\n{body}'
 		
 		context['response'] = "Success"
