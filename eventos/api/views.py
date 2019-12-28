@@ -23,7 +23,7 @@ def api_detail_eventpost_view(request, slug):
         return Response(status= status.HTTP_404_NOT_FOUND)
     
     if request.method == 'GET':
-        serializer = BarPostSerializer(obj)
+        serializer = eventpostSerializer(obj)
         return Response(serializer.data)
 
 @api_view(['PUT',])
@@ -33,10 +33,6 @@ def api_update_eventpost_view(request, slug):
         obj = eventpost.objects.get(slug=slug)
     except eventpost.DoesNotExist:
         return Response(status= status.HTTP_404_NOT_FOUND)
-
-   # user = request.user #ahora puedo pedir usuario
-    #if blogpost_author != user:
-    #    return Response({'response': "you dont have permission to edit that"})
 
     if request.method == 'PUT':
         serializer = eventpostSerializer(obj, data=request.data) #esto es como el request.POST de los forms
@@ -94,7 +90,6 @@ def api_addUser_eventpost_view(request):
                     newPR = postrelations()
                     newPR.person = user
                     newPR.event = obj
-                    newPR.code = obj.code
                     newPR.save()
                     data["success"] = "users belong to the event"
         else:
@@ -106,7 +101,8 @@ def api_addUser_eventpost_view(request):
 @permission_classes((IsAuthenticated,))
 def api_won_event_view(request):
     data={}
-    code = request.data["code"]    
+    code = request.data["code"]
+    user = request.user    
     try:
         obj = eventpost.objects.get(code=code)
     except eventpost.DoesNotExist or user.DoesNotExist:

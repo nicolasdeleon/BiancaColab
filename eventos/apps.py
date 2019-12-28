@@ -1,8 +1,5 @@
 from django.apps import AppConfig
 
-
-#class BareventoConfig(AppConfig):
 class eventosConfig(AppConfig):
-
-	managed = False
+    managed = False
     name = 'eventos'
