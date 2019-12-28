@@ -1,6 +1,8 @@
 
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import url, include
+
 from accounts.api.views import (
     api_registration_view,
     ObtainAuthTokenView,
@@ -8,7 +10,7 @@ from accounts.api.views import (
 	update_account_view,
     ChangePasswordView,
     send_feedback_view,
-    reset_password,
+#    reset_password,
 )
 
 urlpatterns = [
@@ -18,5 +20,6 @@ urlpatterns = [
 	path('properties/update', update_account_view, name="update"),
     path('change_password', ChangePasswordView.as_view(), name="change_password"),
     path('feedback',send_feedback_view,name="feedback"),
-    path('reset_password/', reset_password, name = 'reset_password')
+#    path('reset_password/', reset_password, name = 'reset_password')
+    path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'accounts',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_rest_passwordreset',
 
 ]
 
@@ -103,9 +104,9 @@ WSGI_APPLICATION = 'backBone_Bianca.wsgi.application'
 DATABASES =  {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgresDB',
+        'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': 'damianpg',
+        'PASSWORD': 'florencia',
         'HOST': 'localhost',
         'PORT': '5432',
     }

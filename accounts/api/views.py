@@ -236,7 +236,7 @@ def send_feedback_view(request):
 #Obtengo las credenciales ya verificadas del mail configurado para mandar mails
 EMAIL_ADDRESS2 = 'flororsi@gmail.com' #ACA HAY Q PONER LA CUENTA DE SUPPORT DE BIANCA Y DARLE LOS PERMISOS CORRESPONDIENTES
 EMAIL_PASSWORD2 = 'ozdktmppasgklser'
-
+'''
 @api_view(['POST', ])
 @permission_classes((IsAuthenticated, ))
 def reset_password(request):
@@ -265,3 +265,5 @@ def reset_password(request):
 
 		smtp.sendmail(EMAIL_ADDRESS2,EMAIL_ADDRESS2,msg)
 	return Response(context)
+	'''
+	
