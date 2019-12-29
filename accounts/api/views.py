@@ -18,7 +18,8 @@ from rest_framework.generics import UpdateAPIView
 ##Cosas para manejar mail
 import os
 import smtplib
-
+import binascii
+import random
 
 @api_view(['POST', ])
 @permission_classes([])
@@ -65,19 +66,19 @@ def api_registration_view(request):
 		return Response(data)
 
 def validate_email(email):
-	user = None
+	user_aux = None
 	try:
-		user = User.objects.get(email=email)
-	except User.DoesNotExist:
+		user_aux = user.objects.get(email=email)
+	except user.DoesNotExist:
 		return None
 	if user != None:
 		return email
 
 def validate_instaacount(instaaccount):
-	user = None
+	user_aux = None
 	try:
-		user = user.objects.get(instaaccount=instaaccount)
-	except User.DoesNotExist:
+		user_aux = user.objects.get(instaaccount=instaaccount)
+	except user.DoesNotExist:
 		return None
 	if user != None:
 		return instaaccount
@@ -232,3 +233,73 @@ def send_feedback_view(request):
 
 		smtp.sendmail(EMAIL_ADDRESS,EMAIL_ADDRESS,msg)
 	return Response(context)
+
+#Obtengo las credenciales ya verificadas del mail configurado para mandar mails
+EMAIL_ADDRESS2 = 'flororsi@gmail.com' #ACA HAY Q PONER LA CUENTA DE SUPPORT DE BIANCA Y DARLE LOS PERMISOS CORRESPONDIENTES
+EMAIL_PASSWORD2 = 'ozdktmppasgklser'
+
+@api_view(['POST', ])
+@permission_classes((IsAuthenticated, ))
+def reset_password(request):
+	context = {}
+	#CHECK QUE EFECTIVAMENTE ESTA MI USER
+	try:
+		user = request.user
+	except User.DoesNotExist:
+		context['response'] = 'Error'
+		context['error_message'] = 'User does not exist'
+		return Response(context,status=status.HTTP_404_NOT_FOUND)
+	
+	user.reset_password_token = binascii.hexlify(os.urandom(10)).decode()[0:10]
+	user.save()
+
+	#Tengo mi user
+	with smtplib.SMTP('smtp.gmail.com',587) as smtp:
+		smtp.ehlo()
+		smtp.starttls()
+		smtp.ehlo()
+		
+		smtp.login(EMAIL_ADDRESS2,EMAIL_PASSWORD2)
+
+		subject = 'Password Reset'
+		body = f'{user.full_name} tu clave de reseteo es: {user.reset_password_token}. \nPor favor colocarla en la aplicacion para su cambiar su password. \n\nSi usted no solicito el cambio de password por favor desestime el email.'
+		msg = f'Subject: {subject}\n\n{body}'
+		
+		context['response'] = "Success"
+
+		smtp.sendmail(user.email,user.email,msg)
+	return Response(context)
+	
+
+class reset_password_confirm(UpdateAPIView):
+
+	serializer_class = ChangePasswordSerializer
+	model = user
+	permission_classes = (IsAuthenticated,)
+	authentication_classes = (TokenAuthentication,)
+
+	def get_object(self, queryset=None):
+		obj = self.request.user
+		return obj
+
+	def update(self, request, *args, **kwargs):
+		self.object = self.get_object()
+		serializer = self.get_serializer(data=request.data)
+
+		if serializer.is_valid():
+			# Check old password
+			if not self.object.reset_password_token == serializer.data.get("old_password"):
+				return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+
+			# confirm the new passwords match
+			new_password = serializer.data.get("new_password")
+			confirm_new_password = serializer.data.get("confirm_new_password")
+			if new_password != confirm_new_password:
+				return Response({"new_password": ["New passwords must match"]}, status=status.HTTP_400_BAD_REQUEST)
+
+			# set_password also hashes the password that the user will get
+			self.object.set_password(serializer.data.get("new_password"))
+			self.object.save()
+			return Response({"response":"successfully changed password"}, status=status.HTTP_200_OK)
+
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
