@@ -9,7 +9,7 @@ user = settings.AUTH_USER_MODEL
 STATUS_EVENT ={
     ('2BA','To_be_accepted'),
     ('W','Winner'),
-    ('F','Finished'),
+   # ('F','Finished'),
     ('R','Refused')
 }
 
