@@ -66,19 +66,19 @@ def api_registration_view(request):
 		return Response(data)
 
 def validate_email(email):
-	user = None
+	user_aux = None
 	try:
-		user = User.objects.get(email=email)
-	except User.DoesNotExist:
+		user_aux = user.objects.get(email=email)
+	except user.DoesNotExist:
 		return None
 	if user != None:
 		return email
 
 def validate_instaacount(instaaccount):
-	user = None
+	user_aux = None
 	try:
-		user = user.objects.get(instaaccount=instaaccount)
-	except User.DoesNotExist:
+		user_aux = user.objects.get(instaaccount=instaaccount)
+	except user.DoesNotExist:
 		return None
 	if user != None:
 		return instaaccount
