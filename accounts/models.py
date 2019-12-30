@@ -66,7 +66,7 @@ class user(AbstractBaseUser):
 	instaaccount = models.CharField(max_length= 255,unique=True)
 	timestamp = models.DateTimeField(auto_now_add=True)
 	scoring = models.IntegerField(default = 0)
-	
+	reset_password_token = models.CharField(max_length= 10, default = 0)
 #	scoring = models.IntegerField(default = 1)
 	#confirm  = models.BolleanField(defalut=False)
 	#

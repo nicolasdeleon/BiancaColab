@@ -75,25 +75,26 @@ def api_addUser_eventpost_view(request):
         return Response(data=data,status= status.HTTP_404_NOT_FOUND)
 
     if request.method == 'POST':
-        #?¿?¿Ojo que se podria creear dos veces?¿?¿
+       
         obj.users.add(user)
-        qs = obj.users.all() #Esto el dia de mañana se podria sacar, siento que es ineficiente
+        #qs = obj.users.all() #Esto el dia de mañana se podria sacar, siento que es ineficiente
         serializer = eventpostSerializer(obj) 
 
-        if qs.filter(pk=user.pk).exists():
-            try:
-                sPRbyU = postrelations.objects.get(person = user, code = code)
+        #if qs.filter(pk=user.pk).exists():
+        try:
+                #sPRbyU = postrelations.objects.get(person = user, code = code)
+                sPRbyU = postrelations.objects.get(person = user, event = obj)
 
                 data["failed"] = "Duplicate association."
                     
-            except ObjectDoesNotExist:
+        except ObjectDoesNotExist:
                     newPR = postrelations()
                     newPR.person = user
                     newPR.event = obj
                     newPR.save()
                     data["success"] = "users belong to the event"
-        else:
-            data["failed"] = "could not add user to event"
+        #else:
+        #    data["failed"] = "could not add user to event"
         return Response(data=data)
 
 
