@@ -65,11 +65,11 @@ class PostRelationsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = postrelations
-        fields = ['instaaccount','eventTitle','createTime','status','eventStatus'] 
+        fields = ['instaaccount','eventTitle','createTime','status','eventStatus','event','winer_code'] 
 
    
 class EventsSerializer(serializers.ModelSerializer):
 
     class Meta:
       model = eventpost
-      fields = ['title','company','desc','createTime','code','status'] 
+      fields = ['pk','title','company','desc','createTime','code','status'] 
