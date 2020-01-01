@@ -336,7 +336,8 @@ def reset_password(request):
 	except user.DoesNotExist:
 		data['response'] = 'Error'
 		data['error_message'] = 'User does not exist'
-		return Response(data,status=status.HTTP_404_NOT_FOUND)
+		#return Response(data,status=status.HTTP_404_NOT_FOUND)
+		return Response(data)
 
 @api_view(['POST', ])
 @permission_classes((AllowAny, ))
@@ -354,4 +355,5 @@ def reset_password_confirm(request):
 	except user.DoesNotExist:
 		data['response'] = 'Error'
 		data['error_message'] = 'User or token does not exist'
-		return Response(data,status=status.HTTP_404_NOT_FOUND)
+		#return Response(data,status=status.HTTP_404_NOT_FOUND)
+		return Response(data)
