@@ -270,7 +270,7 @@ def reset_password(request):
 
 		smtp.sendmail(user.email,user.email,msg)
 	return Response(context)
-'''	
+
 
 
 class reset_password_confirm(UpdateAPIView):
@@ -306,7 +306,7 @@ class reset_password_confirm(UpdateAPIView):
 
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+'''
 @api_view(['POST', ])
 @permission_classes((AllowAny, ))
 def reset_password(request):
@@ -338,4 +338,20 @@ def reset_password(request):
 		data['error_message'] = 'User does not exist'
 		return Response(data,status=status.HTTP_404_NOT_FOUND)
 
-	#return Response(data=data)
+@api_view(['POST', ])
+@permission_classes((AllowAny, ))
+def reset_password_confirm(request):
+	data={}
+	email = request.data.get('email')
+	token = request.data.get('token')
+	password = request.data.get('password')
+	try:
+		user_aux = user.objects.get(email = email, reset_password_token  = token)
+		user_aux.set_password(password)
+		user_aux.save()
+		data["response"] = "Succes"
+		return Response(data=data)
+	except user.DoesNotExist:
+		data['response'] = 'Error'
+		data['error_message'] = 'User or token does not exist'
+		return Response(data,status=status.HTTP_404_NOT_FOUND)
