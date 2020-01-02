@@ -4,6 +4,8 @@ from django.utils.text import slugify
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 
+from django.core.validators import RegexValidator
+
 user = settings.AUTH_USER_MODEL
 
 STATUS_EVENT ={
@@ -32,7 +34,7 @@ class eventpost(models.Model):
     users = models.ManyToManyField(user,blank=True,verbose_name="list of users",related_name="+")
     createTime = models.DateTimeField(auto_now = True)
     posts = models.ManyToManyField(fotos, blank = True, verbose_name="publicaciones")
-    code = models.CharField(max_length = 5,null=True,unique=True)
+    code = models.CharField(validators=[RegexValidator(regex='^.{5}$', message='Length has to be 5', code='nomatch')],max_length = 5,null=True,unique=True)
     users_winners = models.ManyToManyField(user,blank=True,verbose_name="list of users Winners",related_name="+")
     status =  models.CharField(choices = STATUS_EVENTPOST, default = "2BO", max_length=3)
     stock = models.IntegerField(default = 0)

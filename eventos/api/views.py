@@ -71,7 +71,8 @@ def api_addUser_eventpost_view(request):
     try:
         obj = eventpost.objects.get(code=code) #CHEQUEO CODIGO DEL EVENTO VS EL QUE ME MANDA EL USUARIO
     except eventpost.DoesNotExist or user.DoesNotExist:
-        data["failed"] = "Wrong Event Code"
+        data['response'] = 'Error'
+        data['error_message'] = 'Código incorrecto'
         return Response(data=data,status= status.HTTP_404_NOT_FOUND)
 
     if request.method == 'POST':
@@ -84,8 +85,8 @@ def api_addUser_eventpost_view(request):
         try:
                 #sPRbyU = postrelations.objects.get(person = user, code = code)
                 sPRbyU = postrelations.objects.get(person = user, event = obj)
-
-                data["failed"] = "Duplicate association."
+                data['response'] = 'Error'
+                data['error_message'] = 'Duplicate association.'
                     
         except ObjectDoesNotExist:
                     newPR = postrelations()
