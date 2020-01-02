@@ -12,6 +12,7 @@ from accounts.api.serializers import RegistrationSerializer, AccountPropertiesSe
 
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.generics import UpdateAPIView
 
@@ -202,7 +203,7 @@ def send_feedback_view(request):
 	#CHECK QUE EFECTIVAMENTE ESTA MI USER
 	try:
 		user = request.user
-	except User.DoesNotExist:
+	except user.DoesNotExist:
 		context['response'] = 'Error'
 		context['error_message'] = 'User does not exist'
 		return Response(context,status=status.HTTP_404_NOT_FOUND)
@@ -237,7 +238,7 @@ def send_feedback_view(request):
 #Obtengo las credenciales ya verificadas del mail configurado para mandar mails
 EMAIL_ADDRESS2 = 'flororsi@gmail.com' #ACA HAY Q PONER LA CUENTA DE SUPPORT DE BIANCA Y DARLE LOS PERMISOS CORRESPONDIENTES
 EMAIL_PASSWORD2 = 'ozdktmppasgklser'
-
+'''
 @api_view(['POST', ])
 @permission_classes((IsAuthenticated, ))
 def reset_password(request):
@@ -269,7 +270,8 @@ def reset_password(request):
 
 		smtp.sendmail(user.email,user.email,msg)
 	return Response(context)
-	
+
+
 
 class reset_password_confirm(UpdateAPIView):
 
@@ -303,3 +305,55 @@ class reset_password_confirm(UpdateAPIView):
 			return Response({"response":"successfully changed password"}, status=status.HTTP_200_OK)
 
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+'''
+@api_view(['POST', ])
+@permission_classes((AllowAny, ))
+def reset_password(request):
+	data={}
+	email = request.data.get('email')
+	try:
+		user_aux = user.objects.get(email = email)
+		#data["codeMail"] = "OK"
+		user_aux.reset_password_token = binascii.hexlify(os.urandom(10)).decode()[0:10]
+		user_aux.save()
+		#Tengo mi user
+		with smtplib.SMTP('smtp.gmail.com',587) as smtp:
+			smtp.ehlo()
+			smtp.starttls()
+			smtp.ehlo()
+			
+			smtp.login(EMAIL_ADDRESS2,EMAIL_PASSWORD2)
+
+			subject = 'Password Reset'
+			body = f'{user_aux.full_name} tu clave de reseteo es:\n\n{user_aux.reset_password_token}\n\nIngresala en la app junto con la nueva password.\nSi no solicitaste el cambio de password desestimar el mail.'
+			msg = f'Subject: {subject}\n\n{body}'
+			
+			data['response'] = "Success"
+
+			smtp.sendmail(user_aux.email,user_aux.email,msg)
+		return Response(data=data)
+	except user.DoesNotExist:
+		data['response'] = 'Error'
+		data['error_message'] = 'User does not exist'
+		#return Response(data,status=status.HTTP_404_NOT_FOUND)
+		return Response(data)
+
+@api_view(['POST', ])
+@permission_classes((AllowAny, ))
+def reset_password_confirm(request):
+	data={}
+	email = request.data.get('email')
+	token = request.data.get('token')
+	password = request.data.get('password')
+	try:
+		user_aux = user.objects.get(email = email, reset_password_token  = token)
+		user_aux.set_password(password)
+		user_aux.save()
+		data["response"] = "Succes"
+		return Response(data=data)
+	except user.DoesNotExist:
+		data['response'] = 'Error'
+		data['error_message'] = 'User or token does not exist'
+		#return Response(data,status=status.HTTP_404_NOT_FOUND)
+		return Response(data)

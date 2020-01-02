@@ -22,5 +22,6 @@ urlpatterns = [
     path('change_password', ChangePasswordView.as_view(), name="change_password"),
     path('feedback',send_feedback_view,name="feedback"),
     path('reset_password/', reset_password, name = 'reset_password'),
-    path('reset_password/confirm/', reset_password_confirm.as_view(), name = 'reset_password_confirm'),
+    #path('reset_password/confirm/', reset_password_confirm.as_view(), name = 'reset_password_confirm'),
+    path('reset_password/confirm/', reset_password_confirm, name = 'reset_password_confirm'),
 ]
