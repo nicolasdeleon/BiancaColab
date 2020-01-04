@@ -111,11 +111,11 @@ WSGI_APPLICATION = 'backBone_Bianca.wsgi.application'
 DATABASES =  {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env("DATABASE"),
-        'USER': env("DATABASE_USER"),
-        'PASSWORD': env("DATABASE_PASSWORD"),
-        'HOST': env("HOST"),
-        'PORT': env("PORT"),
+        'NAME': 'postgresDB',
+        'USER': 'postgres',
+        'PASSWORD': 'damianpg',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
