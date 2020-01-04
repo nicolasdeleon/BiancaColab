@@ -127,7 +127,7 @@ def account_properties_view(request):
 	context = {}
 	try:
 		user = request.user
-	except User.DoesNotExist:
+	except user.DoesNotExist:
 		context['response'] = 'Error'
 		context['error_message'] = 'User does not exist'
 		return Response(context,status=status.HTTP_404_NOT_FOUND)
@@ -143,7 +143,7 @@ def update_account_view(request):
 	context = {}
 	try:
 		user = request.user
-	except User.DoesNotExist:
+	except user.DoesNotExist:
 		context['response'] = 'Error'
 		context['error_message'] = 'User does not exist'
 		return Response(context,status=status.HTTP_404_NOT_FOUND)

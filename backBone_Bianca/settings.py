@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import django_heroku
+from environs import Env
+
+#Abre y lee la informacion de un archivo .env personal de cada uno
+env = Env()
+env.read_env()
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -105,13 +111,14 @@ WSGI_APPLICATION = 'backBone_Bianca.wsgi.application'
 DATABASES =  {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgresDB',
-        'USER': 'postgres',
-        'PASSWORD': 'damianpg',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': env("DATABASE"),
+        'USER': env("DATABASE_USER"),
+        'PASSWORD': env("DATABASE_PASSWORD"),
+        'HOST': env("HOST"),
+        'PORT': env("PORT"),
     }
-    }
+}
+
 import dj_database_url
 
 db_from_env = dj_database_url.config(conn_max_age=600)

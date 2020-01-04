@@ -123,3 +123,56 @@ venv.bak/
 dmypy.json
 
 # Pyre type checker
+
+*.swp
+*.swl
+*.swm
+*.pyc
+*.log
+*.pot
+*.swo
+*.out
+*.swn
+*.mo
+*.o
+.gitignore
+/uwsgi
+/daemon
+/build
+/media
+pip-log.txt
+.DS_store
+.ropeproject
+*.sqlite3
+/db/db_*
+/bin
+/lib/
+/core/media
+/include/
+/man/
+/share/
+/env/
+.env
+/static
+*.db
+uwsgi.ini
+*~
+
+celerybeat-schedule
+
+celerybeat.pid
+
+htmlcov/
+.coverage
+
+node_modules/
+package-lock.json
+
+### VisualStudioCode ###
+.vscode/*
+# !.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+db/
