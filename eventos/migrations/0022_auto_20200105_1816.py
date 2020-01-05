@@ -10,11 +10,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='eventpost',
-            name='status',
-            field=models.CharField(choices=[('F', 'Finished'), ('2BO', 'To_be_open'), ('C', 'Close'), ('O', 'Open')], default='2BO', max_length=3),
-        ),
+      #  migrations.AlterField(
+       #     model_name='eventpost',
+       #     name='status',
+       #     field=models.CharField(choices=[('F', 'Finished'), ('2BO', 'To_be_open'), ('C', 'Close'), ('O', 'Open')], default='2BO', max_length=3),
+       # ),
         migrations.AlterField(
             model_name='postrelations',
             name='status',
