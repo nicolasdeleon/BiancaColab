@@ -50,6 +50,7 @@ class postrelations(models.Model):
     createTime = models.DateTimeField(auto_now = True)
     winer_code = models.CharField(max_length=20,verbose_name="Code to Retrieve")
     status = models.CharField(choices = STATUS_EVENT, default = "2BA", max_length=3)
+    notificationToken = models.CharField(max_length=40,blank = True, null=True)
 
     class Meta:
         ordering = ['-createTime']

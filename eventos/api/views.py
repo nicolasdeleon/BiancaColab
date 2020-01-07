@@ -65,7 +65,7 @@ def api_delete_BarPost_view(request, slug):
 @permission_classes((IsAuthenticated,))
 def api_addUser_eventpost_view(request):
     data={}
-    code = request.data["code"]  
+    code = request.data['code']  
     user = request.user
 
     try:
@@ -92,6 +92,7 @@ def api_addUser_eventpost_view(request):
                     newPR = postrelations()
                     newPR.person = user
                     newPR.event = obj
+                    newPR.notificationToken = request.data['notificationToken']
                     newPR.save()
                     data["success"] = "users belong to the event"
         #else:
