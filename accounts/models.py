@@ -61,12 +61,8 @@ class user(AbstractBaseUser):
 	#lastlogin
 	email = models.EmailField(max_length= 255, unique = True)
 	full_name = models.CharField(max_length = 255)
-<<<<<<< Updated upstream
-=======
 	first_name = models.CharField(max_length=255, blank=True)
 	last_name = models.CharField(max_length=255,blank=True)
-	birthDate = models.DateTimeField(auto_now=False,default=timezone.now)
->>>>>>> Stashed changes
 	birthDate = models.DateTimeField(auto_now=False,default=timezone.now)
 	active = models.BooleanField(default = True) #can login
 	staff  = models.BooleanField(default = False) #staff user not suepruser
