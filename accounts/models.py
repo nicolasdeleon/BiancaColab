@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -66,6 +67,7 @@ class user(AbstractBaseUser):
 	last_name = models.CharField(max_length=255,blank=True)
 	birthDate = models.DateTimeField(auto_now=False,default=timezone.now)
 >>>>>>> Stashed changes
+	birthDate = models.DateTimeField(auto_now=False,default=timezone.now)
 	active = models.BooleanField(default = True) #can login
 	staff  = models.BooleanField(default = False) #staff user not suepruser
 	admin = models.BooleanField(default = False) #superuser

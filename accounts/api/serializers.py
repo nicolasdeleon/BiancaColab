@@ -17,6 +17,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         'first_name',
         'last_name',
         'instaaccount',
+        birthDate,
         'birthDate',
         'password',
         'password2']
@@ -54,7 +55,7 @@ class AccountPropertiesSerializer(serializers.ModelSerializer):
 
     class Meta: #Requerido para mapear campos form a campos modelo
         model = user
-        fields = ['email','full_name','instaaccount']
+        fields = ['email','full_name','instaaccount','birthDate']
 
 
 class ChangePasswordSerializer(serializers.Serializer):
