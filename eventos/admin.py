@@ -78,7 +78,10 @@ def set_status_winner(modeladmin, request, queryset):
 						 event.stockW +=1
 						 event.save()
 						 q.status='W'
+						 var_token = q. notificationToken
 						 q.save()
+						 var_token = q. notificationToken
+						 send_push_message(token=var_token, message='Ganaste' )
 						 messages.success(request, 'Se marcó como winner')
 						 if event.stock == event.stockW:
 						 	event.status = "C"
@@ -100,8 +103,8 @@ def set_status_finished(modeladmin, request, queryset):
 						event = q.event
 						q.status='F'
 						q.save()
-						var_token = q. notificationToken
-						send_push_message(token=var_token, message='Ganaste' )
+						#var_token = q. notificationToken
+						#send_push_message(token=var_token, message='Ganaste' )
 						messages.success(request, 'Se marcó como pagada')
 
 						
