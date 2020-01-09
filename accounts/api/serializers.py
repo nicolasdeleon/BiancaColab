@@ -10,7 +10,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta: #Requerido para mapear campos form a campos modelo
         model = user
-        fields = ['email','full_name','instaaccount','password','password2']
+        fields = ['email','full_name','instaaccount','birthDate','password','password2']
         extra_kwargs = { #esta propiedad ni idea que hace
             "password" : {'write_only' : True}
         }
@@ -20,6 +20,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             email = self.validated_data['email'],
 		    instaaccount = self.validated_data['instaaccount'],
 		    full_name = self.validated_data['full_name'],
+            birthDate = self.validated_data['birthDate'],
 		    staff = False,
 		    admin = False,
 		    active = True,
@@ -36,7 +37,7 @@ class AccountPropertiesSerializer(serializers.ModelSerializer):
 
     class Meta: #Requerido para mapear campos form a campos modelo
         model = user
-        fields = ['email','full_name','instaaccount']
+        fields = ['email','full_name','instaaccount','birthDate']
 
 
 class ChangePasswordSerializer(serializers.Serializer):
