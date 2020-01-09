@@ -25,7 +25,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         ObjUser = user(
             email = self.validated_data['email'],
 		    instaaccount = self.validated_data['instaaccount'],
-		    full_name = self.validated_data['full_name'],
 		    first_name = self.validated_data['first_name'],
             last_name = self.validated_data['last_name'],
             birthDate = self.validated_data['birthDate'],
