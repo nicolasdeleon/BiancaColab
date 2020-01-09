@@ -37,7 +37,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         if(password != password2):
             raise serializers.ValidationError({'password:','Passwords must match'})
         name = self.validated_data['first_name'] + ' ' + self.validated_data['last_name']
-        ObjUser.set_full_name(name)
+        ObjUser.full_name=name
         ObjUser.set_password(password)
         ObjUser.save()
         return ObjUser
