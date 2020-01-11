@@ -2,8 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    BaseUserManager,
-
+    BaseUserManager
 )
 
 from django.conf import settings
@@ -13,72 +12,105 @@ from rest_framework.authtoken.models import Token
 
 
 class usermanager(BaseUserManager):
-	def create_user(self, email, instaaccount=None,full_name=None, password = None, is_active =True,is_staff=False, is_admin=False):
+	def create_user(self, 
+		email, 
+		first_name, 
+		last_name,
+		instaaccount,
+		birthDate = "2020-1-1",  
+		password = None, 
+		is_active = True,
+		is_staff = False, 
+		is_admin = False):
+		
 		if not email:
 			raise ValueError("Users must have an email address")
 		if not instaaccount:
-			raise ValueError("Users must have an instaaccount")
-		if not full_name:
-			raise ValueError("Users must have a full name")
+			raise ValueError("Users must have a Instagram ccount")
+		if not first_name:
+			raise ValueError("Users must have a first name")
+		if not last_name:
+			raise ValueError("Users must have a last name")
 		if not password:
 			raise ValueError("Users must have a password")
 
-		user_obj = self.model(
+		person = self.model(
 			email = self.normalize_email(email),
 			)
-		user_obj.instaaccount = instaaccount,
-		user_obj.full_name = full_name
-		user_obj.set_password(password)
-		user_obj.staff = is_staff
-		user_obj.admin = is_admin
-		user_obj.active = is_active
-		user_obj.save(using=self._db)
-		return user_obj
+		person.instaaccount = instaaccount
+		person.first_name = first_name
+		person.last_name = last_name
+		person.full_name = first_name + ' ' + last_name
+		person.set_password(password)
+		person.birthDate = birthDate
+		person.staff = is_staff
+		person.admin = is_admin
+		person.active = is_active
+		person.save(using=self._db)
+		
+		return person
 
-	def create_staffuser(self, email, instaaccount, full_name, password=None):
-		user = self.create_user(
+	def create_staffuser(self, 
+		email, 
+		instaaccount, 
+		first_name,
+		last_name,
+		password=None):
+		
+		person = self.create_user(
 			email,
-			instaaccount=instaaccount,
-			full_name =full_name,
-			password=password,
-			is_staff=True)
-		return user
+			instaaccount = instaaccount,
+			first_name = first_name,
+			last_name = last_name,
+			password = password,
+			is_staff = True)
+		
+		return person
 
-	def create_superuser(self,email, instaaccount,full_name,password=None):
-		user = self.create_user(
+	def create_superuser(self,
+		email, 
+		instaaccount,
+		first_name,
+		last_name,
+		password=None):
+		
+		person = self.create_user(
 			email,
-			instaaccount=instaaccount,
-			full_name =full_name,
-			password=password,
-			is_staff=True,
-			is_admin=True)
-		return user
+			instaaccount = instaaccount,
+			first_name = first_name,
+			last_name = last_name,
+			password = password,
+			is_staff = True,
+			is_admin = True)
+		
+		return person
 
 
 class user(AbstractBaseUser):
-	#id
-	#pass
-	#lastlogin
+
 	email = models.EmailField(max_length= 255, unique = True)
-	full_name = models.CharField(max_length = 255)
-	first_name = models.CharField(max_length=255, blank=True)
-	last_name = models.CharField(max_length=255,blank=True)
-	birthDate = models.DateTimeField(auto_now=False,default=timezone.now)
-	active = models.BooleanField(default = True) #can login
-	staff  = models.BooleanField(default = False) #staff user not suepruser
-	admin = models.BooleanField(default = False) #superuser
+	full_name = models.CharField(max_length = 255, default="missing")
+	first_name = models.CharField(max_length=120, default="missing")
+	last_name = models.CharField(max_length=125, default="missing")
+	birthDate = models.DateTimeField(default=timezone.now)
+	active = models.BooleanField(default = True)
+	staff  = models.BooleanField(default = False)
+	admin = models.BooleanField(default = False)
 	instaaccount = models.CharField(max_length= 255,unique=True)
 	timestamp = models.DateTimeField(auto_now_add=True)
 	scoring = models.IntegerField(default = 0)
-	reset_password_token = models.CharField(max_length= 10, default = 0)
-#	scoring = models.IntegerField(default = 1)
-	#confirm  = models.BolleanField(defalut=False)
-	#
+	reset_password_token = models.CharField(max_length= 22, default = 0)
+
+	# remplaza el username field de django default como tmb password
 
 	USERNAME_FIELD = 'email'
-	#remplaza el username field de django default como tmb password
 
-	REQUIRED_FIELDS = ['full_name','instaaccount'] #cualquier otro field q si o si sea necesario
+	# Requested by superuser and ordinary users. Fields such as email and password are Required as well
+	REQUIRED_FIELDS = [
+		'first_name',
+		'last_name',
+		'instaaccount'
+		] 
 
 	objects = usermanager()
 
@@ -86,7 +118,7 @@ class user(AbstractBaseUser):
 		return self.email
 
 	def get_full_name(self):
-		return self.ful_name
+		return self.full_name
 
 	def get_instaaccount(self):
 		return self.instaaccount

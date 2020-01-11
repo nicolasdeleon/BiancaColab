@@ -8,19 +8,19 @@ from django.core.validators import RegexValidator
 
 user = settings.AUTH_USER_MODEL
 
-STATUS_EVENT ={
+STATUS_EVENT = [
     ('2BA','To_be_accepted'),
     ('W','Winner'),
     ('F','Finished'),
     ('R','Refused')
-}
+]
 
-STATUS_EVENTPOST ={
+STATUS_EVENTPOST = [
     ('2BO','To_be_open'),
     ('O','Open'),
     ('C','Close'),
     ('F','Finished')
-}
+]
 
 class fotos(models.Model):
     updloader = models.ForeignKey(user, default = 1, blank = True, on_delete=models.CASCADE)
