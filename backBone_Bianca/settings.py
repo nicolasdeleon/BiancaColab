@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'p!z9_bzd_e%0^!i_o&$zj+_*vcd*n*r$6_x7e3td^s9x5vj-h)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', True)
 
 ALLOWED_HOSTS = ['biancaapp-ndlc.herokuapp.com']
 
