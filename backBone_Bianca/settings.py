@@ -31,7 +31,7 @@ SECRET_KEY = 'p!z9_bzd_e%0^!i_o&$zj+_*vcd*n*r$6_x7e3td^s9x5vj-h)'
 # SECURITY WARNING: don't run with debug turned on in production!
 #HEROKU CONFIGURES A VARIABLE IN ITS OS KNOWN AS DEBUG_VALUE SO IF IT MATCHES THE VALUE OF IT, IT IS SET
 #WARNING!!!!! ALWAYS SET HEROKU CONFIG VARIABLES TO FALSE
-DEBUG = os.environ.get('DEBUG_VALUE', True)
+DEBUG = os.environ.get('DEBUG_VALUE', True) == "True"
 
 ALLOWED_HOSTS = ['biancaapp-ndlc.herokuapp.com']
 
