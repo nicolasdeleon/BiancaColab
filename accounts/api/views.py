@@ -193,8 +193,11 @@ class ChangePasswordView(UpdateAPIView):
         
         
 #Obtengo las credenciales ya verificadas del mail configurado para mandar mails
-EMAIL_ADDRESS = "nicolasmatiasdeleon@gmail.com" #ACA HAY Q PONER LA CUENTA DE SUPPORT DE BIANCA Y DARLE LOS PERMISOS CORRESPONDIENTES
-EMAIL_PASSWORD = 'bvbzvkelrbpbyegj'
+#EMAIL_ADDRESS = "nicolasmatiasdeleon@gmail.com" #ACA HAY Q PONER LA CUENTA DE SUPPORT DE BIANCA Y DARLE LOS PERMISOS CORRESPONDIENTES
+#EMAIL_PASSWORD = 'bvbzvkelrbpbyegj'
+EMAIL_ADDRESS = "support@biancaapp.com" 
+EMAIL_PASSWORD = "Bianca3872"
+
 
 @api_view(['POST', ])
 @permission_classes((IsAuthenticated, ))
@@ -215,7 +218,7 @@ def send_feedback_view(request):
 	puntaje_general = request.data.get('puntaje_general')
 	
 	#Tengo mi user
-	with smtplib.SMTP('smtp.gmail.com',587) as smtp:
+	with smtplib.SMTP('smtp-relay.gmail.com',587) as smtp:
 		smtp.ehlo()
 		smtp.starttls()
 		smtp.ehlo()
@@ -315,15 +318,15 @@ def reset_password(request):
 	try:
 		user_aux = user.objects.get(email = email)
 		#data["codeMail"] = "OK"
-		user_aux.reset_password_token = binascii.hexlify(os.urandom(10)).decode()[0:10]
+		user_aux.reset_password_token = binascii.hexlify(os.urandom(6)).decode()[0:6]
 		user_aux.save()
 		#Tengo mi user
-		with smtplib.SMTP('smtp.gmail.com',587) as smtp:
+		with smtplib.SMTP('smtp-relay.gmail.com',587) as smtp:
 			smtp.ehlo()
 			smtp.starttls()
 			smtp.ehlo()
 			
-			smtp.login(EMAIL_ADDRESS2,EMAIL_PASSWORD2)
+			smtp.login(EMAIL_ADDRESS,EMAIL_PASSWORD)
 
 			subject = 'Password Reset'
 			body = f'{user_aux.full_name} tu clave de reseteo es:\n\n{user_aux.reset_password_token}\n\nIngresala en la app junto con la nueva password.\nSi no solicitaste el cambio de password desestimar el mail.'
