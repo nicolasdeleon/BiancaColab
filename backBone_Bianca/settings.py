@@ -191,6 +191,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     # Personal configurations
-SUPPORT_EMAIL = "Bianca Support Team <us@biancaapp.com>"
+SUPPORT_EMAIL = "Bianca Support Team <support@biancaapp.com>"
 
 django_heroku.settings(locals())

@@ -154,8 +154,7 @@ class EmailConfirmed(models.Model):
 		return str(self.user) + ' - confirmed: '  + str(self.confirmed)
 
 	def activate_user_email(self):
-		# activation_url = "http://localhost:8000/accounts/activate/%s" %(self.activation_key)
-		activation_url = "http://google.com"
+		activation_url = "https://biancaapp-ndlc.herokuapp.com/accounts/activate/%s" %(self.activation_key)
 		context = {
 			"activation_url": activation_url,
 		}
@@ -163,8 +162,9 @@ class EmailConfirmed(models.Model):
 		message = render_to_string("activation_message.html", context)
 		self.email_user(subject, text_body='', html_body=message, from_email=settings.SUPPORT_EMAIL)
 
-	def email_user(self, subject, text_body, html_body, from_email=None, *kwargs):
-		msg = EmailMultiAlternatives(subject=subject, from_email=from_email, to=["ndeleon@biancaapp.com"], body=text_body)
+	def email_user(self, subject, text_body, html_body, from_email=None, **kwargs):
+		print(self.user.email)
+		msg = EmailMultiAlternatives(subject=subject, from_email=from_email, to=[self.user.email], body=text_body)
 		msg.attach_alternative(html_body, "text/html")
 		msg.send()
 

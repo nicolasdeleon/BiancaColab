@@ -2,9 +2,9 @@
 from django.contrib import admin
 from django.urls import path
 from .views import (
-    email_test_view,
+    activation_view,
 )
 
 urlpatterns = [
-    path('', email_test_view),
+    path('activate/<activation_key>/', activation_view),
 ]

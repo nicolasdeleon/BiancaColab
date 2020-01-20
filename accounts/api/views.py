@@ -97,10 +97,13 @@ class ObtainAuthTokenView(APIView):
 		user = authenticate(email=email, password=password)
 		if user:
 			try:
-				token = Token.objects.get(user=user)
-				context['response'] = 'Successfully authenticated.'
-				context['email'] = user.email
-				context['token'] = token.key
+				if user.emailconfirmed.confirmed:
+					token = Token.objects.get(user=user)
+					context['response'] = 'Successfully authenticated.'
+					context['email'] = user.email
+					context['token'] = token.key
+				else:
+					context['error_message'] = f'Por favor, active su cuenta con el mail que a sido enviado a {user.email}'		
 			except Token.DoesNotExist:
 				token = Token.objects.create(user=user)
 				context['response'] = 'Successfully authenticated.'
@@ -113,8 +116,6 @@ class ObtainAuthTokenView(APIView):
 				context['timestamp'] = user.timestamp
 				context['token'] = token.key
 		else:
-			context['response'] = 'Error'
-			##### TESTTTT: context['dataDeTest'] = str(request.data)
 			context['error_message'] = 'Invalid credentials'
 			return Response(context,status=status.HTTP_404_NOT_FOUND)
 		return Response(context)

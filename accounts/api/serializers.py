@@ -1,3 +1,5 @@
+import hashlib
+import random
 from rest_framework import serializers
 
 #modelo a serializar
@@ -22,11 +24,17 @@ class RegistrationSerializer(serializers.ModelSerializer):
         }
     
     def generateConfimationKey(self, user):
-        email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(user=ObjUser)
+        email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(user=user)
         #Corro get or create lo que implica que email_is_created devuelve true siempre y cuando se genere bien
         #El mail se manda directamente de la funcion crear de EmailConfirmed class
         if email_is_created:
-            pass
+            short_hash = hashlib.sha1(str(random.random()).encode('utf-8'))
+            short_hash = short_hash.hexdigest()[:5]
+            base, domain = str(user.email).split('@')
+            activation_key = hashlib.sha1(str(short_hash+base).encode('utf-8')).hexdigest()
+            email_confirmed.activation_key = activation_key
+            email_confirmed.save()
+            user.emailconfirmed.activate_user_email()
 
     def save(self):
         ObjUser = user(
@@ -48,9 +56,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
         ObjUser.set_password(password)
         
         #Generate EmailConfirmation
+        ObjUser.save()
         self.generateConfimationKey(ObjUser)
 
-        ObjUser.save()
         return ObjUser
 
 class AccountPropertiesSerializer(serializers.ModelSerializer):
