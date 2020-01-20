@@ -1,7 +1,9 @@
+import hashlib
+import random
 from rest_framework import serializers
 
 #modelo a serializar
-from accounts.models import user
+from accounts.models import user, EmailConfirmed
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -20,18 +22,31 @@ class RegistrationSerializer(serializers.ModelSerializer):
         extra_kwargs = { #esta propiedad ni idea que hace
             "password" : {'write_only' : True}
         }
+    
+    def generateConfimationKey(self, user):
+        email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(user=user)
+        #Corro get or create lo que implica que email_is_created devuelve true siempre y cuando se genere bien
+        #El mail se manda directamente de la funcion crear de EmailConfirmed class
+        if email_is_created:
+            short_hash = hashlib.sha1(str(random.random()).encode('utf-8'))
+            short_hash = short_hash.hexdigest()[:5]
+            base, domain = str(user.email).split('@')
+            activation_key = hashlib.sha1(str(short_hash+base).encode('utf-8')).hexdigest()
+            email_confirmed.activation_key = activation_key
+            email_confirmed.save()
+            user.emailconfirmed.activate_user_email()
 
     def save(self):
         ObjUser = user(
             email = self.validated_data['email'],
-		    instaaccount = self.validated_data['instaaccount'],
-		    first_name = self.validated_data['first_name'],
+        instaaccount = self.validated_data['instaaccount'],
+        first_name = self.validated_data['first_name'],
             last_name = self.validated_data['last_name'],
             birthDate = self.validated_data['birthDate'],
-		    staff = False,
-		    admin = False,
-		    active = True,
-		)
+        staff = False,
+        admin = False,
+        active = True,
+        )
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
         if(password != password2):
@@ -39,7 +54,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
         name = self.validated_data['first_name'] + ' ' + self.validated_data['last_name']
         ObjUser.full_name=name
         ObjUser.set_password(password)
+        
+        #Generate EmailConfirmation
         ObjUser.save()
+        self.generateConfimationKey(ObjUser)
+
         return ObjUser
 
 class AccountPropertiesSerializer(serializers.ModelSerializer):

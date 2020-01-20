@@ -25,8 +25,7 @@ from .views import (
 )
 
 from eventos.views import (
-    blog_post_create_view,
-    
+    blog_post_create_view, 
 )
 
 urlpatterns = [
@@ -39,6 +38,8 @@ urlpatterns = [
     path('Users',user_list_view),
     path('users-to-be-accepted', usersToBeAccepted_view),
 
+    #ACCOUNTS VIEWS
+    path('accounts/', include('accounts.urls')),
 
     #REST FRAMEWORK URLS
     path('api/eventos/',include('eventos.api.urls')),
