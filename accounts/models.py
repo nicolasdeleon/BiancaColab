@@ -1,14 +1,13 @@
-from django.db import models
-from django.utils import timezone
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager
-)
-
 from django.conf import settings
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.core.mail import send_mail
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.template.loader import render_to_string
+from django.utils import timezone
 from rest_framework.authtoken.models import Token
+from django.core.mail import EmailMultiAlternatives
 
 
 class usermanager(BaseUserManager):
@@ -123,7 +122,6 @@ class user(AbstractBaseUser):
 	def get_instaaccount(self):
 		return self.instaaccount
 
-
 	def has_perm(self,perm,obj=None):
 		return True
 
@@ -146,6 +144,29 @@ class profile(models.Model):
 	user = models.OneToOneField(user,on_delete=models.CASCADE)
 	#extends extra field of user with other info
 	#tiene que tener la menor cantidad de cambios posibles user model}
+
+class EmailConfirmed(models.Model):
+	user = models.OneToOneField(user,on_delete=models.CASCADE)
+	activation_key = models.CharField(max_length=200)
+	confirmed = models.BooleanField(default=False)
+
+	def __str__(self):
+		return str(self.user) + ' - confirmed: '  + str(self.confirmed)
+
+	def activate_user_email(self):
+		# activation_url = "http://localhost:8000/accounts/activate/%s" %(self.activation_key)
+		activation_url = "http://google.com"
+		context = {
+			"activation_url": activation_url,
+		}
+		subject = "Confirmá tu Cuenta"
+		message = render_to_string("activation_message.html", context)
+		self.email_user(subject, text_body='', html_body=message, from_email=settings.SUPPORT_EMAIL)
+
+	def email_user(self, subject, text_body, html_body, from_email=None, *kwargs):
+		msg = EmailMultiAlternatives(subject=subject, from_email=from_email, to=["ndeleon@biancaapp.com"], body=text_body)
+		msg.attach_alternative(html_body, "text/html")
+		msg.send()
 
 @receiver(post_save,sender = settings.AUTH_USER_MODEL)
 def create_auth_token(sender,instance=None,created=False,**kwargs):
