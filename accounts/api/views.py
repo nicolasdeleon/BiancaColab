@@ -171,27 +171,38 @@ class ChangePasswordView(UpdateAPIView):
 		return obj
 
 	def update(self, request, *args, **kwargs):
+
+		context = {}
 		self.object = self.get_object()
 		serializer = self.get_serializer(data=request.data)
 
 		if serializer.is_valid():
 			# Check old password
 			if not self.object.check_password(serializer.data.get("old_password")):
-				return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+				context['response'] = 'Error'
+				context['error_message'] = 'Contraseña actual errónea.'
+				return Response(context,status=status.HTTP_400_BAD_REQUEST)
+				#return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
 
 			# confirm the new passwords match
 			new_password = serializer.data.get("new_password")
 			confirm_new_password = serializer.data.get("confirm_new_password")
 			if new_password != confirm_new_password:
-				return Response({"new_password": ["New passwords must match"]}, status=status.HTTP_400_BAD_REQUEST)
+
+				context['response'] = 'Error'
+				context['error_message'] = 'Las nuevas contraseñas deben coincidir.'
+				return Response(context,status=status.HTTP_400_BAD_REQUEST)
+				#return Response({"new_password": ["New passwords must match"]}, status=status.HTTP_400_BAD_REQUEST)
 
 			# set_password also hashes the password that the user will get
 			self.object.set_password(serializer.data.get("new_password"))
 			self.object.save()
+
+			context['response'] = 'OK'
+			context['error_message'] = 'Contraseña cambiada con éxito.'
 			return Response({"response":"successfully changed password"}, status=status.HTTP_200_OK)
 
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
         
 #Obtengo las credenciales ya verificadas del mail configurado para mandar mails
 #EMAIL_ADDRESS = "nicolasmatiasdeleon@gmail.com" #ACA HAY Q PONER LA CUENTA DE SUPPORT DE BIANCA Y DARLE LOS PERMISOS CORRESPONDIENTES
