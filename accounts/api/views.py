@@ -166,19 +166,19 @@ class ChangePasswordView(UpdateAPIView):
 	permission_classes = (IsAuthenticated,)
 	authentication_classes = (TokenAuthentication,)
 
-	context = {}
 	def get_object(self, queryset=None):
 		obj = self.request.user
 		return obj
 
 	def update(self, request, *args, **kwargs):
+
+		context = {}
 		self.object = self.get_object()
 		serializer = self.get_serializer(data=request.data)
 
 		if serializer.is_valid():
 			# Check old password
 			if not self.object.check_password(serializer.data.get("old_password")):
-
 				context['response'] = 'Error'
 				context['error_message'] = 'Contraseña actual errónea.'
 				return Response(context,status=status.HTTP_400_BAD_REQUEST)
