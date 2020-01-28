@@ -19,6 +19,8 @@ from rest_framework.generics import UpdateAPIView
 from django.core.mail import EmailMultiAlternatives
 from django.db.models.signals import post_save
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
+
 
 ##Cosas para manejar mail
 import os
@@ -284,6 +286,7 @@ def reset_password(request):
 		data['error_message'] = 'User does not exist'
 		#return Response(data,status=status.HTTP_404_NOT_FOUND)
 		return Response(data)
+
 
 @api_view(['POST', ])
 @permission_classes((AllowAny, ))
