@@ -21,6 +21,7 @@ from django.db.models.signals import post_save
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
+from backBone_Bianca.settings import SUPPORT_EMAIL
 
 ##Cosas para manejar mail
 import os
@@ -273,10 +274,10 @@ def reset_password(request):
 		}
 		message = render_to_string("reset_password.html", context)
 
-		from_email = settings.SUPPORT_EMAIL
+		from_email = SUPPORT_EMAIL
 
-		mail = EmailMultiAlternatives(subject, from_email, [user_aux.email], body='')
-		mail.attach_alternative(html_body, "text/html")
+		mail = EmailMultiAlternatives(subject, from_email, [user_aux.email], '')
+		mail.attach_alternative(message, "text/html")
 		mail.send()
 
 		data['response'] = "Success"
