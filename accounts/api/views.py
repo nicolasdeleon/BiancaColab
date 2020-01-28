@@ -16,6 +16,10 @@ from rest_framework.permissions import AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.generics import UpdateAPIView
 
+from django.core.mail import EmailMultiAlternatives
+from django.db.models.signals import post_save
+from django.core.mail import send_mail
+
 ##Cosas para manejar mail
 import os
 import smtplib
