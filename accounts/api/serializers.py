@@ -33,8 +33,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
             base, domain = str(user.email).split('@')
             activation_key = hashlib.sha1(str(short_hash+base).encode('utf-8')).hexdigest()
             email_confirmed.activation_key = activation_key
+            # Un comment this comment the day we want to start using email validation on sign up and delete email_confirmed-confirmed = True
+            # user.emailconfirmed.activate_user_email()
+            email_confirmed.confirmed = True
             email_confirmed.save()
-            user.emailconfirmed.activate_user_email()
 
     def save(self):
         ObjUser = user(
