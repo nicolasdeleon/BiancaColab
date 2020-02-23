@@ -1,16 +1,9 @@
-import json
-
-from django.contrib.auth.models import User
-from django.test import TestCase
-from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from accounts.api.serializers import RegistrationSerializer
 from accounts.models import user
-import secrets
 
 # Create your tests here.
 
@@ -26,7 +19,7 @@ class ApiAccountRegistrationTests(APITestCase):
             "first_name" : "test",
             "last_name" : "case",
             "instaaccount" : "@test",
-            "birthDate" : timezone.datetime(1997,1,23,00,00,00,00),
+            "birthDate" : timezone.datetime(1997, 1, 23, 00, 00, 00, 00),
             "password" : "testpassword",
             "password2" : "testpassword"
         }
@@ -44,18 +37,18 @@ class ApiAccountAuthenticationTests(APITestCase):
             "password" : "secret"
         }
         self.user = user.objects.create_user(
-            email = self.credentials['email'],
-            password = self.credentials['password'],
-            instaaccount = "@test22222",
-            first_name = "oliver",
-            last_name = "twist",
+            email=self.credentials['email'],
+            password=self.credentials['password'],
+            instaaccount="@test22222",
+            first_name="oliver",
+            last_name="twist",
         )
         self.token = Token.objects.get(user=self.user)
         self.api_Authentication()
 
     def api_Authentication(self):
-        self.client.credentials(HTTP_AUTHORIZATION = "Token " + self.token.key)
-    
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
+
     # Actual authentication assertions
 
     # Api Log In Test:
