@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+
+import dj_database_url
 import django_heroku
 from environs import Env
 
@@ -60,15 +62,14 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
-    
+
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     )
-
 }
 
-AUTH_USER_MODEL = 'accounts.User' #changes the built-in user model to ours
-
+# changes the built-in user model to ours
+AUTH_USER_MODEL = 'accounts.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -85,7 +86,7 @@ ROOT_URLCONF = 'backBone_Bianca.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -111,8 +112,8 @@ WSGI_APPLICATION = 'backBone_Bianca.wsgi.application'
     }
 }'''
 
-#El dia de mañana esto tiene que importar las credenciales de un archivo .env el cual propio de cada uno
-DATABASES =  {
+# El dia de mañana esto tiene que importar las credenciales de un archivo .env el cual propio de cada uno
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'biancalocal',
@@ -123,7 +124,6 @@ DATABASES =  {
     }
 }
 
-import dj_database_url
 
 db_from_env = dj_database_url.config(conn_max_age=600)
 DATABASES['default'].update(db_from_env)
@@ -167,14 +167,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-LOCAL_STATIC_CDN_PATH = os.path.join(os.path.dirname(BASE_DIR),'static_cdn_test')
+LOCAL_STATIC_CDN_PATH = os.path.join(os.path.dirname(BASE_DIR), 'static_cdn_test')
 
-STATIC_ROOT = os.path.join(os.path.dirname(LOCAL_STATIC_CDN_PATH),'static') #generalmente va a venir de la nube xq no es seguro lo que estoy haciendo ahora
+# Generalmente va a venir de la nube xq no es seguro lo que estoy haciendo ahora
+STATIC_ROOT = os.path.join(os.path.dirname(LOCAL_STATIC_CDN_PATH), 'static')
 
-#STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
+# STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 
 STATICFILES_DIR = [
-    os.path.join(BASE_DIR,'staticfiles')
+    os.path.join(BASE_DIR, 'staticfiles')
 ]
 
 MEDIA_ROOT = os.path.join(os.path.dirname(LOCAL_STATIC_CDN_PATH),'media')
@@ -182,7 +183,6 @@ MEDIA_URL = '/media/'
 
 # Mail configurations
     # Send grid configurations
-
 SENDGRID_API_KEY = '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'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey'
