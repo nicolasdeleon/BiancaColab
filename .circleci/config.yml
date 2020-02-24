@@ -24,7 +24,9 @@ jobs:
           command: ./cc-test-reporter before-build
       - run:
           name: Run tests
-          command: python manage.py test
+          command: |
+            coverage run manage.py test --settings=core.settings.test
+            coverage xml
       - run:
           name: Submit test results
           command: ./cc-test-reporter after-build
