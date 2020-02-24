@@ -3,13 +3,14 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/python:3.7.3  # primary container for the build job
-      - image: postgres:10
+    - image: circleci/python:3.7.3  # primary container for the build job
+    - image: postgres:10
       environment:
         POSTGRES_USER: root
         POSTGRES_DB: circle_test
         POSTGRES_HOST_AUTH_METHOD: trust
     steps:
+      - checkout
       - run:
           name: Install dependencies
           command: pip install -r requirements.txt -r dev-requirements.txt
