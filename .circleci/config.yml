@@ -1,21 +1,24 @@
 version: 2.1
 
-orbs:
-  python: circleci/python@0.2.1
-
 jobs:
-  build-and-test:
-    executor: python/default
+  build:
+    docker:
+      - image: circleci/python:3.7.3  # primary container for the build job
+      - image: postgres:10
+      environment:
+        POSTGRES_USER: root
+        POSTGRES_DB: circle_test
+        POSTGRES_HOST_AUTH_METHOD: trust
     steps:
-      - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
       - run:
-          command: ./manage.py test
-          name: Test
-
+          name: Install dependencies
+          command: pip install -r requirements.txt -r dev-requirements.txt
+      - run:
+          name: Run tests
+          command: manage.py test
+      - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+          path: test-results
 workflows:
   main:
     jobs:
-      - build-and-test
+      - build
