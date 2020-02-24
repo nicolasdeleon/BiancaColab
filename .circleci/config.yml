@@ -15,21 +15,8 @@ jobs:
           name: Install dependencies
           command: sudo pip install -r requirements.txt
       - run:
-          name: Install test reporter
-          command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
-      - run:
-          name: Configure test reporter
-          command: ./cc-test-reporter before-build
-      - run:
           name: Run tests
-          command: |
-            coverage run manage.py test --settings=core.settings.test
-            coverage xml
-      - run:
-          name: Submit test results
-          command: ./cc-test-reporter after-build
+          command: python manage.py test
 workflows:
   main:
     jobs:
