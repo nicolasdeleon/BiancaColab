@@ -6,6 +6,6 @@ ignore=migrations
 # C0111: Missing docstring
 # R0913 to many arguments
 # R0903: Too few public methods (N/2)
-disable=R0913,C0111,R0903
+disable=R0913,C0111,R0903,missing-docstring,no-init,no-member,cyclic-import,bad-continuation,superfluous-parens,wildcard-import,no-self-use,line-too-long,redefined-builtin,too-many-arguments,unused-wildcard-import,too-few-public-methods,too-many-lines,too-many-instance-attributes,too-many-public-methods,multiple-statements,unused-argument,abstract-method,redefined-outer-name,protected-access,duplicate-code,arguments-differ,method-hidden,fixme,locally-disabled,too-many-ancestors,no-else-return,too-many-locals,model-no-explicit-unicode
 [FORMAT]
 max-line-length=160
