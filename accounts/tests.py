@@ -3,7 +3,8 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from accounts.models import user
+from accounts.models import user, EmailConfirmed
+
 
 # Create your tests here.
 
@@ -29,8 +30,8 @@ class ApiAccountRegistrationTests(APITestCase):
 
 
 class ApiAccountAuthenticationTests(APITestCase):
+    """ This class is entended to test all end points regarding accounts that require authentication """
 
-    # This class is entended to test all end points regarding accounts that require authentication
     def setUp(self):
         self.credentials = {
             "email" : "testdiferentthanothers@test.com",
@@ -43,6 +44,10 @@ class ApiAccountAuthenticationTests(APITestCase):
             first_name="oliver",
             last_name="twist",
         )
+        # THIS SHOULD BE CHANGED IF WE ARE USING CONFIRMATION EMAIL FOR USERS
+        self.email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(user=self.user)
+        self.email_confirmed.confirmed = True
+        self.email_confirmed.save()
         self.token = Token.objects.get(user=self.user)
         self.api_Authentication()
 
