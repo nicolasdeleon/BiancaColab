@@ -138,10 +138,10 @@ class user(AbstractBaseUser):
         """ References user Instagram account """
         return self.instaaccount
 
-    def has_perm(self):
+    def has_perm(self, perm, obj=None):
         return True
 
-    def has_module_perms(self):
+    def has_module_perms(self, app_label):
         return True
 
     @property

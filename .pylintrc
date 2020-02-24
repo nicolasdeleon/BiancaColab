@@ -8,4 +8,4 @@ ignore=migrations
 # R0903: Too few public methods (N/2)
 disable=R0913,C0111,R0903
 [FORMAT]
-max-line-length=120
+max-line-length=160

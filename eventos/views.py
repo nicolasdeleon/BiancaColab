@@ -1,89 +1,80 @@
-from django.shortcuts import render, Http404, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import eventpost
-from .models import postrelations
+from django.shortcuts import Http404, get_object_or_404, redirect, render
+
 from .forms import EventoModelForm
+from .models import eventpost
 
 
-#CRUD:CreateRetrieveUpdateDelete
-
-#retrieve all
-@staff_member_required 
+@staff_member_required
 def eventpost_alldetail_view(request):
-    #lista de todos los eventos que tenemos:
-    qs = eventpost.objects.all()#obtengo todos los post
-    template_name = 'eventos/alldetail_view.html' #esto lo tengo que asociar a un html creo
-    cant_de_posts = qs.count()
-    if(cant_de_posts == 0):
+    """ List ALL existing events """
+    query = eventpost.objects.all()
+    template_name = 'eventos/alldetail_view.html'
+    cant_de_posts = query.count()
+    if cant_de_posts == 0:
         print("ERROR: No hay eventos!")
-        raise Http404    
+        raise Http404
     context = {
         "title" : "Nuestros Eventos",
-        "object_list" : qs,
+        "object_list" : query,
         "cant_de_posts" : cant_de_posts
-    } 
-    return render(request, template_name,context)
+    }
+    return render(request, template_name, context)
 
-#retrieve one
-@staff_member_required 
-def eventpost_event_view(request,slug):
-    #lista de todos los eventos que tenemos:
-    obj = get_object_or_404(eventpost,slug = slug) #obtengo el post del bar cuyo slug es unico
-    template_name = 'eventos/event_view.html' #esto lo tengo que asociar a un html creo 
-    users = obj.users.all()      
+@staff_member_required
+def eventpost_event_view(request, slug):
+    """ Gets a single event denoted by its slug """
+    event = get_object_or_404(eventpost, slug=slug)
+    template_name = 'eventos/event_view.html'
+    users = event.users.all()
     context = {
-        "title" : obj.title,
-        "object" : obj,
+        "title" : event.title,
+        "object" : event,
         "cant_de_activos" : users,
-    } 
-    return render(request, template_name,context)
+    }
+    return render(request, template_name, context)
 
-#create one
 @staff_member_required
 def blog_post_create_view(request):
-    #use a form
+    """ Creates a new event """
     form = EventoModelForm(request.POST or None)
     if form.is_valid():
         form.save()
-        form = EventoModelForm()    
+        form = EventoModelForm()
     template_name = "eventos/create_evento.html"
     context = {
         "title": "create event",
         'form' : form
     }
+    return render(request, template_name, context)
 
-    return render(request, template_name,context)
-
-
-#update one
 @staff_member_required
-def blog_post_update_view(request,slug):
-    obj = eventpost.objects.get(slug = slug)
-    if obj == None:
+def blog_post_update_view(request, slug):
+    """ Updates an event denoted by its slug """
+    event = eventpost.objects.get(slug=slug)
+    if event is None:
         raise Http404
-    form = EventoModelForm(request.POST or None,instance=obj)
+    form = EventoModelForm(request.POST or None, instance=event)
     if form.is_valid():
         form.save()
     template_name = "eventos/updateEvento.html"
     context = {
         'title' : "update event ",
-        'object' : obj,
+        'object' : event,
         'form' : form,
     }
-    return render(request, template_name,context)
+    return render(request, template_name, context)
 
-#delete one
 @staff_member_required
-def blog_post_delete_view(request,slug):
-    obj = get_object_or_404(eventpost,slug = slug)
+def blog_post_delete_view(request, slug):
+    """ Deletes an event denoted by its slug """
+    event = get_object_or_404(eventpost, slug=slug)
     if request.method == "POST":
-        obj.delete()
-        return redirect("/eventos/") 
+        event.delete()
+        return redirect("/eventos/")
     template_name = "eventos/deleteEvento.html"
     context = {
-        'title' : "delete event ",
-        'object' : obj,
+        'title' : "delete event",
+        'object' : event,
     }
-    return render(request, template_name,context)
-
+    return render(request, template_name, context)

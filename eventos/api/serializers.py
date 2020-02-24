@@ -1,32 +1,21 @@
 from rest_framework import serializers
 
-#modelo a serializar
 from eventos.models import eventpost, fotos, postrelations
 
 
 class eventpostSerializer(serializers.ModelSerializer):
 
-    #quiero obtener las fotos para cada post
- #   imagenes = serializers.SerializerMethodField('get_BarPost_Fotos')
-
     class Meta:
         model = eventpost
-        fields = ['title','company','slug','users','code'] 
-        
-    #funcion para updatear
+        fields = ['title', 'company', 'slug', 'users', 'code']
+
     def update(self, instance, validated_data):
+        """ Update event post """
         instance.title = validated_data.get('title', instance.title)
         instance.company = validated_data.get('content', instance.content)
-  #      instance.slug = validated_data.get('created', instance.created)
-  #      instance.users = validated_data.get('created', instance.created)
-  #      return instance
-  
-  # def get_BarPost_Fotos(self,BarPost):
-   #    fotos = BarPost.fotos
-
-
-
-
+        # instance.slug = validated_data.get('created', instance.created)
+        # instance.users = validated_data.get('created', instance.created)
+        # return instance
 
 """
 class CommentSerializer(serializers.Serializer):
@@ -44,32 +33,40 @@ class CommentSerializer(serializers.Serializer):
         return instance
 """
 
+
 class PostRelationsSerializer(serializers.ModelSerializer):
 
     instaaccount = serializers.SerializerMethodField('get_instaaccount_from_person')
     eventTitle = serializers.SerializerMethodField('get_eventTitle_from_event')
     eventStatus = serializers.SerializerMethodField('get_event_status')
-    
 
     def get_instaaccount_from_person(self, postrelations):
-      instaaccount = postrelations.person.instaaccount
-      return instaaccount
+        instaaccount = postrelations.person.instaaccount
+        return instaaccount
 
     def get_eventTitle_from_event(self, postrelations):
-      eventTitle = postrelations.event.title
-      return eventTitle
+        eventTitle = postrelations.event.title
+        return eventTitle
 
-    def get_event_status(self,postrelations):
-      eventstatus = postrelations.event.status
-      return eventstatus
+    def get_event_status(self, postrelations):
+        eventstatus = postrelations.event.status
+        return eventstatus
 
     class Meta:
         model = postrelations
-        fields = ['instaaccount','eventTitle','createTime','status','eventStatus','event','winer_code'] 
+        fields = ['instaaccount', 'eventTitle', 'createTime', 'status', 'eventStatus', 'event', 'winer_code']
 
-   
+
 class EventsSerializer(serializers.ModelSerializer):
 
     class Meta:
-      model = eventpost
-      fields = ['pk','title','company','desc','createTime','code','status'] 
+        model = eventpost
+        fields = [
+            'pk',
+            'title',
+            'company',
+            'desc',
+            'createTime',
+            'code',
+            'status'
+            ]
