@@ -10,6 +10,8 @@ from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
 
+
+
 class usermanager(BaseUserManager):
     """ Standard User Manager """
     def create_user(
@@ -159,6 +161,7 @@ class Profile(models.Model):
     """ Extend extra fields of user rather than change user model """
     user = models.OneToOneField(user, on_delete=models.CASCADE)
     followers = models.IntegerField(verbose_name='Amount of followers', blank=True, null=True)
+    likes = models.FloatField(verbose_name='Promediated likes per publication', blank=True, null=True)
     zone = models.CharField(verbose_name='Location', max_length=255, blank=True)
     scoring = models.IntegerField(verbose_name='Overall event score', blank=True, default=0)
 
