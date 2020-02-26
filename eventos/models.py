@@ -18,9 +18,9 @@ STATUS_EVENTPOST = [
     ('F', 'Finished')
 ]
 
-class fotos(models.Model):
+class  InstaStoryPublication(models.Model):
     updloader = models.ForeignKey(user, default=1, blank=True, on_delete=models.CASCADE)
-    image = models.FileField(upload_to='image/', blank=True, null=True)
+    image = models.ImageField(upload_to='image/', blank=True, null=True)
 
 class eventpost(models.Model):
     title = models.CharField(max_length=30)
@@ -29,7 +29,7 @@ class eventpost(models.Model):
     desc = models.CharField(null=True, blank=True, max_length=255)
     users = models.ManyToManyField(user, blank=True, verbose_name="list of users", related_name="+")
     createTime = models.DateTimeField(auto_now=True)
-    posts = models.ManyToManyField(fotos, blank=True, verbose_name="publicaciones")
+    posts = models.ManyToManyField(InstaStoryPublication, blank=True, verbose_name="publicaciones")
     code = models.CharField(validators=[RegexValidator(regex='^.{5}$', message='Length has to be 5', code='nomatch')], max_length=5, null=True, unique=True)
     users_winners = models.ManyToManyField(user, blank=True, verbose_name="list of users Winners", related_name="+")
     status = models.CharField(choices=STATUS_EVENTPOST, default="2BO", max_length=3)

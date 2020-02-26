@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from eventos.models import eventpost, fotos, postrelations
+from eventos.models import eventpost, postrelations
 
 
 class eventpostSerializer(serializers.ModelSerializer):

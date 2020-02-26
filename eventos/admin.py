@@ -4,7 +4,7 @@ from exponent_server_sdk import (DeviceNotRegisteredError, PushClient,
                                  PushServerError)
 from requests.exceptions import ConnectionError, HTTPError
 
-from .models import eventpost, fotos, postrelations
+from .models import eventpost, InstaStoryPublication, postrelations
 
 
 def send_push_message(token, message, extra=None):
@@ -101,5 +101,5 @@ class postrelationsadmin(admin.ModelAdmin):
 
 
 admin.site.register(eventpost)
-admin.site.register(fotos)
+admin.site.register(InstaStoryPublication)
 admin.site.register(postrelations, postrelationsadmin)
