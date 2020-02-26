@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from django.contrib.auth import get_user_model
-from .models import EmailConfirmed
+from .models import EmailConfirmed, Profile
 
 User = get_user_model()
 
@@ -12,4 +12,5 @@ class UserAdmin(admin.ModelAdmin):
         model = User
 
 admin.site.register(User, UserAdmin)
+admin.site.register(Profile)
 admin.site.register(EmailConfirmed)

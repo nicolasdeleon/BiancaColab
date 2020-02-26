@@ -93,7 +93,6 @@ class usermanager(BaseUserManager):
             is_staff=True,
             is_admin=True
             )
-
         return person
 
 
@@ -109,8 +108,7 @@ class user(AbstractBaseUser):
     admin = models.BooleanField(default=False)
     instaaccount = models.CharField(max_length=255, unique=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    scoring = models.IntegerField(default=0)
-    reset_password_token = models.CharField(max_length=22, default=0)
+    reset_password_token = models.CharField(max_length=22, blank=True, default=0)
 
     # Remplaza el username field de django default como tmb password.
 
@@ -157,9 +155,15 @@ class user(AbstractBaseUser):
         return self.active
 
 
-class profile(models.Model):
+class Profile(models.Model):
     """ Extend extra fields of user rather than change user model """
     user = models.OneToOneField(user, on_delete=models.CASCADE)
+    followers = models.IntegerField(verbose_name='Amount of followers', blank=True, null=True)
+    zone = models.CharField(verbose_name='Location', max_length=255, blank=True)
+    scoring = models.IntegerField(verbose_name='Overall event score', blank=True, default=0)
+
+    def __str__(self):
+        return str(self.user)
 
 
 class EmailConfirmed(models.Model):
