@@ -44,7 +44,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             instaaccount = self.validated_data['instaaccount'],
             first_name = self.validated_data['first_name'],
             last_name = self.validated_data['last_name'],
-            birth_date = self.validated_data['birth_date'],
+            birth_date = self.validated_data['birthDate'],
             staff = False,
             admin = False,
             active = True,
