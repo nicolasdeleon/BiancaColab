@@ -20,7 +20,7 @@ class ApiAccountRegistrationTests(APITestCase):
             "first_name" : "test",
             "last_name" : "case",
             "instaaccount" : "@test",
-            "birthDate" : timezone.datetime(1997, 1, 23, 00, 00, 00, 00),
+            "birth_date" : timezone.datetime(1997, 1, 23, 00, 00, 00, 00),
             "password" : "testpassword",
             "password2" : "testpassword"
         }

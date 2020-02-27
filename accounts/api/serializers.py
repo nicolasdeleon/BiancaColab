@@ -16,7 +16,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         'first_name',
         'last_name',
         'instaaccount',
-        'birthDate',
+        'birth_date',
         'password',
         'password2']
         extra_kwargs = { #esta propiedad ni idea que hace
@@ -41,13 +41,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def save(self):
         ObjUser = user(
             email = self.validated_data['email'],
-        instaaccount = self.validated_data['instaaccount'],
-        first_name = self.validated_data['first_name'],
+            instaaccount = self.validated_data['instaaccount'],
+            first_name = self.validated_data['first_name'],
             last_name = self.validated_data['last_name'],
-            birthDate = self.validated_data['birthDate'],
-        staff = False,
-        admin = False,
-        active = True,
+            birth_date = self.validated_data['birth_date'],
+            staff = False,
+            admin = False,
+            active = True,
         )
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
@@ -67,7 +67,7 @@ class AccountPropertiesSerializer(serializers.ModelSerializer):
 
     class Meta: #Requerido para mapear campos form a campos modelo
         model = user
-        fields = ['email','full_name','instaaccount','birthDate']
+        fields = ['email','full_name','instaaccount','birth_date']
 
 
 class ChangePasswordSerializer(serializers.Serializer):
