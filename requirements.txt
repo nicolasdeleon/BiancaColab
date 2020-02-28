@@ -10,3 +10,4 @@ gunicorn===19.0.0
 environs==7.1.0
 exponent_server_sdk==0.3.1
 Pillow==7.0.0
+django-storages[dropbox]
