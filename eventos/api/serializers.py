@@ -64,6 +64,7 @@ class EventsSerializer(serializers.ModelSerializer):
         fields = [
             'pk',
             'title',
+            'image',
             'company',
             'desc',
             'createTime',

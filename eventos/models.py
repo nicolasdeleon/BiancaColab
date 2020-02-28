@@ -28,6 +28,7 @@ class  InstaStoryPublication(models.Model):
 
 class eventpost(models.Model):
     title = models.CharField(max_length=30)
+    image = models.ImageField(upload_to='Event_Image/', blank=True, null=True)
     company = models.CharField(max_length=30)
     slug = models.SlugField(default=id(True), max_length=255, unique=True)
     desc = models.CharField(null=True, blank=True, max_length=255)
