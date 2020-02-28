@@ -1,13 +1,8 @@
 {% extends "base.html" %} 
 
 {% block content %}
-    <h2>{{object.company}}</h2>
-    <p>Cuando: {{object.createTime}}</p>
-    <p>slug: {{object.slug}}</p>
-    <p>cantidad de activos: {{object.users.count}}</p>
-    {%for user in cant_de_activos%}
-    <li>
-        <p>{{user}}</p>
-    </li>    
+    {%for img in images%}
+        <img margin="30" width="280" height="380" src="{{ img.url }}">
     {%endfor%}
+    
 {% endblock %}

@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'accounts',
     'rest_framework',
     'rest_framework.authtoken',
-
+    'storages'
 ]
 
 REST_FRAMEWORK = {
@@ -165,12 +165,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+DEFAULT_FILE_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
+
+DROPBOX_OAUTH2_TOKEN=os.environ.get('DROPBOX_OAUTH2_TOKEN')
+
 STATIC_URL = '/static/'
 
-LOCAL_STATIC_CDN_PATH = os.path.join(os.path.dirname(BASE_DIR), 'static_cdn_test')
+LOCAL_STATIC_CDN_PATH = ''
 
 # Generalmente va a venir de la nube xq no es seguro lo que estoy haciendo ahora
-STATIC_ROOT = os.path.join(os.path.dirname(LOCAL_STATIC_CDN_PATH), 'static')
+STATIC_ROOT = ''
 
 # STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 
@@ -178,8 +182,8 @@ STATICFILES_DIR = [
     os.path.join(BASE_DIR, 'staticfiles')
 ]
 
-MEDIA_ROOT = os.path.join(os.path.dirname(LOCAL_STATIC_CDN_PATH),'media')
-MEDIA_URL = '/media/'
+MEDIA_ROOT = ''
+MEDIA_URL = ''
 
 # Mail configurations
     # Send grid configurations

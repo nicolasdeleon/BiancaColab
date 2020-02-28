@@ -4,6 +4,8 @@ from django.shortcuts import Http404, get_object_or_404, redirect, render
 from .forms import EventoModelForm
 from .models import eventpost
 
+from django.conf import settings
+
 
 @staff_member_required
 def eventpost_alldetail_view(request):
@@ -27,10 +29,17 @@ def eventpost_event_view(request, slug):
     event = get_object_or_404(eventpost, slug=slug)
     template_name = 'eventos/event_view.html'
     users = event.users.all()
+    post_relations = event.postrelations_set.all()
+    story_list = []
+    for post_relation in post_relations:
+        story_list.append(post_relation.story.image)
+    print(story_list[0])
+    print(settings.MEDIA_URL)
     context = {
         "title" : event.title,
         "object" : event,
         "cant_de_activos" : users,
+        "images": story_list
     }
     return render(request, template_name, context)
 
