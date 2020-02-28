@@ -18,7 +18,7 @@ STATUS_EVENTPOST = [
     ('F', 'Finished')
 ]
 
-class  InstaStoryPublication(models.Model):
+class InstaStoryPublication(models.Model):
     person = models.ForeignKey(user, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='Events_Users_Storys/', blank=True, null=True)
 
@@ -52,7 +52,7 @@ class postrelations(models.Model):
     winer_code = models.CharField(max_length=20, verbose_name="Code to Retrieve")
     status = models.CharField(choices=STATUS_EVENT, default="2BA", max_length=3)
     notificationToken = models.CharField(max_length=255, blank=True, null=True)
-    story = models.ForeignKey(InstaStoryPublication, blank=True, null=True, on_delete=models.DO_NOTHING)
+    story = models.ForeignKey(InstaStoryPublication, blank=True, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         ordering = ['-createTime']

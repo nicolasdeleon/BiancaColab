@@ -100,6 +100,10 @@ class postrelationsadmin(admin.ModelAdmin):
     actions = [set_status_winner, set_status_refused, set_status_finished]
 
 
+class InstaStoryPublicationAdmin(admin.ModelAdmin):
+    list_filter = ('person',)
+    list_display = ('person', )
+
 admin.site.register(eventpost)
-admin.site.register(InstaStoryPublication)
 admin.site.register(postrelations, postrelationsadmin)
+admin.site.register(InstaStoryPublication, InstaStoryPublicationAdmin)
