@@ -20,7 +20,6 @@ class usermanager(BaseUserManager):
                 first_name,
                 last_name,
                 instaaccount,
-                birthDate="2020-1-1",
                 password=None,
                 is_active=True,
                 is_staff=False,
@@ -47,7 +46,6 @@ class usermanager(BaseUserManager):
         person.last_name = last_name
         person.full_name = first_name + ' ' + last_name
         person.set_password(password)
-        person.birthDate = birthDate
         person.staff = is_staff
         person.admin = is_admin
         person.active = is_active
@@ -104,7 +102,7 @@ class user(AbstractBaseUser):
     full_name = models.CharField(max_length=255, default="missing")
     first_name = models.CharField(max_length=120, default="missing")
     last_name = models.CharField(max_length=125, default="missing")
-    birthDate = models.DateTimeField(default=timezone.now)
+    birth_date = models.DateTimeField(verbose_name="Fecha de nacimiento", blank=True, null=True)
     active = models.BooleanField(default=True)
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
