@@ -216,7 +216,7 @@ class api_all_events_view(ListAPIView):
     queryset = eventpost.objects.all()
 
     def get_queryset(self):
-        queryset = eventpost.objects.exclude(status='C')
+        queryset = eventpost.objects.exclude(status='C').order_by('-createTime')
         return queryset
 
 
