@@ -36,7 +36,7 @@ def api_registration_view(request):
         if validate_email(email) is not None:
             data['error_message'] = 'That email is already in use.'
             data['response'] = 'Error'
-        return Response(data)
+            return Response(data)
 
         instaaccount = request.data.get('instaaccount')
         if validate_instaacount(instaaccount) is not None:
