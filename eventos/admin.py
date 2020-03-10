@@ -27,7 +27,7 @@ def send_push_message(token, message, extra=None):
         #         'response_data': exc.response_data,
         #     })
         raise
-
+"""
     except (ConnectionError, HTTPError) as exc:
         # Encountered some Connection or HTTP error - retry a few times in
         # case it is transient.
@@ -54,7 +54,7 @@ def send_push_message(token, message, extra=None):
                 'push_response': exc.push_response._asdict(),
             })
         raise self.retry(exc=exc)
-
+"""
 
 def set_status_winner(modeladmin, request, queryset):
     for q in queryset:
