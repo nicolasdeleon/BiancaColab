@@ -124,6 +124,44 @@ def api_won_event_view(request):
         Response("finalizo")
     return Response(data=data)
 
+'''
+Api para que un usuario finalice el evento porque recibió su beneficio.
+
+'''
+@api_view(['POST',])
+@permission_classes((IsAuthenticated,))
+def api_fin_event_view(request):
+    data={}
+    code = request.data["code"]
+    user = request.user    
+    try:
+        obj = eventpost.objects.get(code=code)
+    except eventpost.DoesNotExist or user.DoesNotExist:
+        data["failed"] = "Wrong Event Code"
+        return Response(data=data,status= status.HTTP_404_NOT_FOUND)
+
+    try:
+        #sPRbyU = postrelations.objects.get(person = user, code = code)
+        sPRbyU = postrelations.objects.get(person = user, event = obj)
+        if sPRbyU.status == 'W':
+            sPRbyU.status ='F'
+            sPRbyU.save()
+            data["success"] = "update successful"
+            data['status'] = 'Finalized'
+        else:
+         data['response'] = 'Error'
+         data['error_message'] = 'EventRelation is not winner'
+                    
+    except ObjectDoesNotExist:
+            data['response'] = 'Error'
+            data['error_message'] = 'EventRelation doesnt exist'
+                    
+
+    return Response(data=data)
+
+
+
+
 
 @api_view(['GET',])
 @permission_classes((IsAuthenticated,))

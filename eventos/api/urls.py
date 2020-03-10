@@ -7,7 +7,7 @@ from eventos.api.views import (
     api_won_events_view,    
     api_PostRelations_view,
     api_all_events_view,
-    api_fin_event_view
+    api_fin_event_view,
 )
 
 urlpatterns = [
@@ -19,4 +19,5 @@ urlpatterns = [
     path('post_relations/',api_PostRelations_view.as_view(),name="post_relations"),
     path('all_events/',api_all_events_view.as_view(),name="all_events"),
 
-    path('finEvent/',api_fin_event_view,name='finEvent'),
+    path('finEvent/',api_fin_event_view,name='finEvent'), 
+    ]
