@@ -61,15 +61,51 @@ def api_delete_BarPost_view(request, slug):
             data["failed"] = "object could not be deleted"
         return Response(data=data)
 
+
+# @api_view(['POST',])
+# @permission_classes((IsAuthenticated,))
+# def api_addUser_eventpost_view(request):
+#     data = {}
+#     code = request.data['code']
+#     user = request.user
+#     try:
+#         # CHEQUEO CODIGO DEL EVENTO VS EL QUE ME MANDA EL USUARIO
+#         obj = eventpost.objects.get(code=code)
+#     except eventpost.DoesNotExist or user.DoesNotExist:
+#         data['response'] = 'Error'
+#         data['error_message'] = 'Código incorrecto'
+#         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+
+#     if request.method == 'POST':
+#         obj.users.add(user)
+#         # qs = obj.users.all() #Esto el dia de mañana se podria sacar, siento que es ineficiente
+#         # if qs.filter(pk=user.pk).exists():
+#         try:
+#             #sPRbyU = postrelations.objects.get(person = user, code = code)
+#             sPRbyU = postrelations.objects.get(person=user, event=obj)
+#             data['response'] = 'Error'
+#             data['error_message'] = 'Duplicate association.'
+
+#         except ObjectDoesNotExist:
+#             newPR = postrelations()
+#             newPR.person = user
+#             newPR.event = obj
+#             newPR.notificationToken = request.data['notificationToken']
+#             newPR.save()
+#             data["success"] = "users belong to the event"
+#         return Response(data=data)
+
+
+
 @api_view(['POST',])
 @permission_classes((IsAuthenticated,))
 def api_addUser_eventpost_view(request):
     data = {}
-    code = request.data['code']
+    code = request.data['pk']
     user = request.user
     try:
         # CHEQUEO CODIGO DEL EVENTO VS EL QUE ME MANDA EL USUARIO
-        obj = eventpost.objects.get(code=code)
+        obj = eventpost.objects.get(pk=code)
     except eventpost.DoesNotExist or user.DoesNotExist:
         data['response'] = 'Error'
         data['error_message'] = 'Código incorrecto'
@@ -93,6 +129,7 @@ def api_addUser_eventpost_view(request):
             newPR.save()
             data["success"] = "users belong to the event"
         return Response(data=data)
+
 
 
 @api_view(['GET',])

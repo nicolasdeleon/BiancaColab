@@ -67,7 +67,7 @@ def set_status_winner(modeladmin, request, queryset):
                 var_token = q.notificationToken
                 q.save()
                 var_token = q.notificationToken
-                send_push_message(token=var_token, message='Ganaste')
+                send_push_message(token=var_token, message='Ganaste! Pasá a buscar tu beneficio!')
                 messages.success(request, 'Se marcó como winner')
                 if event.stock == event.stockW:
                     event.status = "C"
