@@ -169,10 +169,10 @@ Api para que un usuario finalice el evento porque recibió su beneficio.
 @permission_classes((IsAuthenticated,))
 def api_fin_event_view(request):
     data={}
-    code = request.data["code"]
+    code = request.data["pk"]
     user = request.user    
     try:
-        obj = eventpost.objects.get(code=code)
+        obj = eventpost.objects.get(pk=code)
     except eventpost.DoesNotExist or user.DoesNotExist:
         data["failed"] = "Wrong Event Code"
         return Response(data=data,status= status.HTTP_404_NOT_FOUND)
