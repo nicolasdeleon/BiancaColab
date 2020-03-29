@@ -132,7 +132,7 @@ def api_addUser_eventpost_view(request):
 
 
 
-@api_view(['GET',])
+@api_view(['POST',])
 @permission_classes((IsAuthenticated,))
 def api_eventrel_state(request):
     data = {}
@@ -147,7 +147,7 @@ def api_eventrel_state(request):
     statusE = obj.status
     if statusE in ('O', '2BO'):
         user = request.user
-        if request.method == 'GET':
+        if request.method == 'POST':
             # winners = obj.users_winners.all()
             # if winners.filter(pk=user.pk).exists():
             #     data["user_win"] = "True" # El usuario ganó
