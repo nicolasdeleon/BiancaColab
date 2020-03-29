@@ -163,7 +163,8 @@ def api_eventrel_state(request):
          except ObjectDoesNotExist:
             data['response'] = 'Error'
             data['error_message'] = 'inexistent relation.'
-         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+            return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+         #
 
     else:
         data["is_finalized"] = "True"
