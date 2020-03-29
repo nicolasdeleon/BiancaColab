@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'accounts',
     'rest_framework',
     'rest_framework.authtoken',
-    'storages'
+    'storages',
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {
@@ -79,6 +80,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backBone_Bianca.urls'
@@ -101,6 +103,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backBone_Bianca.wsgi.application'
 
+#CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = (
+       'http://localhost:3000',
+       'https://biancaapp.netlify.com'
+    )
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
