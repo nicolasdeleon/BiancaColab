@@ -68,6 +68,5 @@ class EventsSerializer(serializers.ModelSerializer):
             'company',
             'desc',
             'createTime',
-          
             'status'
             ]
