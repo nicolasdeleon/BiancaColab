@@ -13,6 +13,25 @@ from eventos.api.serializers import (EventsSerializer, PostRelationsSerializer,
 from eventos.models import eventpost, postrelations
 
 
+@api_view(['POST',])
+@permission_classes((IsAuthenticated,))
+def api_create_eventpost(request):
+        comp = request.data['company']
+        st = request.data['status']
+        stock = request.data['stock']
+        title = request.data['title']
+   # if request.method == 'POST':
+        newEP = eventpost(title = title,company=comp, status = st, stock = stock).save(),
+       
+
+        #newEP.company = request.data['company']
+        #newEP.save();
+        
+        data={}
+        data["success"] = "create successful"
+        return Response(data=data)
+        
+        
 @api_view(['GET',])
 @permission_classes((IsAuthenticated,))
 def api_detail_eventpost_view(request, slug):

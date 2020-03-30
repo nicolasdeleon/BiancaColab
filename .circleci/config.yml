@@ -17,6 +17,9 @@ jobs:
       - run:
           name: Run tests
           command: python manage.py test
+      - run:
+          name: Run tests events
+          command: python manage.py test eventos
 workflows:
   main:
     jobs:
