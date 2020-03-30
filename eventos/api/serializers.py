@@ -7,7 +7,7 @@ class eventpostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = eventpost
-        fields = ['title', 'company', 'slug', 'users', 'code']
+        fields = ['title', 'company', 'slug', 'users']
 
     def update(self, instance, validated_data):
         """ Update event post """
@@ -68,6 +68,6 @@ class EventsSerializer(serializers.ModelSerializer):
             'company',
             'desc',
             'createTime',
-            'code',
+          
             'status'
             ]
