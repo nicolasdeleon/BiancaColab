@@ -13,6 +13,25 @@ from eventos.api.serializers import (EventsSerializer, PostRelationsSerializer,
 from eventos.models import eventpost, postrelations
 
 
+@api_view(['POST',])
+@permission_classes((IsAuthenticated,))
+def api_create_eventpost(request):
+        comp = request.data['company']
+        st = request.data['status']
+        stock = request.data['stock']
+        title = request.data['title']
+   # if request.method == 'POST':
+        newEP = eventpost(title = title,company=comp, status = st, stock = stock).save(),
+       
+
+        #newEP.company = request.data['company']
+        #newEP.save();
+        
+        data={}
+        data["success"] = "create successful"
+        return Response(data=data)
+        
+        
 @api_view(['GET',])
 @permission_classes((IsAuthenticated,))
 def api_detail_eventpost_view(request, slug):
@@ -61,15 +80,51 @@ def api_delete_BarPost_view(request, slug):
             data["failed"] = "object could not be deleted"
         return Response(data=data)
 
+
+# @api_view(['POST',])
+# @permission_classes((IsAuthenticated,))
+# def api_addUser_eventpost_view(request):
+#     data = {}
+#     code = request.data['code']
+#     user = request.user
+#     try:
+#         # CHEQUEO CODIGO DEL EVENTO VS EL QUE ME MANDA EL USUARIO
+#         obj = eventpost.objects.get(code=code)
+#     except eventpost.DoesNotExist or user.DoesNotExist:
+#         data['response'] = 'Error'
+#         data['error_message'] = 'Código incorrecto'
+#         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+
+#     if request.method == 'POST':
+#         obj.users.add(user)
+#         # qs = obj.users.all() #Esto el dia de mañana se podria sacar, siento que es ineficiente
+#         # if qs.filter(pk=user.pk).exists():
+#         try:
+#             #sPRbyU = postrelations.objects.get(person = user, code = code)
+#             sPRbyU = postrelations.objects.get(person=user, event=obj)
+#             data['response'] = 'Error'
+#             data['error_message'] = 'Duplicate association.'
+
+#         except ObjectDoesNotExist:
+#             newPR = postrelations()
+#             newPR.person = user
+#             newPR.event = obj
+#             newPR.notificationToken = request.data['notificationToken']
+#             newPR.save()
+#             data["success"] = "users belong to the event"
+#         return Response(data=data)
+
+
+
 @api_view(['POST',])
 @permission_classes((IsAuthenticated,))
 def api_addUser_eventpost_view(request):
     data = {}
-    code = request.data['code']
+    code = request.data['pk']
     user = request.user
     try:
         # CHEQUEO CODIGO DEL EVENTO VS EL QUE ME MANDA EL USUARIO
-        obj = eventpost.objects.get(code=code)
+        obj = eventpost.objects.get(pk=code)
     except eventpost.DoesNotExist or user.DoesNotExist:
         data['response'] = 'Error'
         data['error_message'] = 'Código incorrecto'
@@ -95,14 +150,15 @@ def api_addUser_eventpost_view(request):
         return Response(data=data)
 
 
-@api_view(['GET',])
+
+@api_view(['POST',])
 @permission_classes((IsAuthenticated,))
-def api_won_event_view(request):
+def api_eventrel_state(request):
     data = {}
-    code = request.data["code"]
+    code = request.data["pk"]
     user = request.user
     try:
-        obj = eventpost.objects.get(code=code)
+        obj = eventpost.objects.get(pk=code)
     except eventpost.DoesNotExist or user.DoesNotExist:
         data["failed"] = "Wrong Event Code"
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
@@ -110,19 +166,65 @@ def api_won_event_view(request):
     statusE = obj.status
     if statusE in ('O', '2BO'):
         user = request.user
-        if request.method == 'GET':
-            winners = obj.users_winners.all()
-            if winners.filter(pk=user.pk).exists():
-                data["user_win"] = "True" # El usuario ganó
-                data["statusEvent"] = statusE
-            else:
-                data["user_win"] = "False" # El usuario no ganó
-                data["statusEvent"] = statusE
+        if request.method == 'POST':
+            # winners = obj.users_winners.all()
+            # if winners.filter(pk=user.pk).exists():
+            #     data["user_win"] = "True" # El usuario ganó
+            #     data["statusEvent"] = statusE
+            # else:
+            #     data["user_win"] = "False" # El usuario no ganó
+            #     data["statusEvent"] = statusE
+            # if qs.filter(pk=user.pk).exists():
+         try:
+            event = postrelations.objects.get(person=user, event=obj)
+            data['status'] = event.status
+            data['response'] = 'OK'
+         except ObjectDoesNotExist:
+            data['status'] = 'N'
+            data['response'] = 'OK'
+         #
+
     else:
         data["is_finalized"] = "True"
         data["status"] = statusE
-        Response("finalizo")
+        
     return Response(data=data)
+
+'''
+Api para que un usuario finalice el evento porque recibió su beneficio.
+
+'''
+@api_view(['POST',])
+@permission_classes((IsAuthenticated,))
+def api_fin_event_view(request):
+    data={}
+    code = request.data["pk"]
+    user = request.user    
+    try:
+        obj = eventpost.objects.get(pk=code)
+    except eventpost.DoesNotExist or user.DoesNotExist:
+        data["failed"] = "Wrong Event Code"
+        return Response(data=data,status= status.HTTP_404_NOT_FOUND)
+
+    try:
+        #sPRbyU = postrelations.objects.get(person = user, code = code)
+        sPRbyU = postrelations.objects.get(person = user, event = obj)
+        if sPRbyU.status == 'W':
+            sPRbyU.status ='F'
+            sPRbyU.save()
+            data["success"] = "update successful"
+            data['status'] = 'Finalized'
+        else:
+         data['response'] = 'Error'
+         data['error_message'] = 'EventRelation is not winner'
+                    
+    except ObjectDoesNotExist:
+            data['response'] = 'Error'
+            data['error_message'] = 'EventRelation doesnt exist'
+    return Response(data=data)
+
+
+
 
 
 @api_view(['GET',])
