@@ -14,8 +14,6 @@ def send_push_message(token, message, extra=None):
         response = PushClient().publish(
             PushMessage(to=token,
                         body=message))
-         	# PushMessage(to="ExponentPushToken[MWei7RCEEGbm8obBHRgAal]",
-            #           body="Flor"))
     except PushServerError as exc:
         # Encountered some likely formatting/validation error.
         # rollbar.report_exc_info(9_1
@@ -67,11 +65,15 @@ def set_status_winner(modeladmin, request, queryset):
                 var_token = q.notificationToken
                 q.save()
                 var_token = q.notificationToken
-                send_push_message(token=var_token, message='Ganaste! Pasá a buscar tu beneficio!')
                 messages.success(request, 'Se marcó como winner')
                 if event.stock == event.stockW:
                     event.status = "C"
                     event.save()
+                
+                try:
+                    send_push_message(token=var_token, message='Aprobado! Ahora busca tu beneficio!')
+                except:
+                    return  
             else:
                 # event.status == "C"
                 messages.error(request, 'Evento concluido')
