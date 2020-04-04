@@ -32,7 +32,7 @@ class InstaStoryPublication(models.Model):
 
 
 class eventpost(models.Model):
-    type_ev = models.CharField(choices=TYPE_EVENT, default="A")
+    type_ev = models.CharField(choices=TYPE_EVENT, default="A", max_length=3)
     title = models.CharField(max_length=30)
     image = models.ImageField(upload_to='Event_Image/', blank=True, null=True)
     company = models.CharField(max_length=30)

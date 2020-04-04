@@ -59,15 +59,15 @@ def set_status_winner(modeladmin, request, queryset):
         if q.status == "2BA":
             event = q.event
             if event.stock << event.stockW and event.status == "O":
-                event.stockW += 1
-                event.save()
+                #event.stockW += 1
+                #event.save()
                 q.status = 'W'
                 var_token = q.notificationToken
                 q.save()
                 var_token = q.notificationToken
                 messages.success(request, 'Se marcó como winner')
                 if event.stock == event.stockW:
-                    event.status = "C"
+                    event.status = "F"
                     event.save()
                 
                 try:

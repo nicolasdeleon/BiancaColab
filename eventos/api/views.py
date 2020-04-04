@@ -124,32 +124,42 @@ def api_addUser_eventpost_view(request):
     user = request.user
     try:
         # CHEQUEO CODIGO DEL EVENTO VS EL QUE ME MANDA EL USUARIO
-        obj = eventpost.objects.get(pk=code)
+        event = eventpost.objects.get(pk=code)
     except eventpost.DoesNotExist or user.DoesNotExist:
         data['response'] = 'Error'
         data['error_message'] = 'Código incorrecto'
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'POST':
-        obj.users.add(user)
-        # qs = obj.users.all() #Esto el dia de mañana se podria sacar, siento que es ineficiente
-        # if qs.filter(pk=user.pk).exists():
-        try:
+       if event.stock << event.stockW and event.status == "O":  
+
+          event.users.add(user)
+          
+          try:
             #sPRbyU = postrelations.objects.get(person = user, code = code)
-            sPRbyU = postrelations.objects.get(person=user, event=obj)
+            sPRbyU = postrelations.objects.get(person=user, event=event)
             data['response'] = 'Error'
             data['error_message'] = 'Duplicate association.'
 
-        except ObjectDoesNotExist:
+          except ObjectDoesNotExist:
             newPR = postrelations()
             newPR.person = user
-            newPR.event = obj
+            newPR.event = event
             newPR.notificationToken = request.data['notificationToken']
             newPR.save()
+            event.stockW += 1
+            event.save()
             data["success"] = "users belong to the event"
-        return Response(data=data)
-
-
+            if event.stock == event.stockW:
+                    event.status = "F"
+                    event.save()
+          return Response(data=data)
+       else:
+            event.status = "F"
+            event.save()
+            data['response'] = 'Error'
+            data['error_message'] = 'Evento finalizado'
+            return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST',])
 @permission_classes((IsAuthenticated,))
