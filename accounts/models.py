@@ -95,9 +95,27 @@ class usermanager(BaseUserManager):
             )
         return person
 
+class Role(models.Model):
+  '''
+  The Role entries are managed by the system,
+  automatically created via a Django data migration.
+  '''
+  USER = 1
+  COMPANY = 2
+  VALIDATOR = 3
+
+  ROLE_CHOICES = (
+      (USER, 'user'),
+      (COMPANY, 'company'),
+      (VALIDATOR, 'validator'),
+      
+  )
+
+  id = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, primary_key=True)
 
 class user(AbstractBaseUser):
     """ Custom user extends abstractBaseUser from django auth.models, see doc. """
+    roles = models.ManyToManyField(Role, default=1)
     email = models.EmailField(max_length=255, unique=True)
     full_name = models.CharField(max_length=255, default="missing")
     first_name = models.CharField(max_length=120, default="missing")

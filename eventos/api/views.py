@@ -167,17 +167,10 @@ def api_eventrel_state(request):
     if statusE in ('O', '2BO'):
         user = request.user
         if request.method == 'POST':
-            # winners = obj.users_winners.all()
-            # if winners.filter(pk=user.pk).exists():
-            #     data["user_win"] = "True" # El usuario ganó
-            #     data["statusEvent"] = statusE
-            # else:
-            #     data["user_win"] = "False" # El usuario no ganó
-            #     data["statusEvent"] = statusE
-            # if qs.filter(pk=user.pk).exists():
          try:
             event = postrelations.objects.get(person=user, event=obj)
             data['status'] = event.status
+            data['response'] = 'OK'
             data['response'] = 'OK'
          except ObjectDoesNotExist:
             data['status'] = 'N'
@@ -187,7 +180,7 @@ def api_eventrel_state(request):
     else:
         data["is_finalized"] = "True"
         data["status"] = statusE
-        
+        return Response(data=data, status=status.HTTP_404_NOT_FOUND)
     return Response(data=data)
 
 '''
@@ -200,6 +193,7 @@ def api_fin_event_view(request):
     data={}
     code = request.data["pk"]
     user = request.user    
+    user_info = request.user_info
     try:
         obj = eventpost.objects.get(pk=code)
     except eventpost.DoesNotExist or user.DoesNotExist:
@@ -211,6 +205,7 @@ def api_fin_event_view(request):
         sPRbyU = postrelations.objects.get(person = user, event = obj)
         if sPRbyU.status == 'W':
             sPRbyU.status ='F'
+            sPRbyU.user_info = user_info
             sPRbyU.save()
             data["success"] = "update successful"
             data['status'] = 'Finalized'

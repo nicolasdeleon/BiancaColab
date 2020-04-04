@@ -10,6 +10,11 @@ STATUS_EVENT = [
     ('F', 'Finished'),
     ('R', 'Refused')
 ]
+TYPE_EVENT = [
+    ('A', 'Short'),
+    ('B', 'Long'),
+    ('T', 'Test')
+]
 
 STATUS_EVENTPOST = [
     ('2BO', 'To_be_open'),
@@ -27,11 +32,12 @@ class InstaStoryPublication(models.Model):
 
 
 class eventpost(models.Model):
+    type_ev = models.CharField(choices=TYPE_EVENT, default="A")
     title = models.CharField(max_length=30)
     image = models.ImageField(upload_to='Event_Image/', blank=True, null=True)
     company = models.CharField(max_length=30)
     slug = models.SlugField(default=id(True), max_length=255, unique=True)
-    desc = models.CharField(null=True, blank=True, max_length=255)
+    desc = models.CharField(null=True, blank=True, max_length=255, verbose_name="Descripcion")
     users = models.ManyToManyField(user, blank=True, verbose_name="list of users", related_name="+")
     createTime = models.DateTimeField(auto_now=True)
     posts = models.ManyToManyField(InstaStoryPublication, blank=True, verbose_name="publicaciones")
@@ -40,6 +46,7 @@ class eventpost(models.Model):
     stock = models.IntegerField(default=0)
     scoring = models.IntegerField(default=0)
     stockW = models.IntegerField(default=0)
+    text = models.CharField(null=True, blank=True, max_length=255, verbose_name="Text to retrieve user information")
 
     def __str__(self):
         return self.title
@@ -52,6 +59,8 @@ class postrelations(models.Model):
     status = models.CharField(choices=STATUS_EVENT, default="2BA", max_length=3)
     notificationToken = models.CharField(max_length=255, blank=True, null=True)
     story = models.ForeignKey(InstaStoryPublication, blank=True, null=True, on_delete=models.SET_NULL)
+    user_info = models.CharField(max_length=26, verbose_name="Data to save", blank=True)
+    
 
     class Meta:
         ordering = ['-createTime']
