@@ -56,7 +56,6 @@ class postrelations(models.Model):
     person = models.ForeignKey(user, default=1, blank=True, on_delete=models.CASCADE)
     event = models.ForeignKey(eventpost, default=1, on_delete=models.CASCADE)
     createTime = models.DateTimeField(auto_now=True)
-    winer_code = models.CharField(max_length=20, verbose_name="Code to Retrieve")
     status = models.CharField(choices=STATUS_EVENT, default="2BA", max_length=3)
     notificationToken = models.CharField(max_length=255, blank=True, null=True)
     story = models.ForeignKey(InstaStoryPublication, blank=True, null=True, on_delete=models.SET_NULL)

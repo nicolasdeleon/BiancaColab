@@ -57,8 +57,8 @@ def send_push_message(token, message, extra=None):
 def set_status_winner(modeladmin, request, queryset):
     for q in queryset:
         if q.status == "2BA":
-            event = q.event
-            if event.stock << event.stockW and event.status == "O":
+                event = q.event
+            #if event.stock << event.stockW and event.status == "O":
                 #event.stockW += 1
                 #event.save()
                 q.status = 'W'
@@ -74,9 +74,9 @@ def set_status_winner(modeladmin, request, queryset):
                     send_push_message(token=var_token, message='Aprobado! Ahora busca tu beneficio!')
                 except:
                     return  
-            else:
+            #else:
                 # event.status == "C"
-                messages.error(request, 'Evento concluido')
+            #    messages.error(request, 'Evento concluido')
         else:
             messages.error(request, 'Relación ya marcada como ganadora')
 
