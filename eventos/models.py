@@ -4,13 +4,8 @@ from django.db import models
 
 user = settings.AUTH_USER_MODEL
 
-STATUS_EVENT = [
-    ('2BA', 'To_be_accepted'),
-    ('W', 'Winner'),
-    ('F', 'Finished'),
-    ('R', 'Refused')
-]
-TYPE_EVENT = [
+#EVENTPOST
+TYPE_EVENTPOST = [
     ('A', 'Short'),
     ('B', 'Long'),
     ('T', 'Test')
@@ -22,7 +17,13 @@ STATUS_EVENTPOST = [
     ('C', 'Close'),
     ('F', 'Finished')
 ]
-
+#EVENT RELATION
+STATUS_EVENT = [
+    ('2BA', 'To_be_accepted'),
+    ('W', 'Winner'),
+    ('F', 'Finished'),
+    ('R', 'Refused')
+]
 class InstaStoryPublication(models.Model):
     person = models.ForeignKey(user, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='Events_Users_Storys/', blank=True, null=True)
@@ -32,7 +33,7 @@ class InstaStoryPublication(models.Model):
 
 
 class eventpost(models.Model):
-    type_ev = models.CharField(choices=TYPE_EVENT, default="A", max_length=3)
+    type_ev = models.CharField(choices=TYPE_EVENTPOST, default="A", max_length=3)
     title = models.CharField(max_length=30)
     image = models.ImageField(upload_to='Event_Image/', blank=True, null=True)
     company = models.CharField(max_length=30)

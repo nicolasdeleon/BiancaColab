@@ -203,7 +203,7 @@ def api_fin_event_view(request):
     data={}
     code = request.data["pk"]
     user = request.user    
-    user_info = request.user_info
+    user_info = request.data["user_info"]
     try:
         obj = eventpost.objects.get(pk=code)
     except eventpost.DoesNotExist or user.DoesNotExist:
