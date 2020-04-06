@@ -33,6 +33,7 @@ class InstaStoryPublication(models.Model):
 
 
 class eventpost(models.Model):
+    owner_ev =  models.ForeignKey(user, on_delete=models.CASCADE, default= 1)
     type_ev = models.CharField(choices=TYPE_EVENTPOST, default="A", max_length=3)
     title = models.CharField(max_length=30)
     image = models.ImageField(upload_to='Event_Image/', blank=True, null=True)

@@ -95,27 +95,17 @@ class usermanager(BaseUserManager):
             )
         return person
 
-class Role(models.Model):
-  '''
-  The Role entries are managed by the system,
-  automatically created via a Django data migration.
-  '''
-  USER = 1
-  COMPANY = 2
-  VALIDATOR = 3
 
-  ROLE_CHOICES = (
-      (USER, 'user'),
-      (COMPANY, 'company'),
-      (VALIDATOR, 'validator'),
-      
-  )
-
-  id = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, primary_key=True)
+ROLES = [
+    (1, 'User'),
+    (2, 'Company'),
+    (3, 'Validator')
+    
+]
 
 class user(AbstractBaseUser):
     """ Custom user extends abstractBaseUser from django auth.models, see doc. """
-    roles = models.ManyToManyField(Role, default=1)
+    role = models.CharField(choices=ROLES, default=1, max_length=3)
     email = models.EmailField(max_length=255, unique=True)
     full_name = models.CharField(max_length=255, default="missing")
     first_name = models.CharField(max_length=120, default="missing")
@@ -127,6 +117,7 @@ class user(AbstractBaseUser):
     instaaccount = models.CharField(max_length=255, unique=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     reset_password_token = models.CharField(max_length=22, blank=True, default=0)
+    phone = models.CharField(max_length=40, default="")
 
     # Remplaza el username field de django default como tmb password.
 
