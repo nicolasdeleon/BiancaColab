@@ -64,7 +64,7 @@ def api_registration_view(request):
             token = Token.objects.get(user=user).key
             data['token'] = token
             data['phone'] = user.phone
-            date['rol'] = user.role
+            date['role'] = user.role
         else:
             data = serializer.errors
             return Response(data)
