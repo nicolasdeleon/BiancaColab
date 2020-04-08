@@ -12,7 +12,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta: #Requerido para mapear campos form a campos modelo
         model = user
-        fields = [
+        fields = [      
         'role',
         'phone',
         'email',
@@ -46,7 +46,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             email = self.validated_data['email'],
             instaaccount = self.validated_data['instaaccount'],
             first_name = self.validated_data['first_name'],
-            last_name = self.validated_data['last_name'],
+            #last_name = self.validated_data['last_name'],
             #birth_date = self.validated_data['birth_date'],
             staff = False,
             admin = False,

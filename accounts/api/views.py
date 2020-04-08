@@ -52,7 +52,10 @@ def api_registration_view(request):
             return Response(data)
 
         if serializer.is_valid():
-            user = serializer.save()
+           user = serializer.save() 
+           if (user.role==1):
+           
+            
             data['response'] = 'user registered successfuly'
             data['email'] = user.email
             data['full_name'] = user.full_name
@@ -64,10 +67,39 @@ def api_registration_view(request):
             token = Token.objects.get(user=user).key
             data['token'] = token
             data['phone'] = user.phone
-            date['role'] = user.role
+            data['role'] = user.role
+           if (user.role==2):
+            data['response'] = 'user registered successfuly'
+            data['email'] = user.email
+            data['full_name'] = user.full_name
+            data['active'] = user.active
+            data['staff'] = user.staff
+            data['admin'] = user.admin
+            data['instaaccount'] = user.instaaccount
+            data['timestamp'] = user.timestamp
+            token = Token.objects.get(user=user).key
+            data['token'] = token
+            data['phone'] = user.phone
+            data['role'] = user.role
+           else:
+            data['response'] = 'user registered successfuly'
+            data['email'] = user.email
+            data['full_name'] = user.full_name
+            data['active'] = user.active
+            data['staff'] = user.staff
+            data['admin'] = user.admin
+            data['instaaccount'] = user.instaaccount
+            data['timestamp'] = user.timestamp
+            token = Token.objects.get(user=user).key
+            data['token'] = token
+            data['phone'] = user.phone
+            data['role'] = user.role
+           
         else:
             data = serializer.errors
             return Response(data)
+        
+
         return Response(data, status=status.HTTP_201_CREATED)
 
 def validate_email(email):
