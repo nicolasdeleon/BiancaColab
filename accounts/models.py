@@ -17,10 +17,12 @@ class usermanager(BaseUserManager):
                 email,
                 first_name,
                 last_name,
+                role=0,
                 password=None,
                 is_active=True,
                 is_staff=False,
                 is_admin=False
+                
                 ):
         """ Standard User Fields """
 
@@ -71,7 +73,7 @@ class usermanager(BaseUserManager):
                 email,
                 first_name,
                 last_name,
-                password=None
+                password=None,
                 ):
         """ Super User / Owner Fields """
 
@@ -82,7 +84,7 @@ class usermanager(BaseUserManager):
             password=password,
             is_staff=True,
             is_admin=True,
-            role=0
+            role=0,
             )
         return person
 
@@ -142,9 +144,9 @@ class User(AbstractBaseUser):
 
 class Company(models.Model):
     """ Extend extra fields for company of user rather than change user model """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.CharField(max_length=40, default="")
-    instaAccount = models.CharField(max_length=255, unique=True)
+    instaAccount = models.CharField(max_length=255, unique=True, null=True)
     companyName = models.CharField(max_length=255, blank=True)
 
 
@@ -156,7 +158,7 @@ class Profile(models.Model):
     zone = models.CharField(verbose_name='Location', max_length=255, blank=True)
     scoring = models.IntegerField(verbose_name='Overall event score', blank=True, default=0)
     phone = models.CharField(max_length=40, default="")
-    instaAccount = models.CharField(max_length=255, unique=True)
+    instaAccount = models.CharField(max_length=255, unique=True, null=True)
     birthDate = models.DateTimeField(verbose_name="Fecha de nacimiento", blank=True, null=True)
 
 
