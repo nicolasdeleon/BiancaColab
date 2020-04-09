@@ -4,7 +4,7 @@ from exponent_server_sdk import (DeviceNotRegisteredError, PushClient,
                                  PushServerError)
 from requests.exceptions import ConnectionError, HTTPError
 
-from .models import eventpost, InstaStoryPublication, postrelations
+from .models import EventPost, InstaStoryPublication, PostRelations
 
 
 def send_push_message(token, message, extra=None):
@@ -96,7 +96,7 @@ def set_status_finished(modeladmin, request, queryset):
             messages.error(request, 'Relación no ganadora')
 
 
-class postrelationsadmin(admin.ModelAdmin):
+class PostRelationsAdmin(admin.ModelAdmin):
     list_filter = ('status',)
     list_display = ('event', 'instaaccount', 'status', 'createTime')
     actions = [set_status_winner, set_status_refused, set_status_finished]
@@ -106,6 +106,6 @@ class InstaStoryPublicationAdmin(admin.ModelAdmin):
     list_filter = ('person',)
     list_display = ('person', )
 
-admin.site.register(eventpost)
-admin.site.register(postrelations, postrelationsadmin)
+admin.site.register(EventPost)
+admin.site.register(PostRelations, PostRelationsAdmin)
 admin.site.register(InstaStoryPublication, InstaStoryPublicationAdmin)

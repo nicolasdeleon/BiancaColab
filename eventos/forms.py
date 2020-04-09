@@ -1,10 +1,10 @@
 from django import forms
 
-from .models import eventpost
+from .models import EventPost
 
 class EventoModelForm(forms.ModelForm):
     class Meta:
-        model = eventpost
+        model = EventPost
         # Tengo que mapear los campos de mi modelo que quiera actualizar con el form
         fields = ['title', 'company', 'slug', 'desc']
 

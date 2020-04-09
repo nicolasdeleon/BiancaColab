@@ -2,7 +2,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import Http404, get_object_or_404, redirect, render
 
 from .forms import EventoModelForm
-from .models import eventpost
+from .models import EventPost
 
 from django.conf import settings
 
@@ -10,7 +10,7 @@ from django.conf import settings
 @staff_member_required
 def eventpost_alldetail_view(request):
     """ List ALL existing events """
-    query = eventpost.objects.all()
+    query = EventPost.objects.all()
     template_name = 'eventos/alldetail_view.html'
     cant_de_posts = query.count()
     if cant_de_posts == 0:
@@ -26,10 +26,10 @@ def eventpost_alldetail_view(request):
 @staff_member_required
 def eventpost_event_view(request, slug):
     """ Gets a single event denoted by its slug """
-    event = get_object_or_404(eventpost, slug=slug)
+    event = get_object_or_404(EventPost, slug=slug)
     template_name = 'eventos/event_view.html'
     users = event.users.all()
-    post_relations = event.postrelations_set.all()
+    post_relations = event.postelations_set.all()
     story_list = []
     for post_relation in post_relations:
         story_list.append(post_relation.story.image)

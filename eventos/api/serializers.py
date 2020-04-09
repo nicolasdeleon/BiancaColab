@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
-from eventos.models import eventpost, postrelations
+from eventos.models import EventPost, PostRelations
 
 
-class eventpostSerializer(serializers.ModelSerializer):
+class EventPostSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = eventpost
+        model = EventPost
         fields = ['title', 'company', 'slug', 'users']
 
     def update(self, instance, validated_data):
@@ -42,30 +42,30 @@ class PostRelationsSerializer(serializers.ModelSerializer):
     eventId = serializers.SerializerMethodField('get_event_id_from_event')
 
     def get_instaaccount_from_person(self, postrelations):
-        instaaccount = postrelations.person.instaaccount
+        instaaccount = PostRelations.person.instaaccount
         return instaaccount
 
     def get_eventTitle_from_event(self, postrelations):
-        eventTitle = postrelations.event.title
+        eventTitle = PostRelations.event.title
         return eventTitle
 
     def get_event_id_from_event(self, postrelations):
-        eventId = postrelations.event.pk
+        eventId = PostRelations.event.pk
         return eventId
 
     def get_event_status(self, postrelations):
-        eventstatus = postrelations.event.status
+        eventstatus = PostPelations.event.status
         return eventstatus
 
     class Meta:
-        model = postrelations
-        fields = ['instaaccount', 'eventTitle', 'eventId', 'createTime', 'status', 'eventStatus', 'event', 'winer_code']
+        model = PostRelations
+        fields = ['instaaccount', 'eventTitle', 'eventId', 'createTime', 'status', 'eventStatus', 'event']
 
 
 class EventsSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = eventpost
+        model = EventPost
         fields = [
             'pk',
             'title',

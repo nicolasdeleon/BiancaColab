@@ -20,7 +20,7 @@ from rest_framework.views import APIView
 from accounts.api.serializers import (AccountPropertiesSerializer,
                                       ChangePasswordSerializer,
                                       RegistrationSerializer)
-from accounts.models import user
+from accounts.models import User
 from backBone_Bianca.settings import SUPPORT_EMAIL
 
 
@@ -52,16 +52,16 @@ def api_registration_view(request):
             return Response(data)
 
         if serializer.is_valid():
-            user = serializer.save()
+            User = serializer.save()
             data['response'] = 'user registered successfuly'
-            data['email'] = user.email
-            data['full_name'] = user.full_name
-            data['active'] = user.active
-            data['staff'] = user.staff
-            data['admin'] = user.admin
-            data['instaaccount'] = user.instaaccount
-            data['timestamp'] = user.timestamp
-            token = Token.objects.get(user=user).key
+            data['email'] = User.email
+            data['full_name'] = User.full_name
+            data['active'] = User.active
+            data['staff'] = User.staff
+            data['admin'] = User.admin
+            data['instaaccount'] = User.instaaccount
+            data['timestamp'] = User.timestamp
+            token = Token.objects.get(User=User).key
             data['token'] = token
         else:
             data = serializer.errors
@@ -71,19 +71,19 @@ def api_registration_view(request):
 def validate_email(email):
     user_aux = None
     try:
-        user_aux = user.objects.get(email=email)
-    except user.DoesNotExist:
+        user_aux = User.objects.get(email=email)
+    except User.DoesNotExist:
         return None
-    if user is not None:
+    if User is not None:
         return email
 
 def validate_instaacount(instaaccount):
     user_aux = None
     try:
-        user_aux = user.objects.get(instaaccount=instaaccount)
-    except user.DoesNotExist:
+        user_aux = User.objects.get(instaaccount=instaaccount)
+    except User.DoesNotExist:
         return None
-    if user is not None:
+    if User is not None:
         return instaaccount
 
 class ObtainAuthTokenView(APIView):
@@ -96,26 +96,26 @@ class ObtainAuthTokenView(APIView):
 
         email = request.data.get('username')
         password = request.data.get('password')
-        user = authenticate(email=email, password=password)
-        if user:
+        User = authenticate(email=email, password=password)
+        if User:
             try:
-                if user.emailconfirmed.confirmed:
-                    token = Token.objects.get(user=user)
+                if User.emailconfirmed.confirmed:
+                    token = Token.objects.get(User=User)
                     context['response'] = 'Successfully authenticated.'
-                    context['email'] = user.email
+                    context['email'] = User.email
                     context['token'] = token.key
                 else:
                     context['error_message'] = f'Por favor, active su cuenta con el mail que a sido enviado a {user.email}'
             except Token.DoesNotExist:
-                token = Token.objects.create(user=user)
+                token = Token.objects.create(User=User)
                 context['response'] = 'Successfully authenticated.'
-                context['email'] = user.email
-                context['full_name'] = user.full_name
-                context['active'] = user.active
-                context['staff'] = user.staff
-                context['admin'] = user.admin
-                context['instaaccount'] = user.instaaccount
-                context['timestamp'] = user.timestamp
+                context['email'] = User.email
+                context['full_name'] = User.full_name
+                context['active'] = User.active
+                context['staff'] = User.staff
+                context['admin'] = User.admin
+                context['instaaccount'] = User.instaaccount
+                context['timestamp'] = User.timestamp
                 context['token'] = token.key
         else:
             context['error_message'] = 'Invalid credentials'
@@ -129,14 +129,14 @@ class ObtainAuthTokenView(APIView):
 def account_properties_view(request):
     context = {}
     try:
-        user = request.user
-    except user.DoesNotExist:
+        User = request.User
+    except User.DoesNotExist:
         context['response'] = 'Error'
         context['error_message'] = 'User does not exist'
         return Response(context, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = AccountPropertiesSerializer(user)
+        serializer = AccountPropertiesSerializer(User)
         return Response(serializer.data)
 
 # Account update properties
@@ -145,14 +145,14 @@ def account_properties_view(request):
 def update_account_view(request):
     context = {}
     try:
-        user = request.user
-    except user.DoesNotExist:
+        user = request.User
+    except User.DoesNotExist:
         context['response'] = 'Error'
         context['error_message'] = 'User does not exist'
         return Response(context, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PUT':
-        serializer = AccountPropertiesSerializer(user, data=request.data)
+        serializer = AccountPropertiesSerializer(User, data=request.data)
         data = {}
         if serializer.is_valid():
             serializer.save()
@@ -164,12 +164,12 @@ def update_account_view(request):
 class ChangePasswordView(UpdateAPIView):
 
     serializer_class = ChangePasswordSerializer
-    model = user
+    model = User
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
 
     def get_object(self, queryset=None):
-        obj = self.request.user
+        obj = self.request.User
         return obj
 
     def update(self, request, *args, **kwargs):
@@ -229,11 +229,11 @@ def send_feedback_view(request):
         smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
 
         if puntaje_promedio <= 3:
-            subject = f'Feedback, {user.full_name}, MAL'
+            subject = f'Feedback, {User.full_name}, MAL'
         else:
-            subject = f'Feedback, {user.full_name}, BIEN'
+            subject = f'Feedback, {User.full_name}, BIEN'
 
-        body = f'{user.full_name} te te graduo asi..\nFluidez: {puntaje_fluidez}\nAtencion: {puntaje_atencion}\nPago: {puntaje_pago}\nGeneral: {puntaje_general}\nObteniendo un promedio: {puntaje_promedio}'
+        body = f'{User.full_name} te te graduo asi..\nFluidez: {puntaje_fluidez}\nAtencion: {puntaje_atencion}\nPago: {puntaje_pago}\nGeneral: {puntaje_general}\nObteniendo un promedio: {puntaje_promedio}'
         msg = f'Subject: {subject}\n\n{body}'
 
         context['response'] = "Success"
@@ -248,25 +248,25 @@ def reset_password(request):
     data = {}
     email = request.data.get('email')
     try:
-        user_aux = user.objects.get(email=email)
+        user_aux = User.objects.get(email=email)
         user_aux.reset_password_token = binascii.hexlify(os.urandom(6)).decode()[0:6]
         user_aux.save()
 
         subject = "Password Reset"
         context = {
-            "reset_token": user_aux.reset_password_token
+            "reset_token": User_aux.reset_password_token
         }
         message = render_to_string("reset_password.html", context)
 
         from_email = SUPPORT_EMAIL
 
-        mail = EmailMultiAlternatives(subject, from_email, [user_aux.email], '')
+        mail = EmailMultiAlternatives(subject, from_email, [User_aux.email], '')
         mail.attach_alternative(message, "text/html")
         mail.send()
 
         data['response'] = "Success"
         return Response(data=data)
-    except user.DoesNotExist:
+    except User.DoesNotExist:
         data['response'] = 'Error'
         data['error_message'] = 'User does not exist'
         return Response(data)
@@ -295,6 +295,6 @@ def reset_password_confirm(request):
 def get_accounts_general_info(request):
     data = {}
 
-    number_of_users = len(user.objects.all())
+    number_of_users = len(User.objects.all())
     data['number_of_users'] = number_of_users
     return Response(data)

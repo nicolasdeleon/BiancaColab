@@ -3,7 +3,7 @@ import random
 from rest_framework import serializers
 
 #modelo a serializar
-from accounts.models import user, EmailConfirmed
+from accounts.models import User, EmailConfirmed
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -11,7 +11,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type':'password'},write_only = True) #campo extra al form
 
     class Meta: #Requerido para mapear campos form a campos modelo
-        model = user
+        model = User
         fields = ['email',
         'first_name',
         'last_name',
@@ -24,13 +24,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
         }
     
     def generateConfimationKey(self, user):
-        email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(user=user)
+        email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(User=user)
         #Corro get or create lo que implica que email_is_created devuelve true siempre y cuando se genere bien
         #El mail se manda directamente de la funcion crear de EmailConfirmed class
         if email_is_created:
             short_hash = hashlib.sha1(str(random.random()).encode('utf-8'))
             short_hash = short_hash.hexdigest()[:5]
-            base, domain = str(user.email).split('@')
+            base, domain = str(User.email).split('@')
             activation_key = hashlib.sha1(str(short_hash+base).encode('utf-8')).hexdigest()
             email_confirmed.activation_key = activation_key
             # Un comment this comment the day we want to start using email validation on sign up and delete email_confirmed-confirmed = True
@@ -39,7 +39,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             email_confirmed.save()
 
     def save(self):
-        ObjUser = user(
+        ObjUser = User(
             email = self.validated_data['email'],
             instaaccount = self.validated_data['instaaccount'],
             first_name = self.validated_data['first_name'],
@@ -66,7 +66,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class AccountPropertiesSerializer(serializers.ModelSerializer):
 
     class Meta: #Requerido para mapear campos form a campos modelo
-        model = user
+        model = User
         fields = ['email','full_name','instaaccount','birth_date']
 
 

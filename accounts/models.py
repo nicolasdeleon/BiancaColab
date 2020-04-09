@@ -96,8 +96,16 @@ class usermanager(BaseUserManager):
         return person
 
 
-class user(AbstractBaseUser):
+ROLES = [
+    (1, 'User'),
+    (2, 'Company'),
+    (3, 'Validator')
+    
+]
+
+class User(AbstractBaseUser):
     """ Custom user extends abstractBaseUser from django auth.models, see doc. """
+    role = models.CharField(choices=ROLES, default=1, max_length=3)
     email = models.EmailField(max_length=255, unique=True)
     full_name = models.CharField(max_length=255, default="missing")
     first_name = models.CharField(max_length=120, default="missing")
@@ -109,6 +117,7 @@ class user(AbstractBaseUser):
     instaaccount = models.CharField(max_length=255, unique=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     reset_password_token = models.CharField(max_length=22, blank=True, default=0)
+    phone = models.CharField(max_length=40, default="")
 
     # Remplaza el username field de django default como tmb password.
 
@@ -157,7 +166,7 @@ class user(AbstractBaseUser):
 
 class Profile(models.Model):
     """ Extend extra fields of user rather than change user model """
-    user = models.OneToOneField(user, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     followers = models.IntegerField(verbose_name='Amount of followers', blank=True, null=True)
     likes = models.FloatField(verbose_name='Promediated likes per publication', blank=True, null=True)
     zone = models.CharField(verbose_name='Location', max_length=255, blank=True)
@@ -168,7 +177,7 @@ class Profile(models.Model):
 
 
 class EmailConfirmed(models.Model):
-    user = models.OneToOneField(user, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     activation_key = models.CharField(max_length=200)
     confirmed = models.BooleanField(default=False)
 
@@ -194,7 +203,7 @@ class EmailConfirmed(models.Model):
         msg = EmailMultiAlternatives(
             subject=subject,
             from_email=from_email,
-            to=[self.user.email],
+            to=[self.User.email],
             body=text_body
             )
         msg.attach_alternative(html_body, "text/html")
