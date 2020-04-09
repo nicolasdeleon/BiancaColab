@@ -12,7 +12,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta: #Requerido para mapear campos form a campos modelo
         model = User
-        fields = ['email',
+        fields = ['role',
+        'phone',
+        'email',
         'first_name',
         'last_name',
         'instaaccount',
@@ -24,7 +26,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         }
     
     def generateConfimationKey(self, user):
-        email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(User=user)
+        email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(User=User)
         #Corro get or create lo que implica que email_is_created devuelve true siempre y cuando se genere bien
         #El mail se manda directamente de la funcion crear de EmailConfirmed class
         if email_is_created:
@@ -43,8 +45,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
             email = self.validated_data['email'],
             instaaccount = self.validated_data['instaaccount'],
             first_name = self.validated_data['first_name'],
-            last_name = self.validated_data['last_name'],
-            birth_date = self.validated_data['birth_date'],
+            last_name = self['last_name'],
+            #birth_date = self.validated_data['birth_date'],
+            role = self.validated_data['role'],
+            phone = self['phone'],
             staff = False,
             admin = False,
             active = True,
@@ -53,7 +57,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
         password2 = self.validated_data['password2']
         if(password != password2):
             raise serializers.ValidationError({'password:','Passwords must match'})
-        name = self.validated_data['first_name'] + ' ' + self.validated_data['last_name']
+        if (self['role'] == 1):
+            name = self.validated_data['first_name'] + ' ' + self['last_name']
+        else:
+            name = self.validated_data['first_name']
+
         ObjUser.full_name=name
         ObjUser.set_password(password)
         

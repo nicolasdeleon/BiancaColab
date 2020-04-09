@@ -127,7 +127,6 @@ class User(AbstractBaseUser):
 	# Fields such as email and password are Required as well.
     REQUIRED_FIELDS = [
         'first_name',
-        'last_name',
         'instaaccount'
         ]
 
