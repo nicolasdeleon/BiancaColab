@@ -1,7 +1,7 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
-from eventos.models import EventPost
+from eventos.models import Event
 User = get_user_model()
 
 def home_view(request):

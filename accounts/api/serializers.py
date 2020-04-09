@@ -8,7 +8,7 @@ from accounts.models import User, EmailConfirmed
 
 class RegistrationSerializer(serializers.ModelSerializer):
     
-    password2 = serializers.CharField(style={'input_type':'password'},write_only = True) #campo extra al form
+    password2 = serializers.CharField(style={'input_type':'password'}, write_only=True) #campo extra al form
 
     class Meta: #Requerido para mapear campos form a campos modelo
         model = User
@@ -26,7 +26,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         }
     
     def generateConfimationKey(self, user):
-        email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(User=User)
+        email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(User=user)
         #Corro get or create lo que implica que email_is_created devuelve true siempre y cuando se genere bien
         #El mail se manda directamente de la funcion crear de EmailConfirmed class
         if email_is_created:

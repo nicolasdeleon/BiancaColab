@@ -1,17 +1,18 @@
 from django import forms
 
-from .models import EventPost
+from .models import Event
+
 
 class EventoModelForm(forms.ModelForm):
     class Meta:
-        model = EventPost
+        model = Event
         # Tengo que mapear los campos de mi modelo que quiera actualizar con el form
-        fields = ['title', 'company', 'slug', 'desc']
+        fields = ['title', 'slug', 'description']
 
     def clean_slug(self, *args, **kwargs):
         instance = self.instance
         slug = self.cleaned_data.get('slug')
-        query = eventpost.objects.filter(slug__iexact=slug)
+        query = Event.objects.filter(slug__iexact=slug)
         if instance is not None:
             query = query.exclude(pk=instance.pk)
         if query.exists():

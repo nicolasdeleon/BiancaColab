@@ -1,67 +1,66 @@
 from django.conf import settings
-#m django.core.validators import RegexValidator
 from django.db import models
 
-User = settings.AUTH_USER_MODEL
+USER = settings.AUTH_USER_MODEL
 
-#EVENTPOST
-TYPE_EVENTPOST = [
+TYPE_EVENT = [
     ('A', 'Short'),
     ('B', 'Long'),
     ('T', 'Test')
 ]
 
-STATUS_EVENTPOST = [
+STATUS_EVENT = [
     ('2BO', 'To_be_open'),
     ('O', 'Open'),
     ('C', 'Close'),
     ('F', 'Finished')
 ]
-#EVENT RELATION
-STATUS_EVENT = [
+
+STATUS_POST = [
     ('2BA', 'To_be_accepted'),
     ('W', 'Winner'),
     ('F', 'Finished'),
     ('R', 'Refused')
 ]
+
+
 class InstaStoryPublication(models.Model):
-    person = models.ForeignKey(User, on_delete=models.CASCADE)
+    person = models.ForeignKey(USER, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='Events_Users_Storys/', blank=True, null=True)
 
     def __str__(self):
-        return "Instagram story from @" + str(self.person.instaaccount)
+        # TODO: CHECK !!!!!!
+        return "Instagram story from @" + str(self.person.profile_instaAccount)
 
 
-class EventPost(models.Model):
-    eventOwner = models.ForeignKey(User, on_delete=models.CASCADE, default=1)#owner_ev
-    eventType = models.CharField(choices=TYPE_EVENTPOST, default="A", max_length=3)#type_ev
+class Event(models.Model):
+    eventOwner = models.ForeignKey(USER, on_delete=models.CASCADE, default=1)
+    eventType = models.CharField(choices=TYPE_EVENT, default="A", max_length=3)
     title = models.CharField(max_length=30)
     image = models.ImageField(upload_to='Event_Image/', blank=True, null=True)
-    company = models.CharField(max_length=30)
     slug = models.SlugField(default=id(True), max_length=255, unique=True)
-    desc = models.CharField(null=True, blank=True, max_length=255, verbose_name="Descripcion")
-    users = models.ManyToManyField(User, blank=True, verbose_name="list of users", related_name="+")
+    description = models.CharField(null=True, blank=True, max_length=255, verbose_name="Descripción")
     createTime = models.DateTimeField(auto_now=True)
     posts = models.ManyToManyField(InstaStoryPublication, blank=True, verbose_name="publicaciones")
-    usersWinners = models.ManyToManyField(User, blank=True, verbose_name="list of users Winners", related_name="+")#usersWinners
-    status = models.CharField(choices=STATUS_EVENTPOST, default="2BO", max_length=3)
-    stock = models.IntegerField(default=0)
+    usersWinners = models.ManyToManyField(USER, blank=True, verbose_name="list of users Winners", related_name="+")
+    status = models.CharField(choices=STATUS_EVENT, default="2BO", max_length=3)
+    stock = models.IntegerField(default=50)
     scoring = models.IntegerField(default=0)
-    stockW = models.IntegerField(default=0)
-    text = models.CharField(null=True, blank=True, max_length=255, verbose_name="Text to retrieve user information")
+    activeParticipants = models.IntegerField(default=0)
+    benefitDescription = models.CharField(null=True, blank=True, max_length=255, verbose_name="How to retrieve benefit")
 
     def __str__(self):
         return self.title
 
-class PostRelations(models.Model):
-    person = models.ForeignKey(User, default=1, blank=True, on_delete=models.CASCADE)
-    event = models.ForeignKey(EventPost, default=1, on_delete=models.CASCADE)
+
+class Post(models.Model):
+    person = models.ForeignKey(USER, default=1, blank=True, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, default=1, on_delete=models.CASCADE)
     createTime = models.DateTimeField(auto_now=True)
-    status = models.CharField(choices=STATUS_EVENT, default="2BA", max_length=3)
+    status = models.CharField(choices=STATUS_POST, default="2BA", max_length=3)
     notificationToken = models.CharField(max_length=255, blank=True, null=True)
-    story = models.ForeignKey(InstaStoryPublication, blank=True, null=True, on_delete=models.SET_NULL)
-    userInfo = models.CharField(max_length=26, verbose_name="Data to save", blank=True)
-    
+    instagramStory = models.ForeignKey(InstaStoryPublication, blank=True, null=True, on_delete=models.SET_NULL)
+    data4Company = models.CharField(max_length=26, verbose_name="Data to save", blank=True)
 
     class Meta:
         ordering = ['-createTime']

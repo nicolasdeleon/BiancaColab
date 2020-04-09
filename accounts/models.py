@@ -17,7 +17,7 @@ class usermanager(BaseUserManager):
                 email,
                 first_name,
                 last_name,
-                role=0,
+                role=1,
                 password=None,
                 is_active=True,
                 is_staff=False,
@@ -45,6 +45,7 @@ class usermanager(BaseUserManager):
         person.staff = is_staff
         person.admin = is_admin
         person.active = is_active
+        person.role = role
         person.save(using=self._db)
 
         return person
@@ -98,7 +99,7 @@ ROLES = [
 
 class User(AbstractBaseUser):
     """ Custom user extends abstractBaseUser from django auth.models, see doc. """
-    role = models.CharField(choices=ROLES, default=1, max_length=3)
+    role = models.IntegerField(choices=ROLES, default=1)
     email = models.EmailField(max_length=255, unique=True)
     full_name = models.CharField(max_length=255)
     first_name = models.CharField(max_length=120)
@@ -112,6 +113,11 @@ class User(AbstractBaseUser):
     # Remplaza el username field de django default como tmb password.
 
     USERNAME_FIELD = 'email'
+
+    REQUIRED_FIELDS = [
+        'first_name',
+        'last_name'
+    ]
 
     objects = usermanager()
 
@@ -144,7 +150,7 @@ class User(AbstractBaseUser):
 
 class Company(models.Model):
     """ Extend extra fields for company of user rather than change user model """
-    # user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.CharField(max_length=40, default="")
     instaAccount = models.CharField(max_length=255, unique=True, null=True)
     companyName = models.CharField(max_length=255, blank=True)
