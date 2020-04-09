@@ -1,8 +1,8 @@
 from django.contrib import admin
-
 # Register your models here.
 from django.contrib.auth import get_user_model
-from .models import EmailConfirmed, Profile
+
+from .models import Company, EmailConfirmed, Profile
 
 User = get_user_model()
 
@@ -14,3 +14,4 @@ class UserAdmin(admin.ModelAdmin):
 admin.site.register(User, UserAdmin)
 admin.site.register(Profile)
 admin.site.register(EmailConfirmed)
+admin.site.register(Company)
