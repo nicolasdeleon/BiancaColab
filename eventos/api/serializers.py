@@ -3,11 +3,11 @@ from rest_framework import serializers
 from eventos.models import Event, Post
 
 
-class EventPostSerializer(serializers.ModelSerializer):
+class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ['title', 'company', 'slug', 'users']
+        fields = ['title', 'slug', 'users']
 
     def update(self, instance, validated_data):
         """ Update event post """
@@ -34,7 +34,7 @@ class CommentSerializer(serializers.Serializer):
 """
 
 
-class PostRelationsSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
 
     instaaccount = serializers.SerializerMethodField('get_instaaccount_from_person')
     eventTitle = serializers.SerializerMethodField('get_eventTitle_from_event')
@@ -42,24 +42,24 @@ class PostRelationsSerializer(serializers.ModelSerializer):
     eventId = serializers.SerializerMethodField('get_event_id_from_event')
 
     def get_instaaccount_from_person(self, postrelations):
-        instaaccount = postrelations.person.instaaccount
+        instaaccount = Post.person.profile.instaaccount
         return instaaccount
 
     def get_eventTitle_from_event(self, postrelations):
-        eventTitle = PostRelations.event.title
+        eventTitle = Post.event.title
         return eventTitle
 
     def get_event_id_from_event(self, postrelations):
-        eventId = PostRelations.event.pk
+        eventId = Post.event.pk
         return eventId
 
     def get_event_status(self, postrelations):
-        eventstatus = PostPelations.event.status
+        eventstatus = Post.event.status
         return eventstatus
 
     class Meta:
-        model = PostRelations
-        fields = ['instaaccount', 'eventTitle', 'eventId', 'createTime', 'status', 'eventStatus', 'event']
+        model = Post
+        fields = ['instaAccount', 'eventTitle', 'eventId', 'createTime', 'status', 'eventStatus', 'event']
 
 
 class EventsSerializer(serializers.ModelSerializer):
@@ -71,7 +71,7 @@ class EventsSerializer(serializers.ModelSerializer):
             'title',
             'image',
             'company',
-            'desc',
+            'description',
             'createTime',
             'status'
             ]

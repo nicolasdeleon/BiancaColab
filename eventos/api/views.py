@@ -8,47 +8,48 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from eventos.api.serializers import (EventsSerializer, PostRelationsSerializer,
-                                     EventPostSerializer)
-from eventos.models import EventPost, PostRelations
+from eventos.api.serializers import (EventsSerializer, PostSerializer,
+                                     EventSerializer)
+from eventos.models import Event, Post
 
 
 @api_view(['POST',])
 @permission_classes((IsAuthenticated,))
-def api_create_EventPost(request):
-        comp = request.data['company']
-        st = request.data['status']
-        stock = request.data['stock']
-        title = request.data['title']
-        newEP = EventPost(title = title,company=comp, status = st, stock = stock).save(),
-        data={}
-        data["success"] = "create successful"
-        return Response(data=data)
+def api_create_Event(request):
+    user = request.user
+    st = request.data['status']
+    stock = request.data['stock']
+    title = request.data['title']
+    type = request.data['type']
+    newEvent = Event(eventOwner=user, eventType=type, title=title, status=st, stock=stock).save(),
+    data={}
+    data["success"] = "create successful"
+    return Response(data=data)
         
         
 @api_view(['GET',])
 @permission_classes((IsAuthenticated,))
-def api_detail_EventPost_view(request, slug):
+def api_detail_Event_view(request, slug):
     try:
-        obj = EventPost.objects.get(slug=slug)
-    except EventPost.DoesNotExist:
+        obj = Event.objects.get(slug=slug)
+    except Event.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = EventPostSerializer(obj)
+        serializer = EventSerializer(obj)
         return Response(serializer.data)
 
 
 @api_view(['PUT',])
 @permission_classes((IsAuthenticated,))
-def api_update_EventPost_view(request, slug):
+def api_update_Event_view(request, slug):
     try:
-        obj = EventPost.objects.get(slug=slug)
-    except EventPost.DoesNotExist:
+        obj = Event.objects.get(slug=slug)
+    except Event.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PUT':
-        serializer = EventPostSerializer(obj, data=request.data)
+        serializer = EventSerializer(obj, data=request.data)
         data = {}
         if serializer.is_valid():
             serializer.save()
@@ -61,8 +62,8 @@ def api_update_EventPost_view(request, slug):
 @permission_classes((IsAuthenticated,))
 def api_delete_BarPost_view(request, slug):
     try:
-        obj = EventPost.objects.get(slug=slug)
-    except EventPost.DoesNotExist:
+        obj = Event.objects.get(slug=slug)
+    except Event.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'DELETE':
@@ -112,43 +113,40 @@ def api_delete_BarPost_view(request, slug):
 
 @api_view(['POST',])
 @permission_classes((IsAuthenticated,))
-def api_addUser_EventPost_view(request):
+def api_addUser_Event_view(request):
     data = {}
     code = request.data['pk']
     user = request.user
     try:
         # CHEQUEO CODIGO DEL EVENTO VS EL QUE ME MANDA EL USUARIO
-        event = EventPost.objects.get(pk=code)
-    except EventPost.DoesNotExist or user.DoesNotExist:
+        event = Event.objects.get(pk=code)
+    except Event.DoesNotExist or user.DoesNotExist:
         data['response'] = 'Error'
         data['error_message'] = 'Código incorrecto'
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'POST':
-       if event.stock << event.stockW and event.status == "O":  
-
-          event.users.add(user)
-          
-          try:
+        if event.stock << event.activeParticipants and event.status == "O":
+         try:
             #sPRbyU = postrelations.objects.get(person = user, code = code)
-            sPRbyU = postrelations.objects.get(person=user, event=event)
+            newPost = Post.objects.get(person=user, event=event)
             data['response'] = 'Error'
             data['error_message'] = 'Duplicate association.'
 
-          except ObjectDoesNotExist:
-            newPR = postrelations()
-            newPR.person = user
-            newPR.event = event
-            newPR.notificationToken = request.data['notificationToken']
-            newPR.save()
-            event.stockW += 1
+         except ObjectDoesNotExist:
+            newPost = Post()
+            newPost.person = user
+            newPost.event = event
+            newPost.notificationToken = request.data['notificationToken']
+            newPost.save()
+            event.activeParticipants+= 1
             event.save()
             data["success"] = "users belong to the event"
-            if event.stock == event.stockW:
+            if event.stock == event.activeParticipants:
                     event.status = "F"
                     event.save()
-          return Response(data=data)
-       else:
+         return Response(data=data)
+        else:
             event.status = "F"
             event.save()
             data['response'] = 'Error'
@@ -162,8 +160,8 @@ def api_eventrel_state(request):
     code = request.data["pk"]
     user = request.user
     try:
-        obj = EventPost.objects.get(pk=code)
-    except EventPost.DoesNotExist or user.DoesNotExist:
+        obj = Event.objects.get(pk=code)
+    except Event.DoesNotExist or user.DoesNotExist:
         data["failed"] = "Wrong Event Code"
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
@@ -172,7 +170,7 @@ def api_eventrel_state(request):
         user = request.user
         if request.method == 'POST':
          try:
-            event = PostRelations.objects.get(person=user, event=obj)
+            event = Post.objects.get(person=user, event=obj)
             data['status'] = event.status
             data['response'] = 'OK'
          except ObjectDoesNotExist:
@@ -196,24 +194,24 @@ def api_fin_event_view(request):
     data={}
     code = request.data["pk"]
     user = request.user
-    user_info = request.data["user_info"]    
+    data4Company = request.data["data4Company"]    
     try:
-        obj = EventPost.objects.get(pk=code)
-    except EventPost.DoesNotExist or user.DoesNotExist:
+        obj = Event.objects.get(pk=code)
+    except Event.DoesNotExist or user.DoesNotExist:
         data["failed"] = "Wrong Event Code"
         return Response(data=data,status= status.HTTP_404_NOT_FOUND)
 
     try:
-        sPRbyU = PostRelations.objects.get(person = user, event = obj)
-        if sPRbyU.status == 'W':
-            sPRbyU.status ='F'
-            sPRbyU.user_info = user_info
-            sPRbyU.save()
+        post2fin = Post.objects.get(person =user, event =obj)
+        if post2fin.status == 'W':
+            post2fin.status ='F'
+            post2fin.data4Company = data4Company
+            post2fin.save()
             data["success"] = "update successful"
             data['status'] = 'Finalized'
         else:
          data['response'] = 'Error'
-         data['error_message'] = 'EventRelation is not winner'
+         data['error_message'] = 'Post is not winner'
                     
     except ObjectDoesNotExist:
             data['response'] = 'Error'
@@ -240,10 +238,10 @@ def api_won_events_view(request):
     # http://mrsenko.com/blog/atodorov/2016/08/30/loading-initial-data-for-many-to-many-fields/
     # https://stackoverflow.com/questions/24894961/django-meta-many-to-many
     # if EventPost.objects.filter(is_finalized= False).count()> 0:
-    if EventPost.objects.filter(status="O").count() > 0:
+    if Event.objects.filter(status="O").count() > 0:
         # bodyResp["mayor"] ="True"
         # bodyResp["count "] =  BarPost.objects.filter(is_finalized= False).count()
-        PostsOpen = EventPost.objects.filter(status="O")
+        PostsOpen = Event.objects.filter(status="O")
         #bodyResp["barpostOpen"] = barPostsOpen[0].code
         #i=0
         #bodyResp["indice0"] = i
@@ -273,8 +271,8 @@ En headers se coloca el Token Authorization
 '''
 
 
-class api_PostRelations_view(ListAPIView):
-    serializer_class = PostRelationsSerializer
+class api_Post_view(ListAPIView):
+    serializer_class = PostSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
     # pagination_class = PageNumberPagination
@@ -290,7 +288,7 @@ class api_PostRelations_view(ListAPIView):
             context['error_message'] = 'User does not exist'
             return Response(context, status=status.HTTP_404_NOT_FOUND)
         # if user is not None:
-        queryset = PostRelations.objects.filter(person=user).exclude(event__status='C')
+        queryset = Post.objects.filter(person=user).exclude(event__status='C')
         # else:
            # queryset = PostRelations.objects.all()
         return queryset
@@ -312,10 +310,10 @@ class api_all_events_view(ListAPIView):
     pagination_class = PageNumberPagination
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ['status']
-    queryset = EventPost.objects.all()
+    queryset = Event.objects.all()
 
     def get_queryset(self):
-        queryset = EventPost.objects.exclude(status='C').order_by('-createTime')
+        queryset = Event.objects.exclude(status='C').order_by('-createTime')
         return queryset
 
 

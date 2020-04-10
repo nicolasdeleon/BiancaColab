@@ -75,7 +75,10 @@ class Post(models.Model):
         return f"delete/{self.slug}"
 
     def __str__(self):
-        return self.event.title + ' - ' + self.person.instaaccount
+        try:
+         return self.event.title + ' - ' + self.person.profile.instaaccount
+        except:
+         return self.event.title 
 
     def instaaccount(self):
-        return self.person.instaaccount
+        return self.person.profile.instaaccount
