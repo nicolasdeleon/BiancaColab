@@ -22,7 +22,6 @@ class usermanager(BaseUserManager):
                 is_active=True,
                 is_staff=False,
                 is_admin=False
-                
                 ):
         """ Standard User Fields """
 

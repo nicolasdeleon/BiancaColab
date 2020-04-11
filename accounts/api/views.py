@@ -26,8 +26,7 @@ from backBone_Bianca.settings import SUPPORT_EMAIL
 
 @api_view(['POST', ])
 @permission_classes([])
-@authentication_classes([]) #Esto overridea mi settings default authentication
-
+@authentication_classes([])
 def api_registration_view(request):
 
     if request.method == 'POST':
@@ -39,7 +38,7 @@ def api_registration_view(request):
             return Response(data)
 
         instaaccount = request.data.get('instaaccount')
-        if validate_instaacount(instaaccount) is not None:
+        if validate_instaacount(instaaccount) is not None: # TODO: Hay que corregir la funcion validate_instaacount()
             data['error_message'] = 'That instagram account is already in use.'
             data['response'] = 'Error'
             return Response(data)
@@ -52,7 +51,7 @@ def api_registration_view(request):
             return Response(data)
 
         if serializer.is_valid():
-            User = serializer.save()
+            user = serializer.save()
             data['response'] = 'user registered successfuly'
             data['email'] = User.email
             data['full_name'] = User.full_name
@@ -105,7 +104,7 @@ class ObtainAuthTokenView(APIView):
                     context['email'] = User.email
                     context['token'] = token.key
                 else:
-                    context['error_message'] = f'Por favor, active su cuenta con el mail que a sido enviado a {user.email}'
+                    context['error_message'] = f'Por favor, active su cuenta con el mail que a sido enviado a {User.email}'
             except Token.DoesNotExist:
                 token = Token.objects.create(User=User)
                 context['response'] = 'Successfully authenticated.'

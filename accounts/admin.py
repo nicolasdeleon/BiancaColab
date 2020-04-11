@@ -4,14 +4,14 @@ from django.contrib.auth import get_user_model
 
 from .models import Company, EmailConfirmed, Profile
 
-User = get_user_model()
+USER = get_user_model()
 
 class UserAdmin(admin.ModelAdmin):
     search_fields = ['email']
     class Meta:
-        model = User
+        model = USER
 
-admin.site.register(User, UserAdmin)
+admin.site.register(USER, UserAdmin)
 admin.site.register(Profile)
 admin.site.register(EmailConfirmed)
 admin.site.register(Company)

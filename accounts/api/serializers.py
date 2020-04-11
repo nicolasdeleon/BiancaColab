@@ -3,16 +3,21 @@ import random
 from rest_framework import serializers
 
 #modelo a serializar
-from accounts.models import User, EmailConfirmed
+from accounts.models import User, EmailConfirmed, Profile, Company
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
-    
-    password2 = serializers.CharField(style={'input_type':'password'}, write_only=True) #campo extra al form
 
-    class Meta: #Requerido para mapear campos form a campos modelo
+    # TODO: Hay que redifinir la forma en la que tomamos los campos
+    # si vamos a usar un solo registrationSrializer para la empresa como para el usuario. 
+    # Y hay que extraer campos de otros modelos.
+    # Hay un ejemplo de como esta hecho esto en eventos/api/serializer: PostSerializer
+    password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
+
+    class Meta:
         model = User
-        fields = ['role',
+        fields = [
+        'role',
         'phone',
         'email',
         'first_name',
@@ -20,11 +25,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
         'instaaccount',
         'birth_date',
         'password',
-        'password2']
-        extra_kwargs = { #esta propiedad ni idea que hace
+        'password2',
+        ]
+        extra_kwargs = {
             "password" : {'write_only' : True}
         }
-    
+
     def generateConfimationKey(self, user):
         email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(User=user)
         #Corro get or create lo que implica que email_is_created devuelve true siempre y cuando se genere bien
@@ -41,44 +47,58 @@ class RegistrationSerializer(serializers.ModelSerializer):
             email_confirmed.save()
 
     def save(self):
-        ObjUser = User(
-            email = self.validated_data['email'],
-            instaaccount = self.validated_data['instaaccount'],
-            first_name = self.validated_data['first_name'],
-            last_name = self['last_name'],
-            #birth_date = self.validated_data['birth_date'],
-            role = self.validated_data['role'],
-            phone = self['phone'],
-            staff = False,
-            admin = False,
-            active = True,
+        new_user = User(
+            email=self.validated_data['email'],
+            first_name=self.validated_data['first_name'],
+            last_name=self.validated_data['last_name'],
+            role=self.validated_data['role'],
+            phone=self.validated_data['phone'],
+            staff=False,
+            admin=False,
+            active=True,
         )
+
+        if(new_user.role == 1):
+            user_profile = Profile(
+                user=new_user,
+                instaAccount=self.validated_data['instaaccount']
+            )
+            user_profile.save()
+
+        elif (new_user.role == 2):
+            user_company = Company(
+                user=new_user,
+                instaAccount=self.validated_data['instaaccount'],
+                # TODO: Missing phone and company name
+            )
+            user_company.save()
+
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
         if(password != password2):
-            raise serializers.ValidationError({'password:','Passwords must match'})
-        if (self['role'] == 1):
-            name = self.validated_data['first_name'] + ' ' + self['last_name']
-        else:
-            name = self.validated_data['first_name']
+            raise serializers.ValidationError({'password:', 'Passwords must match'})
+        name = self.validated_data['first_name'] + ' ' + self.validated_data['last_name']
+        new_user.full_name = name
+        new_user.set_password(password)
+        # Generate EmailConfirmation
+        new_user.save()
+        self.generateConfimationKey(new_user)
 
-        ObjUser.full_name=name
-        ObjUser.set_password(password)
-        
-        #Generate EmailConfirmation
-        ObjUser.save()
-        self.generateConfimationKey(ObjUser)
+        return new_user
 
-        return ObjUser
 
 class AccountPropertiesSerializer(serializers.ModelSerializer):
-
-    class Meta: #Requerido para mapear campos form a campos modelo
+    # TODO: Esto habria que extenderlo a acout properties serializer para empresa y para usuario
+    # colocando los campos pertinentes para cada uno utilizando la metodologia de
+    # eventos/api/serializer: PostSerializer
+    class Meta:
         model = User
-        fields = ['email','full_name','instaaccount','birth_date']
+        fields = ['email', 'full_name', 'instaaccount', 'birth_date']
+
 
 
 class ChangePasswordSerializer(serializers.Serializer):
-    old_password                = serializers.CharField(required=True)
-    new_password                = serializers.CharField(required=True)
-    confirm_new_password        = serializers.CharField(required=True)
+
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_new_password = serializers.CharField(required=True)
