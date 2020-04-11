@@ -20,7 +20,7 @@ from rest_framework.views import APIView
 from accounts.api.serializers import (AccountPropertiesSerializer,
                                       ChangePasswordSerializer,
                                       RegistrationSerializer)
-from accounts.models import User
+from accounts.models import User,Profile
 from backBone_Bianca.settings import SUPPORT_EMAIL
 
 
@@ -37,8 +37,8 @@ def api_registration_view(request):
             data['response'] = 'Error'
             return Response(data)
 
-        instaaccount = request.data.get('instaaccount')
-        if validate_instaacount(instaaccount) is not None: # TODO: Hay que corregir la funcion validate_instaacount()
+        instaAccount = request.data.get('instaAccount')
+        if validate_instaacount(instaAccount) is not None: # TODO: Hay que corregir la funcion validate_instaacount()
             data['error_message'] = 'That instagram account is already in use.'
             data['response'] = 'Error'
             return Response(data)
@@ -69,21 +69,22 @@ def api_registration_view(request):
 
 def validate_email(email):
     user_aux = None
-    try:
+    try:        
         user_aux = User.objects.get(email=email)
     except User.DoesNotExist:
         return None
     if User is not None:
         return email
 
-def validate_instaacount(instaaccount):
+def validate_instaacount(instaAccount):
     user_aux = None
     try:
-        user_aux = User.objects.get(instaaccount=instaaccount)
-    except User.DoesNotExist:
+        user_aux=Profile.objects.get(instaAccount=instaAccount)
+        #user_aux = User.profile.get(instaAccount=instaaccount)
+    except Profile.DoesNotExist:
         return None
-    if User is not None:
-        return instaaccount
+    if Profile is not None:
+        return instaAccount
 
 class ObtainAuthTokenView(APIView):
 
