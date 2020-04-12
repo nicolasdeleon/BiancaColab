@@ -20,7 +20,7 @@ from rest_framework.views import APIView
 from accounts.api.serializers import (AccountPropertiesSerializer,
                                       ChangePasswordSerializer,
                                       RegistrationSerializer)
-from accounts.models import User,Profile
+from accounts.models import User,Profile,Company
 from backBone_Bianca.settings import SUPPORT_EMAIL
 import logging
 
@@ -32,6 +32,7 @@ def api_registration_view(request):
     if request.method == 'POST':
         data = {}
         email = request.data.get('email')
+        role = request.data.get('role')
         if validate_email(email) is not None:
             data['error_message'] = 'That email is already in use.'
             data['response'] = 'Error'
@@ -51,7 +52,15 @@ def api_registration_view(request):
             return Response(data)
 
         if serializer.is_valid():
+           
             user = serializer.save()
+            if (role=='2'):
+              company = Company(user=user,instaAccount=request.data.get('instaAccount'),phone=request.data.get('phone')).save()
+            elif(role=='1'):
+               if (request.data.get('phone') is None):
+                 profile = Profile(user=user,instaAccount=request.data.get('instaAccount')).save()
+               else:
+                 profile = Profile(user=user,instaAccount=request.data.get('instaAccount'),phone=request.data.get('phone')).save()
             data['response'] = 'user registered successfuly'
             data['email'] = user.email
             data['full_name'] = user.full_name
