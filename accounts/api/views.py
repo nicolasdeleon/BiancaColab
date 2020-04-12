@@ -22,13 +22,13 @@ from accounts.api.serializers import (AccountPropertiesSerializer,
                                       RegistrationSerializer)
 from accounts.models import User,Profile
 from backBone_Bianca.settings import SUPPORT_EMAIL
-
+import logging
 
 @api_view(['POST', ])
 @permission_classes([])
 @authentication_classes([])
 def api_registration_view(request):
-
+    logger=logging.getLogger(__name__)
     if request.method == 'POST':
         data = {}
         email = request.data.get('email')
@@ -53,15 +53,16 @@ def api_registration_view(request):
         if serializer.is_valid():
             user = serializer.save()
             data['response'] = 'user registered successfuly'
-            data['email'] = User.email
-            data['full_name'] = User.full_name
-            data['active'] = User.active
-            data['staff'] = User.staff
-            data['admin'] = User.admin
-            data['instaaccount'] = User.instaaccount
-            data['timestamp'] = User.timestamp
-            token = Token.objects.get(User=User).key
+            data['email'] = user.email
+            data['full_name'] = user.full_name
+            data['active'] = user.active
+            data['staff'] = user.staff
+            data['admin'] = user.admin
+            data['instaAccount'] = instaAccount
+            data['timestamp'] = user.timestamp
+            token = Token.objects.get(user=user).key
             data['token'] = token
+            logger.error(data)
         else:
             data = serializer.errors
             return Response(data)
@@ -114,7 +115,7 @@ class ObtainAuthTokenView(APIView):
                 context['active'] = User.active
                 context['staff'] = User.staff
                 context['admin'] = User.admin
-                context['instaaccount'] = User.instaaccount
+                #context['instaaccount'] = User.instaaccount
                 context['timestamp'] = User.timestamp
                 context['token'] = token.key
         else:

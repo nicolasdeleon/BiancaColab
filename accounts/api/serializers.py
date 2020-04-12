@@ -6,23 +6,17 @@ from rest_framework import serializers
 from accounts.models import User, EmailConfirmed, Profile, Company
 
 
-class RegistrationSerializer(serializers.ModelSerializer):
 
-    # TODO: Hay que redifinir la forma en la que tomamos los campos
-    # si vamos a usar un solo registrationSrializer para la empresa como para el usuario. 
-    # Y hay que extraer campos de otros modelos.
-    # Hay un ejemplo de como esta hecho esto en eventos/api/serializer: PostSerializer
-    password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
-
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
         'role',
-        'phone',
+        #'phone',
         'email',
         'first_name',
         'last_name',
-        'instaaccount',
+        #'instaAccount',
         'birth_date',
         'password',
         'password2',
@@ -30,9 +24,63 @@ class RegistrationSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "password" : {'write_only' : True}
         }
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = [
+        'user',
+        'followers',
+        'likes',
+        'instaAccount',
+        'zone',
+        'story',
+        'phone',
+        'birthDate'
+        ]
 
-    def generateConfimationKey(self, user):
-        email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(User=user)
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = [
+        'user',
+        #'phone',
+        'phone',
+        'instaAccount',
+        'companyName'
+        ]       
+
+class RegistrationSerializer(serializers.ModelSerializer):
+
+    # TODO: Hay que redifinir la forma en la que tomamos los campos
+    # si vamos a usar un solo registrationSrializer para la empresa como para el usuario. 
+    # Y hay que extraer campos de otros modelos.
+    # Hay un ejemplo de como esta hecho esto en eventos/api/serializer: PostSerializer
+    #https://www.reddit.com/r/django/comments/85s6hp/serialize_two_models_drf/
+
+    
+    password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
+
+    class Meta:
+        model = User
+        fields = [
+        'role',
+        #'phone',
+        'email',
+        'first_name',
+        'last_name',
+        #'instaAccoun
+        'password',
+        'password2',
+        ]
+        extra_kwargs = {
+            "password" : {'write_only' : True}
+        }
+        #User=UserSerializer()
+        Profile=ProfileSerializer()
+        Company=CompanySerializer()
+
+    def generateConfimationKey(self, User):
+        email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(user=User)
         #Corro get or create lo que implica que email_is_created devuelve true siempre y cuando se genere bien
         #El mail se manda directamente de la funcion crear de EmailConfirmed class
         if email_is_created:
@@ -50,26 +98,28 @@ class RegistrationSerializer(serializers.ModelSerializer):
         new_user = User(
             email=self.validated_data['email'],
             first_name=self.validated_data['first_name'],
-            last_name=self.validated_data['last_name'],
-            role=self.validated_data['role'],
-            phone=self.validated_data['phone'],
+            last_name=self.validated_data['last_name'],       
+            role=self.validated_data['role'],        
             staff=False,
             admin=False,
             active=True,
         )
 
-        if(new_user.role == 1):
+        if(new_user.role == "1"):
             user_profile = Profile(
                 user=new_user,
-                instaAccount=self.validated_data['instaaccount']
+                instaAccount=self.validated_data['instaAccount'],
+                last_name=self.validated_data['last_name'],
+                phone=self['phone']
             )
             user_profile.save()
 
-        elif (new_user.role == 2):
+        elif (new_user.role == "2"):
             user_company = Company(
                 user=new_user,
-                instaAccount=self.validated_data['instaaccount'],
-                # TODO: Missing phone and company name
+                instaAccount=self.validated_data['instaAccount'],
+                phone=self.validated_data['phone'],
+               
             )
             user_company.save()
 
