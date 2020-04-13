@@ -110,7 +110,7 @@ class ObtainAuthTokenView(APIView):
         if User:
             try:
                 if User.emailconfirmed.confirmed:
-                    token = Token.objects.get(User=User)
+                    token = Token.objects.get(user=User)
                     context['response'] = 'Successfully authenticated.'
                     context['email'] = User.email
                     context['token'] = token.key
