@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
         'first_name',
         'last_name',
         #'instaAccount',
-        'birth_date',
+        'birthDate',
         'password',
         'password2',
         ]
@@ -166,9 +166,11 @@ class AccountPropertiesSerializer(serializers.ModelSerializer):
     # TODO: Esto habria que extenderlo a acout properties serializer para empresa y para usuario
     # colocando los campos pertinentes para cada uno utilizando la metodologia de
     # eventos/api/serializer: PostSerializer
+
+
     class Meta:
         model = User
-        fields = ['email', 'full_name', 'instaAccount', 'birth_date']
+        fields = ['email', 'full_name']
 
 
 

@@ -138,16 +138,28 @@ class ObtainAuthTokenView(APIView):
 @permission_classes((IsAuthenticated, ))
 def account_properties_view(request):
     context = {}
+    user = {}
     try:
-        User = request.User
-    except User.DoesNotExist:
+        user = request.user
+    except user.DoesNotExist:
         context['response'] = 'Error'
         context['error_message'] = 'User does not exist'
         return Response(context, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = AccountPropertiesSerializer(User)
-        return Response(serializer.data)
+	    try:
+	        profileAux = Profile.objects.get(user=user)
+	        context['email'] = user.email        	
+	        context['full_name'] = user.email
+	        context['instaAccount'] = profileAux.instaAccount
+	    except Profile.DoesNotExist:
+	        context['response'] = 'Error'
+	        context['error_message'] = 'Profile does not exist'
+	        return Response(context, status=status.HTTP_404_NOT_FOUND)
+
+    	
+    #serializer = AccountPropertiesSerializer(user)
+    return Response(context)
 
 # Account update properties
 @api_view(['PUT',])
