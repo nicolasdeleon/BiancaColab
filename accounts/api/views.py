@@ -118,7 +118,7 @@ class ObtainAuthTokenView(APIView):
                     context['error_message'] = f'Por favor, active su cuenta con el mail que a sido enviado a {User.email}'
             except Token.DoesNotExist:
                 token = Token.objects.create(User=User)
-                context['response'] = 'Successfully authenticated.'
+                context['response'] = 'Usuario y/o contraseña inválida.'
                 context['email'] = User.email
                 context['full_name'] = User.full_name
                 context['active'] = User.active
@@ -128,7 +128,7 @@ class ObtainAuthTokenView(APIView):
                 context['timestamp'] = User.timestamp
                 context['token'] = token.key
         else:
-            context['error_message'] = 'Invalid credentials'
+            context['error_message'] = 'Usuario y/o contraseña inválida.'
             return Response(context, status=status.HTTP_404_NOT_FOUND)
         return Response(context)
 
@@ -278,7 +278,7 @@ def reset_password(request):
         return Response(data=data)
     except User.DoesNotExist:
         data['response'] = 'Error'
-        data['error_message'] = 'User does not exist'
+        data['error_message'] = 'No existe el usuario.'
         return Response(data)
 
 
@@ -293,11 +293,11 @@ def reset_password_confirm(request):
         user_aux = user.objects.get(email=email, reset_password_token=token)
         user_aux.set_password(password)
         user_aux.save()
-        data["response"] = "Succes"
+        data["response"] = "Success"
         return Response(data=data)
     except user.DoesNotExist:
         data['response'] = 'Error'
-        data['error_message'] = 'User or token does not exist'
+        data['error_message'] = 'No existe el usuario.'
         return Response(data)
 
 @api_view(['GET', ])
