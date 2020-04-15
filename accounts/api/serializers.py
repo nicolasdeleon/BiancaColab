@@ -168,7 +168,7 @@ class AccountPropertiesSerializer(serializers.ModelSerializer):
     # eventos/api/serializer: PostSerializer
     class Meta:
         model = User
-        fields = ['email', 'full_name', 'instaaccount', 'birth_date']
+        fields = ['email', 'full_name', 'instaAccount', 'birth_date']
 
 
 
