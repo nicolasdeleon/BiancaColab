@@ -22,10 +22,11 @@ class ApiAccountRegistrationTests(APITestCase):
             "instaAccount" : "@test",
             "birth_date" : timezone.datetime(1997, 1, 23, 00, 00, 00, 00),
             "password" : "testpassword",
-            "password2" : "testpassword"
+            "password2" : "testpassword",
+            "role": 1
         }
         response = self.client.post(end_point, registration_data)
-        # print(response.data)
+        #TODO: Check if user and corresponding fields exist in database
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 
@@ -37,10 +38,9 @@ class ApiAccountAuthenticationTests(APITestCase):
             "email" : "testdiferentthanothers@test.com",
             "password" : "secret"
         }
-        self.user = user.objects.create_user(
+        self.user = User.objects.create_user(
             email=self.credentials['email'],
             password=self.credentials['password'],
-            instaaccount="@test22222",
             first_name="oliver",
             last_name="twist",
         )
