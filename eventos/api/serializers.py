@@ -4,62 +4,20 @@ from eventos.models import Event, Post
 
 
 class EventSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Event
-        fields = ['title', 'slug', 'users']
-
-    def update(self, instance, validated_data):
-        """ Update event post """
-        instance.title = validated_data.get('title', instance.title)
-        instance.company = validated_data.get('content', instance.content)
-        # instance.slug = validated_data.get('created', instance.created)
-        # instance.users = validated_data.get('created', instance.created)
-        # return instance
-
-"""
-class CommentSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    content = serializers.CharField(max_length=200)
-    created = serializers.DateTimeField()
-
-    def create(self, validated_data):
-        return Comment(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.email = validated_data.get('email', instance.email)
-        instance.content = validated_data.get('content', instance.content)
-        instance.created = validated_data.get('created', instance.created)
-        return instance
-"""
+        fields = ['title', 'pk', 'status']
 
 
 class PostSerializer(serializers.ModelSerializer):
 
-    instaAccount = serializers.SerializerMethodField('get_instaaccount_from_person')
-    eventTitle = serializers.SerializerMethodField('get_event_title_from_event')
-    eventStatus = serializers.SerializerMethodField('get_event_status')
-    eventId = serializers.SerializerMethodField('get_event_id_from_event')
-
-    def get_instaaccount_from_person(self, postrelations):
-        instaaccount = Post.person.profile.instaaccount
-        return instaaccount
-
-    def get_event_title_from_event(self, postrelations):
-        event_title = Post.event.title
-        return event_title
-
-    def get_event_id_from_event(self, postrelations):
-        event_id = Post.event.pk
-        return event_id
-
-    def get_event_status(self, postrelations):
-        eventstatus = Post.event.status
-        return eventstatus
+    event = EventSerializer(
+        read_only=True
+        )
 
     class Meta:
         model = Post
-        fields = ['instaAccount', 'eventTitle', 'eventId', 'createTime', 'status', 'eventStatus', 'event']
+        fields = ['createTime', 'status', 'event']
 
 
 class EventsSerializer(serializers.ModelSerializer):
