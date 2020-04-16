@@ -25,8 +25,8 @@ def api_create_Event(request):
     data={}
     data["success"] = "create successful"
     return Response(data=data)
-        
-        
+
+
 @api_view(['GET',])
 @permission_classes((IsAuthenticated,))
 def api_detail_Event_view(request, slug):
@@ -118,34 +118,32 @@ def api_addUser_Event_view(request):
     code = request.data['pk']
     user = request.user
     try:
-        # CHEQUEO CODIGO DEL EVENTO VS EL QUE ME MANDA EL USUARIO
         event = Event.objects.get(pk=code)
-    except Event.DoesNotExist or user.DoesNotExist:
+    except (Event.DoesNotExist, user.DoesNotExist):
         data['response'] = 'Error'
         data['error_message'] = 'Código incorrecto'
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'POST':
         if event.stock << event.activeParticipants and event.status == "O":
-         try:
-            #sPRbyU = postrelations.objects.get(person = user, code = code)
-            newPost = Post.objects.get(person=user, event=event)
-            data['response'] = 'Error'
-            data['error_message'] = 'Duplicate association.'
+            try:
+                newPost = Post.objects.get(person=user, event=event)
+                data['response'] = 'Error'
+                data['error_message'] = 'Duplicate association.'
 
-         except ObjectDoesNotExist:
-            newPost = Post()
-            newPost.person = user
-            newPost.event = event
-            newPost.notificationToken = request.data['notificationToken']
-            newPost.save()
-            event.activeParticipants+= 1
-            event.save()
-            data["success"] = "users belong to the event"
-            if event.stock == event.activeParticipants:
+            except ObjectDoesNotExist:
+                newPost = Post()
+                newPost.person = user
+                newPost.event = event
+                newPost.notificationToken = request.data['notificationToken']
+                newPost.save()
+                event.activeParticipants += 1
+                event.save()
+                data["success"] = "users belong to the event"
+                if event.stock == event.activeParticipants:
                     event.status = "F"
                     event.save()
-         return Response(data=data)
+            return Response(data=data)
         else:
             event.status = "F"
             event.save()
@@ -161,7 +159,7 @@ def api_eventrel_state(request):
     user = request.user
     try:
         obj = Event.objects.get(pk=code)
-    except Event.DoesNotExist or user.DoesNotExist:
+    except (Event.DoesNotExist, user.DoesNotExist):
         data["failed"] = "Wrong Event Code"
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
@@ -169,53 +167,55 @@ def api_eventrel_state(request):
     if statusE in ('O', '2BO'):
         user = request.user
         if request.method == 'POST':
-         try:
-            event = Post.objects.get(person=user, event=obj)
-            data['status'] = event.status
-            data['response'] = 'OK'
-         except ObjectDoesNotExist:
-            data['status'] = 'N'
-            data['response'] = 'OK'
+            try:
+                event = Post.objects.get(person=user, event=obj)
+                data['status'] = event.status
+                data['response'] = 'OK'
+            except ObjectDoesNotExist:
+                data['status'] = 'N'
+                data['response'] = 'OK'
 
     else:
         data["is_finalized"] = "True"
         data["status"] = statusE
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
-        
+
     return Response(data=data)
 
 '''
 Api para que un usuario finalice el evento porque recibió su beneficio.
 
 '''
+
+
 @api_view(['POST',])
 @permission_classes((IsAuthenticated,))
 def api_fin_event_view(request):
-    data={}
+    data = {}
     code = request.data["pk"]
     user = request.user
-    data4Company = request.data["data4Company"]    
+    data4Company = request.data["data4Company"]
     try:
         obj = Event.objects.get(pk=code)
-    except Event.DoesNotExist or user.DoesNotExist:
+    except (Event.DoesNotExist, user.DoesNotExist):
         data["failed"] = "Wrong Event Code"
-        return Response(data=data,status= status.HTTP_404_NOT_FOUND)
+        return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
     try:
-        post2fin = Post.objects.get(person =user, event =obj)
+        post2fin = Post.objects.get(person=user, event=obj)
         if post2fin.status == 'W':
-            post2fin.status ='F'
+            post2fin.status = 'F'
             post2fin.data4Company = data4Company
             post2fin.save()
             data["success"] = "update successful"
             data['status'] = 'Finalized'
         else:
-         data['response'] = 'Error'
-         data['error_message'] = 'Post is not winner'
-                    
-    except ObjectDoesNotExist:
             data['response'] = 'Error'
-            data['error_message'] = 'EventRelation doesnt exist'
+            data['error_message'] = 'Post is not winner'
+
+    except ObjectDoesNotExist:
+        data['response'] = 'Error'
+        data['error_message'] = 'EventRelation doesnt exist'
     return Response(data=data)
 
 
@@ -271,7 +271,7 @@ En headers se coloca el Token Authorization
 '''
 
 
-class api_Post_view(ListAPIView):
+class DeliverActiveContracts(ListAPIView):
     serializer_class = PostSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
@@ -287,10 +287,7 @@ class api_Post_view(ListAPIView):
             context['response'] = 'Error'
             context['error_message'] = 'User does not exist'
             return Response(context, status=status.HTTP_404_NOT_FOUND)
-        # if user is not None:
         queryset = Post.objects.filter(person=user).exclude(event__status='C')
-        # else:
-           # queryset = PostRelations.objects.all()
         return queryset
 
 
@@ -303,7 +300,8 @@ En params se coloca:
     - En el caso que sean mas de 30 resultados agregar page = 1,2,3...
 '''
 
-class api_all_events_view(ListAPIView):
+
+class DeliverAllEvents(ListAPIView):
     serializer_class = EventsSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
