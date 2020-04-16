@@ -70,7 +70,6 @@ class EventsSerializer(serializers.ModelSerializer):
             'pk',
             'title',
             'image',
-            'company',
             'description',
             'createTime',
             'status'
