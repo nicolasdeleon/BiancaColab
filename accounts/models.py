@@ -150,7 +150,7 @@ class User(AbstractBaseUser):
 class Company(models.Model):
     """ Extend extra fields for company of user rather than change user model """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone = models.CharField(max_length=40, default="")
+    phone = models.CharField(max_length=40, default="", blank=True, null=True)
     instaAccount = models.CharField(max_length=255, unique=True, null=True)
     companyName = models.CharField(max_length=255, blank=True)
 
