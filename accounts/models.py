@@ -162,7 +162,7 @@ class Profile(models.Model):
     likes = models.FloatField(verbose_name='Promediated likes per publication', blank=True, null=True)
     zone = models.CharField(verbose_name='Location', max_length=255, blank=True)
     scoring = models.IntegerField(verbose_name='Overall event score', blank=True, default=0)
-    phone = models.CharField(max_length=40, default="")
+    phone = models.CharField(max_length=40, default="", blank=True, null=True)
     instaAccount = models.CharField(max_length=255, unique=True, null=True)
     birthDate = models.DateTimeField(verbose_name="Fecha de nacimiento", blank=True, null=True)
 
