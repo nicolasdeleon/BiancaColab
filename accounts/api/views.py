@@ -68,6 +68,8 @@ def api_registration_view(request):
             data['staff'] = user.staff
             data['admin'] = user.admin
             data['instaAccount'] = instaAccount
+            data['phone'] = request.data.get('phone')
+            data['role'] = role         
             data['timestamp'] = user.timestamp
             token = Token.objects.get(user=user).key
             data['token'] = token
@@ -166,21 +168,30 @@ def account_properties_view(request):
 @permission_classes((IsAuthenticated, ))
 def update_account_view(request):
     context = {}
-    try:
-        user = request.User
-    except User.DoesNotExist:
-        context['response'] = 'Error'
-        context['error_message'] = 'User does not exist'
-        return Response(context, status=status.HTTP_404_NOT_FOUND)
-
     if request.method == 'PUT':
-        serializer = AccountPropertiesSerializer(User, data=request.data)
-        data = {}
-        if serializer.is_valid():
-            serializer.save()
-            data['response'] = 'Account update success'
-            return Response(data=data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	    try:
+        	user = request.user
+        	profileAux = Profile.objects.get(user=user)
+        	profileAux.instaAccount = request.data.get('instaAccount')
+        	profileAux.save()
+        	context['response'] = 'InstaAccount successfully changed'
+        	return Response(context, status=status.HTTP_200_OK)
+
+	    except User.DoesNotExist:
+	    	context['response'] = 'Error'
+	    	context['error_message'] = 'User does not exist'
+	    	return Response(context, status=status.HTTP_404_NOT_FOUND)
+
+    #if request.method == 'PUT':
+    #    serializer = AccountPropertiesSerializer(User, data=request.data)
+    #    data = {}
+    #    if serializer.is_valid():
+    #        serializer.save()
+    #        data['response'] = 'Account update success'
+    #        return Response(data=data)
+    #    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 class ChangePasswordView(UpdateAPIView):
