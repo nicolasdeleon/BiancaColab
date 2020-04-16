@@ -1,7 +1,6 @@
 from django.urls import path
 
 from eventos.api.views import (
-    api_detail_Event_view,
     api_addUser_Event_view,
     api_eventrel_state,
     api_won_events_view,

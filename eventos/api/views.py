@@ -8,8 +8,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from eventos.api.serializers import (EventsSerializer, PostSerializer,
-                                     EventSerializer)
+from eventos.api.serializers import (EventsSerializer, PostSerializer)
 from eventos.models import Event, Post
 
 
@@ -25,90 +24,6 @@ def api_create_Event(request):
     data={}
     data["success"] = "create successful"
     return Response(data=data)
-
-
-@api_view(['GET',])
-@permission_classes((IsAuthenticated,))
-def api_detail_Event_view(request, slug):
-    try:
-        obj = Event.objects.get(slug=slug)
-    except Event.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = EventSerializer(obj)
-        return Response(serializer.data)
-
-
-@api_view(['PUT',])
-@permission_classes((IsAuthenticated,))
-def api_update_Event_view(request, slug):
-    try:
-        obj = Event.objects.get(slug=slug)
-    except Event.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'PUT':
-        serializer = EventSerializer(obj, data=request.data)
-        data = {}
-        if serializer.is_valid():
-            serializer.save()
-            data["success"] = "update successful"
-            return Response(data=data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['DELETE',])
-@permission_classes((IsAuthenticated,))
-def api_delete_BarPost_view(request, slug):
-    try:
-        obj = Event.objects.get(slug=slug)
-    except Event.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'DELETE':
-        operation = obj.delete()
-        data = {}
-        if operation:
-            data["success"] = "object deleted"
-        else:
-            data["failed"] = "object could not be deleted"
-        return Response(data=data)
-
-
-# @api_view(['POST',])
-# @permission_classes((IsAuthenticated,))
-# def api_addUser_EventPost_view(request):
-#     data = {}
-#     code = request.data['code']
-#     user = request.user
-#     try:
-#         # CHEQUEO CODIGO DEL EVENTO VS EL QUE ME MANDA EL USUARIO
-#         obj = EventPost.objects.get(code=code)
-#     except EventPost.DoesNotExist or user.DoesNotExist:
-#         data['response'] = 'Error'
-#         data['error_message'] = 'Código incorrecto'
-#         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
-
-#     if request.method == 'POST':
-#         obj.users.add(user)
-#         # qs = obj.users.all() #Esto el dia de mañana se podria sacar, siento que es ineficiente
-#         # if qs.filter(pk=user.pk).exists():
-#         try:
-#             #sPRbyU = postrelations.objects.get(person = user, code = code)
-#             sPRbyU = postrelations.objects.get(person=user, event=obj)
-#             data['response'] = 'Error'
-#             data['error_message'] = 'Duplicate association.'
-
-#         except ObjectDoesNotExist:
-#             newPR = postrelations()
-#             newPR.person = user
-#             newPR.event = obj
-#             newPR.notificationToken = request.data['notificationToken']
-#             newPR.save()
-#             data["success"] = "users belong to the event"
-#         return Response(data=data)
-
 
 
 @api_view(['POST',])
