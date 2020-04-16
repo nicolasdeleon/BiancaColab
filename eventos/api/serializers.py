@@ -1,13 +1,13 @@
 from rest_framework import serializers
 
-from eventos.models import eventpost, postrelations
+from eventos.models import Event, Post
 
 
-class eventpostSerializer(serializers.ModelSerializer):
+class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = eventpost
-        fields = ['title', 'company', 'slug', 'users']
+        model = Event
+        fields = ['title', 'slug', 'users']
 
     def update(self, instance, validated_data):
         """ Update event post """
@@ -34,7 +34,7 @@ class CommentSerializer(serializers.Serializer):
 """
 
 
-class PostRelationsSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
 
     instaaccount = serializers.SerializerMethodField('get_instaaccount_from_person')
     eventTitle = serializers.SerializerMethodField('get_eventTitle_from_event')
@@ -42,36 +42,36 @@ class PostRelationsSerializer(serializers.ModelSerializer):
     eventId = serializers.SerializerMethodField('get_event_id_from_event')
 
     def get_instaaccount_from_person(self, postrelations):
-        instaaccount = postrelations.person.instaaccount
+        instaaccount = Post.person.profile.instaaccount
         return instaaccount
 
     def get_eventTitle_from_event(self, postrelations):
-        eventTitle = postrelations.event.title
+        eventTitle = Post.event.title
         return eventTitle
 
     def get_event_id_from_event(self, postrelations):
-        eventId = postrelations.event.pk
+        eventId = Post.event.pk
         return eventId
 
     def get_event_status(self, postrelations):
-        eventstatus = postrelations.event.status
+        eventstatus = Post.event.status
         return eventstatus
 
     class Meta:
-        model = postrelations
-        fields = ['instaaccount', 'eventTitle', 'eventId', 'createTime', 'status', 'eventStatus', 'event', 'winer_code']
+        model = Post
+        fields = ['instaAccount', 'eventTitle', 'eventId', 'createTime', 'status', 'eventStatus', 'event']
 
 
 class EventsSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = eventpost
+        model = Event
         fields = [
             'pk',
             'title',
             'image',
             'company',
-            'desc',
+            'description',
             'createTime',
             'status'
             ]

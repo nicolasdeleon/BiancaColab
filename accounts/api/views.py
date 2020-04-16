@@ -20,26 +20,26 @@ from rest_framework.views import APIView
 from accounts.api.serializers import (AccountPropertiesSerializer,
                                       ChangePasswordSerializer,
                                       RegistrationSerializer)
-from accounts.models import user
+from accounts.models import User,Profile,Company
 from backBone_Bianca.settings import SUPPORT_EMAIL
-
+import logging
 
 @api_view(['POST', ])
 @permission_classes([])
-@authentication_classes([]) #Esto overridea mi settings default authentication
-
+@authentication_classes([])
 def api_registration_view(request):
-
+    logger=logging.getLogger(__name__)
     if request.method == 'POST':
         data = {}
         email = request.data.get('email')
+        role = request.data.get('role')
         if validate_email(email) is not None:
             data['error_message'] = 'That email is already in use.'
             data['response'] = 'Error'
             return Response(data)
 
-        instaaccount = request.data.get('instaaccount')
-        if validate_instaacount(instaaccount) is not None:
+        instaAccount = request.data.get('instaAccount')
+        if validate_instaacount(instaAccount) is not None: # TODO: Hay que corregir la funcion validate_instaacount()
             data['error_message'] = 'That instagram account is already in use.'
             data['response'] = 'Error'
             return Response(data)
@@ -52,17 +52,28 @@ def api_registration_view(request):
             return Response(data)
 
         if serializer.is_valid():
+           
             user = serializer.save()
+            if (role=='2'):
+              company = Company(user=user,instaAccount=request.data.get('instaAccount'),phone=request.data.get('phone')).save()
+            elif(role=='1'):
+               if (request.data.get('phone') is None):
+                 profile = Profile(user=user,instaAccount=request.data.get('instaAccount')).save()
+               else:
+                 profile = Profile(user=user,instaAccount=request.data.get('instaAccount'),phone=request.data.get('phone')).save()
             data['response'] = 'user registered successfuly'
             data['email'] = user.email
             data['full_name'] = user.full_name
             data['active'] = user.active
             data['staff'] = user.staff
             data['admin'] = user.admin
-            data['instaaccount'] = user.instaaccount
+            data['instaAccount'] = instaAccount
+            data['phone'] = request.data.get('phone')
+            data['role'] = role         
             data['timestamp'] = user.timestamp
             token = Token.objects.get(user=user).key
             data['token'] = token
+            logger.error(data)
         else:
             data = serializer.errors
             return Response(data)
@@ -70,21 +81,22 @@ def api_registration_view(request):
 
 def validate_email(email):
     user_aux = None
-    try:
-        user_aux = user.objects.get(email=email)
-    except user.DoesNotExist:
+    try:        
+        user_aux = User.objects.get(email=email)
+    except User.DoesNotExist:
         return None
-    if user is not None:
+    if User is not None:
         return email
 
-def validate_instaacount(instaaccount):
+def validate_instaacount(instaAccount):
     user_aux = None
     try:
-        user_aux = user.objects.get(instaaccount=instaaccount)
-    except user.DoesNotExist:
+        user_aux=Profile.objects.get(instaAccount=instaAccount)
+        #user_aux = User.profile.get(instaAccount=instaaccount)
+    except Profile.DoesNotExist:
         return None
-    if user is not None:
-        return instaaccount
+    if Profile is not None:
+        return instaAccount
 
 class ObtainAuthTokenView(APIView):
 
@@ -96,29 +108,29 @@ class ObtainAuthTokenView(APIView):
 
         email = request.data.get('username')
         password = request.data.get('password')
-        user = authenticate(email=email, password=password)
-        if user:
+        User = authenticate(email=email, password=password)
+        if User:
             try:
-                if user.emailconfirmed.confirmed:
-                    token = Token.objects.get(user=user)
+                if User.emailconfirmed.confirmed:
+                    token = Token.objects.get(user=User)
                     context['response'] = 'Successfully authenticated.'
-                    context['email'] = user.email
+                    context['email'] = User.email
                     context['token'] = token.key
                 else:
-                    context['error_message'] = f'Por favor, active su cuenta con el mail que a sido enviado a {user.email}'
+                    context['error_message'] = f'Por favor, active su cuenta con el mail que a sido enviado a {User.email}'
             except Token.DoesNotExist:
-                token = Token.objects.create(user=user)
-                context['response'] = 'Successfully authenticated.'
-                context['email'] = user.email
-                context['full_name'] = user.full_name
-                context['active'] = user.active
-                context['staff'] = user.staff
-                context['admin'] = user.admin
-                context['instaaccount'] = user.instaaccount
-                context['timestamp'] = user.timestamp
+                token = Token.objects.create(User=User)
+                context['response'] = 'Usuario y/o contraseña inválida.'
+                context['email'] = User.email
+                context['full_name'] = User.full_name
+                context['active'] = User.active
+                context['staff'] = User.staff
+                context['admin'] = User.admin
+                #context['instaaccount'] = User.instaaccount
+                context['timestamp'] = User.timestamp
                 context['token'] = token.key
         else:
-            context['error_message'] = 'Invalid credentials'
+            context['error_message'] = 'Usuario y/o contraseña inválida.'
             return Response(context, status=status.HTTP_404_NOT_FOUND)
         return Response(context)
 
@@ -128,6 +140,7 @@ class ObtainAuthTokenView(APIView):
 @permission_classes((IsAuthenticated, ))
 def account_properties_view(request):
     context = {}
+    user = {}
     try:
         user = request.user
     except user.DoesNotExist:
@@ -136,40 +149,60 @@ def account_properties_view(request):
         return Response(context, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = AccountPropertiesSerializer(user)
-        return Response(serializer.data)
+	    try:
+	        profileAux = Profile.objects.get(user=user)
+	        context['email'] = user.email        	
+	        context['full_name'] = user.email
+	        context['instaAccount'] = profileAux.instaAccount
+	    except Profile.DoesNotExist:
+	        context['response'] = 'Error'
+	        context['error_message'] = 'Profile does not exist'
+	        return Response(context, status=status.HTTP_404_NOT_FOUND)
+
+    	
+    #serializer = AccountPropertiesSerializer(user)
+    return Response(context)
 
 # Account update properties
 @api_view(['PUT',])
 @permission_classes((IsAuthenticated, ))
 def update_account_view(request):
     context = {}
-    try:
-        user = request.user
-    except user.DoesNotExist:
-        context['response'] = 'Error'
-        context['error_message'] = 'User does not exist'
-        return Response(context, status=status.HTTP_404_NOT_FOUND)
-
     if request.method == 'PUT':
-        serializer = AccountPropertiesSerializer(user, data=request.data)
-        data = {}
-        if serializer.is_valid():
-            serializer.save()
-            data['response'] = 'Account update success'
-            return Response(data=data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	    try:
+        	user = request.user
+        	profileAux = Profile.objects.get(user=user)
+        	profileAux.instaAccount = request.data.get('instaAccount')
+        	profileAux.save()
+        	context['response'] = 'InstaAccount successfully changed'
+        	return Response(context, status=status.HTTP_200_OK)
+
+	    except User.DoesNotExist:
+	    	context['response'] = 'Error'
+	    	context['error_message'] = 'User does not exist'
+	    	return Response(context, status=status.HTTP_404_NOT_FOUND)
+
+    #if request.method == 'PUT':
+    #    serializer = AccountPropertiesSerializer(User, data=request.data)
+    #    data = {}
+    #    if serializer.is_valid():
+    #        serializer.save()
+    #        data['response'] = 'Account update success'
+    #        return Response(data=data)
+    #    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 class ChangePasswordView(UpdateAPIView):
 
     serializer_class = ChangePasswordSerializer
-    model = user
+    model = User
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
 
     def get_object(self, queryset=None):
-        obj = self.request.user
+        obj = self.request.User
         return obj
 
     def update(self, request, *args, **kwargs):
@@ -229,11 +262,11 @@ def send_feedback_view(request):
         smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
 
         if puntaje_promedio <= 3:
-            subject = f'Feedback, {user.full_name}, MAL'
+            subject = f'Feedback, {User.full_name}, MAL'
         else:
-            subject = f'Feedback, {user.full_name}, BIEN'
+            subject = f'Feedback, {User.full_name}, BIEN'
 
-        body = f'{user.full_name} te te graduo asi..\nFluidez: {puntaje_fluidez}\nAtencion: {puntaje_atencion}\nPago: {puntaje_pago}\nGeneral: {puntaje_general}\nObteniendo un promedio: {puntaje_promedio}'
+        body = f'{User.full_name} te te graduo asi..\nFluidez: {puntaje_fluidez}\nAtencion: {puntaje_atencion}\nPago: {puntaje_pago}\nGeneral: {puntaje_general}\nObteniendo un promedio: {puntaje_promedio}'
         msg = f'Subject: {subject}\n\n{body}'
 
         context['response'] = "Success"
@@ -248,27 +281,27 @@ def reset_password(request):
     data = {}
     email = request.data.get('email')
     try:
-        user_aux = user.objects.get(email=email)
+        user_aux = User.objects.get(email=email)
         user_aux.reset_password_token = binascii.hexlify(os.urandom(6)).decode()[0:6]
         user_aux.save()
 
         subject = "Password Reset"
         context = {
-            "reset_token": user_aux.reset_password_token
+            "reset_token": User_aux.reset_password_token
         }
         message = render_to_string("reset_password.html", context)
 
         from_email = SUPPORT_EMAIL
 
-        mail = EmailMultiAlternatives(subject, from_email, [user_aux.email], '')
+        mail = EmailMultiAlternatives(subject, from_email, [User_aux.email], '')
         mail.attach_alternative(message, "text/html")
         mail.send()
 
         data['response'] = "Success"
         return Response(data=data)
-    except user.DoesNotExist:
+    except User.DoesNotExist:
         data['response'] = 'Error'
-        data['error_message'] = 'User does not exist'
+        data['error_message'] = 'No existe el usuario.'
         return Response(data)
 
 
@@ -283,11 +316,11 @@ def reset_password_confirm(request):
         user_aux = user.objects.get(email=email, reset_password_token=token)
         user_aux.set_password(password)
         user_aux.save()
-        data["response"] = "Succes"
+        data["response"] = "Success"
         return Response(data=data)
     except user.DoesNotExist:
         data['response'] = 'Error'
-        data['error_message'] = 'User or token does not exist'
+        data['error_message'] = 'No existe el usuario.'
         return Response(data)
 
 @api_view(['GET', ])
@@ -295,6 +328,6 @@ def reset_password_confirm(request):
 def get_accounts_general_info(request):
     data = {}
 
-    number_of_users = len(user.objects.all())
+    number_of_users = len(User.objects.all())
     data['number_of_users'] = number_of_users
     return Response(data)

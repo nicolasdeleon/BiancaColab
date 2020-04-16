@@ -4,7 +4,7 @@ from exponent_server_sdk import (DeviceNotRegisteredError, PushClient,
                                  PushServerError)
 from requests.exceptions import ConnectionError, HTTPError
 
-from .models import eventpost, InstaStoryPublication, postrelations
+from .models import Event, InstaStoryPublication, Post
 
 
 def send_push_message(token, message, extra=None):
@@ -58,18 +58,14 @@ def set_status_winner(modeladmin, request, queryset):
     for q in queryset:
         if q.status == "2BA":
             event = q.event
-            if event.stock << event.stockW and event.status == "O":
-                event.stockW += 1
+            if event.stock << event.activeParticipants and event.status == "O":
+                
                 event.save()
                 q.status = 'W'
                 var_token = q.notificationToken
                 q.save()
                 var_token = q.notificationToken
                 messages.success(request, 'Se marcó como winner')
-                if event.stock == event.stockW:
-                    event.status = "C"
-                    event.save()
-                
                 try:
                     send_push_message(token=var_token, message='Aprobado! Ahora busca tu beneficio!')
                 except:
@@ -78,7 +74,7 @@ def set_status_winner(modeladmin, request, queryset):
                 # event.status == "C"
                 messages.error(request, 'Evento concluido')
         else:
-            messages.error(request, 'Relación ya marcada como ganadora')
+            messages.error(request, 'Relación ya finalizada')
 
 
 def set_status_refused(modeladmin, request, queryset):
@@ -91,12 +87,12 @@ def set_status_finished(modeladmin, request, queryset):
             q.save()
             # var_token = q. notificationToken
             # send_push_message(token=var_token, message='Ganaste' )
-            messages.success(request, 'Se marcó como pagada')
+            messages.success(request, 'Se marcó como finalizada')
         else:
             messages.error(request, 'Relación no ganadora')
 
 
-class postrelationsadmin(admin.ModelAdmin):
+class PostAdmin(admin.ModelAdmin):
     list_filter = ('status',)
     list_display = ('event', 'instaaccount', 'status', 'createTime')
     actions = [set_status_winner, set_status_refused, set_status_finished]
@@ -106,6 +102,6 @@ class InstaStoryPublicationAdmin(admin.ModelAdmin):
     list_filter = ('person',)
     list_display = ('person', )
 
-admin.site.register(eventpost)
-admin.site.register(postrelations, postrelationsadmin)
+admin.site.register(Event)
+admin.site.register(Post, PostAdmin)
 admin.site.register(InstaStoryPublication, InstaStoryPublicationAdmin)

@@ -2,7 +2,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import Http404, get_object_or_404, redirect, render
 
 from .forms import EventoModelForm
-from .models import eventpost
+from .models import Event
 
 from django.conf import settings
 
@@ -10,7 +10,7 @@ from django.conf import settings
 @staff_member_required
 def eventpost_alldetail_view(request):
     """ List ALL existing events """
-    query = eventpost.objects.all()
+    query = Event.objects.all()
     template_name = 'eventos/alldetail_view.html'
     cant_de_posts = query.count()
     if cant_de_posts == 0:
@@ -26,10 +26,10 @@ def eventpost_alldetail_view(request):
 @staff_member_required
 def eventpost_event_view(request, slug):
     """ Gets a single event denoted by its slug """
-    event = get_object_or_404(eventpost, slug=slug)
+    event = get_object_or_404(Event, slug=slug)
     template_name = 'eventos/event_view.html'
     users = event.users.all()
-    post_relations = event.postrelations_set.all()
+    post_relations = event.postelations_set.all()
     story_list = []
     for post_relation in post_relations:
         story_list.append(post_relation.story.image)
@@ -60,7 +60,7 @@ def blog_post_create_view(request):
 @staff_member_required
 def blog_post_update_view(request, slug):
     """ Updates an event denoted by its slug """
-    event = eventpost.objects.get(slug=slug)
+    event = Event.objects.get(slug=slug)
     if event is None:
         raise Http404
     form = EventoModelForm(request.POST or None, instance=event)
@@ -77,7 +77,7 @@ def blog_post_update_view(request, slug):
 @staff_member_required
 def blog_post_delete_view(request, slug):
     """ Deletes an event denoted by its slug """
-    event = get_object_or_404(eventpost, slug=slug)
+    event = get_object_or_404(Event, slug=slug)
     if request.method == "POST":
         event.delete()
         return redirect("/eventos/")

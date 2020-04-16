@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from accounts.models import user, EmailConfirmed
+from accounts.models import User, EmailConfirmed
 
 
 # Create your tests here.
@@ -19,7 +19,7 @@ class ApiAccountRegistrationTests(APITestCase):
             "email" : "test@test.com",
             "first_name" : "test",
             "last_name" : "case",
-            "instaaccount" : "@test",
+            "instaAccount" : "@test",
             "birth_date" : timezone.datetime(1997, 1, 23, 00, 00, 00, 00),
             "password" : "testpassword",
             "password2" : "testpassword"
