@@ -37,7 +37,7 @@ class CommentSerializer(serializers.Serializer):
 class PostSerializer(serializers.ModelSerializer):
 
     instaaccount = serializers.SerializerMethodField('get_instaaccount_from_person')
-    eventTitle = serializers.SerializerMethodField('get_eventTitle_from_event')
+    eventTitle = serializers.SerializerMethodField('get_event_title_from_event')
     eventStatus = serializers.SerializerMethodField('get_event_status')
     eventId = serializers.SerializerMethodField('get_event_id_from_event')
 
@@ -45,13 +45,13 @@ class PostSerializer(serializers.ModelSerializer):
         instaaccount = Post.person.profile.instaaccount
         return instaaccount
 
-    def get_eventTitle_from_event(self, postrelations):
-        eventTitle = Post.event.title
-        return eventTitle
+    def get_event_title_from_event(self, postrelations):
+        event_title = Post.event.title
+        return event_title
 
     def get_event_id_from_event(self, postrelations):
-        eventId = Post.event.pk
-        return eventId
+        event_id = Post.event.pk
+        return event_id
 
     def get_event_status(self, postrelations):
         eventstatus = Post.event.status

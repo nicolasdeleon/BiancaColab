@@ -125,7 +125,7 @@ def api_addUser_Event_view(request):
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'POST':
-        if event.stock << event.activeParticipants and event.status == "O":
+        if event.stock > event.activeParticipants and event.status == "O":
             try:
                 newPost = Post.objects.get(person=user, event=event)
                 data['response'] = 'Error'
