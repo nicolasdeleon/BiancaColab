@@ -6,7 +6,7 @@ from eventos.models import Event, Post
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ['title', 'pk', 'status','benefitDescription']
+        fields = ['title', 'pk', 'status', 'eventType', 'benefitDescription']
 
 
 class PostSerializer(serializers.ModelSerializer):
