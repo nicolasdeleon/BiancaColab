@@ -202,7 +202,7 @@ class ChangePasswordView(UpdateAPIView):
     authentication_classes = (TokenAuthentication,)
 
     def get_object(self, queryset=None):
-        obj = self.request.User
+        obj = self.request.user
         return obj
 
     def update(self, request, *args, **kwargs):
