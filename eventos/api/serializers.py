@@ -17,7 +17,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['createTime', 'status', 'event']
+        fields = ['createTime', 'status', 'event', 'data4Company']
 
 
 class EventsSerializer(serializers.ModelSerializer):
