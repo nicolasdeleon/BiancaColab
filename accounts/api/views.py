@@ -236,6 +236,8 @@ class ChangePasswordView(UpdateAPIView):
 
 EMAIL_ADDRESS = "support@biancaapp.com"
 EMAIL_PASSWORD = "Bianca3872"
+EMAIL_ADDRESS2 = "flororsi@gmail.com" #ACA HAY Q PONER LA CUENTA DE SUPPORT DE BIANCA Y DARLE LOS PERMISOS CORRESPONDIENTES
+EMAIL_PASSWORD2 = "tieieqpzliugmcdb"
 
 @api_view(['POST', ])
 @permission_classes((IsAuthenticated, ))
@@ -253,20 +255,15 @@ def send_feedback_view(request):
     puntaje_atencion = request.data.get('puntaje_atencion')
     puntaje_pago = request.data.get('puntaje_pago')
     puntaje_general = request.data.get('puntaje_general')
-
     with smtplib.SMTP('smtp-relay.gmail.com', 587) as smtp:
         smtp.ehlo()
         smtp.starttls()
         smtp.ehlo()
 
         smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        subject = f'Feedback, {user.full_name}'
 
-        if puntaje_promedio <= 3:
-            subject = f'Feedback, {User.full_name}, MAL'
-        else:
-            subject = f'Feedback, {User.full_name}, BIEN'
-
-        body = f'{User.full_name} te te graduo asi..\nFluidez: {puntaje_fluidez}\nAtencion: {puntaje_atencion}\nPago: {puntaje_pago}\nGeneral: {puntaje_general}\nObteniendo un promedio: {puntaje_promedio}'
+        body = f'{user.full_name} te graduo asi..\nFluidez: {puntaje_fluidez}\nAtencion: {puntaje_atencion}\nPago: {puntaje_pago}\nGeneral: {puntaje_general}\nObteniendo un promedio: {puntaje_promedio}'
         msg = f'Subject: {subject}\n\n{body}'
 
         context['response'] = "Success"
