@@ -235,9 +235,7 @@ class ChangePasswordView(UpdateAPIView):
 
 
 EMAIL_ADDRESS = "support@biancaapp.com"
-EMAIL_PASSWORD = "Bianca3872"
-EMAIL_ADDRESS2 = "flororsi@gmail.com" #ACA HAY Q PONER LA CUENTA DE SUPPORT DE BIANCA Y DARLE LOS PERMISOS CORRESPONDIENTES
-EMAIL_PASSWORD2 = "tieieqpzliugmcdb"
+EMAIL_PASSWORD = "ndkoeuvetbmxrqgu"
 
 @api_view(['POST', ])
 @permission_classes((IsAuthenticated, ))
