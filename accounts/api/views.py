@@ -253,11 +253,11 @@ def send_feedback_view(request):
     puntaje_atencion = request.data.get('puntaje_atencion')
     puntaje_pago = request.data.get('puntaje_pago')
     puntaje_general = request.data.get('puntaje_general')
+    
     with smtplib.SMTP('smtp-relay.gmail.com', 587) as smtp:
         smtp.ehlo()
         smtp.starttls()
         smtp.ehlo()
-
         smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
         subject = f'Feedback, {user.full_name}'
 
@@ -277,23 +277,36 @@ def reset_password(request):
     email = request.data.get('email')
     try:
         user_aux = User.objects.get(email=email)
-        user_aux.reset_password_token = binascii.hexlify(os.urandom(6)).decode()[0:6]
+        user_aux.reset_password_token = binascii.hexlify(os.urandom(5)).decode()[0:5]
         user_aux.save()
 
         subject = "Password Reset"
-        context = {
+        '''context = {
             "reset_token": User_aux.reset_password_token
         }
-        message = render_to_string("reset_password.html", context)
+        message = render_to_string("reset_password.html", context)'''
+
+        body = f'{user_aux.full_name} tu clave de reseteo es: {user_aux.reset_password_token}. \nPor favor colocarla en la aplicacion para su cambiar su password. \n\nSi usted no solicito el cambio de password por favor desestime el email.'
+        msg = f'{body}'
+        #context['response'] = "Success"
+
 
         from_email = SUPPORT_EMAIL
-
+        '''
         mail = EmailMultiAlternatives(subject, from_email, [User_aux.email], '')
         mail.attach_alternative(message, "text/html")
         mail.send()
+        '''
+        with smtplib.SMTP('smtp-relay.gmail.com', 587) as smtp:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.ehlo()
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            msg = f'Subject: {subject}\n\n{msg}'
 
-        data['response'] = "Success"
-        return Response(data=data)
+            smtp.sendmail(EMAIL_ADDRESS, email, msg)
+            data['response'] = "Success"
+            return Response(data=data)
     except User.DoesNotExist:
         data['response'] = 'Error'
         data['error_message'] = 'No existe el usuario.'
@@ -308,15 +321,16 @@ def reset_password_confirm(request):
     token = request.data.get('token')
     password = request.data.get('password')
     try:
-        user_aux = user.objects.get(email=email, reset_password_token=token)
+        user_aux = User.objects.get(email=email, reset_password_token=token)
         user_aux.set_password(password)
         user_aux.save()
         data["response"] = "Success"
         return Response(data=data)
-    except user.DoesNotExist:
+    except User.DoesNotExist:
         data['response'] = 'Error'
         data['error_message'] = 'No existe el usuario.'
         return Response(data)
+
 
 @api_view(['GET', ])
 @permission_classes((AllowAny, ))
