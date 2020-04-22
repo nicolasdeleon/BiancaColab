@@ -11,6 +11,7 @@ from accounts.api.views import (
     reset_password,
     reset_password_confirm,
     get_accounts_general_info,
+    eventWatch
 )
 
 urlpatterns = [
@@ -23,5 +24,6 @@ urlpatterns = [
     path('reset_password/', reset_password, name='reset_password'),
     # path('reset_password/confirm/', reset_password_confirm.as_view(), name = 'reset_password_confirm'),
     path('reset_password/confirm/', reset_password_confirm, name='reset_password_confirm'),
-    path('generalinfo', get_accounts_general_info, name='accounts_general_info')
+    path('generalinfo', get_accounts_general_info, name='accounts_general_info'),
+    path('eventWatch', eventWatch, name='eventWatch')
 ]

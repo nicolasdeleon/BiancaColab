@@ -24,6 +24,40 @@ from accounts.models import User,Profile,Company
 from backBone_Bianca.settings import SUPPORT_EMAIL
 import logging
 
+@api_view(['POST','GET'])
+@permission_classes((IsAuthenticated,))
+def eventWatch(request):
+    data = {}
+    event_pk = request.data['event_pk']
+    user_aux = request.user
+    #logger=logging.getLogger(__name__)
+    #logger.error(user_aux)
+    profile = None
+    try:
+        profile = Profile.objects.get(user=user_aux)
+    except (Profile.DoesNotExist, user_aux.DoesNotExist):
+        data['response'] = 'Error'
+        data['error_message'] = 'Código incorrecto'
+        return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+  
+    if request.method == 'POST':
+        if len (profile.eventWatchList)  < 40:# and event.status == "O":      
+            contains = Profile.objects.filter(eventWatchList__contains=[event_pk],user = user_aux)
+            if len(contains) > 0:
+                data['response'] = 'Error'
+                data['error_message'] = 'Ya agregado'
+                return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+            else:
+                profile.eventWatchList.append(event_pk)
+                profile.save()
+                data['status'] = 'OK'
+                return Response(data=data)
+        else:
+
+            data['response'] = 'Error'
+            data['error_message'] = 'Limite alcanzado'
+            return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+
 @api_view(['POST', ])
 @permission_classes([])
 @authentication_classes([])
@@ -73,7 +107,7 @@ def api_registration_view(request):
             data['timestamp'] = user.timestamp
             token = Token.objects.get(user=user).key
             data['token'] = token
-            logger.error(data)
+            #logger.error(data)
         else:
             data = serializer.errors
             return Response(data)

@@ -8,7 +8,7 @@ from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
-
+from django.contrib.postgres.fields import ArrayField
 
 class usermanager(BaseUserManager):
     """ Standard User Manager """
@@ -165,8 +165,11 @@ class Profile(models.Model):
     phone = models.CharField(max_length=40, default="", blank=True, null=True)
     instaAccount = models.CharField(max_length=255, unique=True, null=True)
     birthDate = models.DateTimeField(verbose_name="Fecha de nacimiento", blank=True, null=True)
-
-
+    eventWatchList = ArrayField(
+            models.CharField(max_length=30, blank=True, default="0"),
+            size=50
+        )
+    
     def __str__(self):
         return str(self.user)
 
