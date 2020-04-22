@@ -80,5 +80,5 @@ class Post(models.Model):
         except:
          return self.event.title 
 
-    def instaaccount(self):
-        return self.person.profile.instaaccount
+    def instaAccount(self):
+        return self.person.profile.instaAccount

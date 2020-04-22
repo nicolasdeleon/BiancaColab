@@ -53,7 +53,7 @@ def set_status_finished(modeladmin, request, queryset):
 
 class PostAdmin(admin.ModelAdmin):
     list_filter = ('status',)
-    list_display = ('event', 'status', 'createTime')
+    list_display = ('instaAccount', 'event', 'status', 'createTime')
     actions = [set_status_winner, set_status_refused, set_status_finished]
 
 
