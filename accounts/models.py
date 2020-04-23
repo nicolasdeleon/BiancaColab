@@ -107,6 +107,7 @@ class User(AbstractBaseUser):
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     reset_password_token = models.CharField(max_length=22, blank=True, default=0)
 
     # Remplaza el username field de django default como tmb password.
@@ -153,7 +154,8 @@ class Company(models.Model):
     phone = models.CharField(max_length=40, default="", blank=True, null=True)
     instaAccount = models.CharField(max_length=255, unique=True, null=True)
     companyName = models.CharField(max_length=255, blank=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class Profile(models.Model):
     """ Extend extra fields of user rather than change user model """
@@ -165,7 +167,8 @@ class Profile(models.Model):
     phone = models.CharField(max_length=40, default="", blank=True, null=True)
     instaAccount = models.CharField(max_length=255, unique=True, null=True)
     birthDate = models.DateTimeField(verbose_name="Fecha de nacimiento", blank=True, null=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.user)
@@ -175,6 +178,8 @@ class EmailConfirmed(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     activation_key = models.CharField(max_length=200)
     confirmed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.user) + ' - confirmed: ' + str(self.confirmed)
