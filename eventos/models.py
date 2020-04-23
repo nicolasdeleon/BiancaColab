@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-
+from accounts.models import Profile
 USER = settings.AUTH_USER_MODEL
 
 TYPE_EVENT = [
@@ -58,6 +58,7 @@ class Event(models.Model):
 
 class Post(models.Model):
     person = models.ForeignKey(USER, default=1, blank=True, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, blank=True, null=True, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, default=1, on_delete=models.CASCADE)
     createTime = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

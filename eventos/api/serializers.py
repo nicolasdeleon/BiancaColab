@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from eventos.models import Event, Post
+from accounts.models import Profile
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -32,3 +33,18 @@ class EventsSerializer(serializers.ModelSerializer):
             'createTime',
             'status'
             ]
+
+
+class IGListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['instaAccount']
+
+
+class PostIGSerializer(serializers.ModelSerializer):
+    profile = IGListSerializer(
+            read_only=True
+        )
+    class Meta:
+        model = Post
+        fields = ['profile']

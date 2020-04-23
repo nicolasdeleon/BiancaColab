@@ -5,10 +5,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-from eventos.api.serializers import (EventsSerializer, PostSerializer)
+from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
+                                     PostSerializer)
 from eventos.models import Event, Post
 
 
@@ -49,6 +50,7 @@ def api_addUser_Event_view(request):
             except ObjectDoesNotExist:
                 newPost = Post()
                 newPost.person = user
+                newPost.profile = user.profile
                 newPost.event = event
                 newPost.notificationToken = request.data['notificationToken']
                 newPost.save()
@@ -206,14 +208,21 @@ class DeliverActiveContracts(ListAPIView):
         return queryset
 
 
-'''
-Se muestran todos los eventos de a 30 por pÃ¡gina (se setea en settings)
-Se puede enviar filtro por is_finalized para obtener los activos
-En params se coloca:
-    - search = 0 (0 = false del campo is_finalized)
-    - orderering = -create_time
-    - En el caso que sean mas de 30 resultados agregar page = 1,2,3...
-'''
+class DeliverIGforEvent(ListAPIView):
+    """
+    Delivers instagram list for a given event primary key
+    ONLY FOR SUPERUSERS MANTAIN ACCES TO: ml@biancaapp.com
+    """
+    serializer_class = PostIGSerializer
+    permission_classes = (IsAdminUser,)
+    authentication_classes = (TokenAuthentication,)
+    pagination_class = PageNumberPagination
+
+    def get_queryset(self):
+        pk = self.request.query_params['pk']
+        event = Event.objects.get(pk=pk)
+        queryset = Post.objects.filter(event=event).filter(status="2BA")
+        return queryset
 
 
 class DeliverAllEvents(ListAPIView):
@@ -228,13 +237,3 @@ class DeliverAllEvents(ListAPIView):
     def get_queryset(self):
         queryset = Event.objects.exclude(status='C').order_by('-createTime')
         return queryset
-
-
-    '''
-Devuelve TODOS los eventos que ganó el usuario y NO están finalizados.
-    if EventPostsOpen.objects.filter(users=user.pk).exists():
-        postsActives = EventPostsOpen.objects.filter(pk=user.pk)
-        codeWinner =  postsActives[0].code
-    else:
-        codeWinner  = "False" #El usuario no ganó      
-'''

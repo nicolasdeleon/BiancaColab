@@ -8,6 +8,7 @@ from eventos.api.views import (
     DeliverAllEvents,
     api_fin_event_view,
     api_create_Event,
+    DeliverIGforEvent
 )
 
 urlpatterns = [
@@ -20,5 +21,6 @@ urlpatterns = [
     path('all_events/', DeliverAllEvents.as_view(), name="all_events"),
     path('create_event/', api_create_Event, name="create_events"),
     path('finalize_event/', api_fin_event_view, name='finalize_event'),
+    path('event2BAIGs/', DeliverIGforEvent.as_view(), name='event2BAIGs')
 
     ]
