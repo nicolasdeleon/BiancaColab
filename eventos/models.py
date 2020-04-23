@@ -27,6 +27,8 @@ STATUS_POST = [
 class InstaStoryPublication(models.Model):
     person = models.ForeignKey(USER, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='Events_Users_Storys/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         # TODO: CHECK !!!!!!
@@ -40,7 +42,8 @@ class Event(models.Model):
     image = models.ImageField(upload_to='Event_Image/', blank=True, null=True)
     slug = models.SlugField(default=id(True), max_length=255, unique=True)
     description = models.CharField(null=True, blank=True, max_length=255, verbose_name="Descripción")
-    createTime = models.DateTimeField(auto_now=True)
+    createTime = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     posts = models.ManyToManyField(InstaStoryPublication, blank=True, verbose_name="publicaciones")
     usersWinners = models.ManyToManyField(USER, blank=True, verbose_name="list of users Winners", related_name="+")
     status = models.CharField(choices=STATUS_EVENT, default="2BO", max_length=3)
@@ -56,7 +59,8 @@ class Event(models.Model):
 class Post(models.Model):
     person = models.ForeignKey(USER, default=1, blank=True, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, default=1, on_delete=models.CASCADE)
-    createTime = models.DateTimeField(auto_now=True)
+    createTime = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(choices=STATUS_POST, default="2BA", max_length=3)
     notificationToken = models.CharField(max_length=255, blank=True, null=True)
     instagramStory = models.ForeignKey(InstaStoryPublication, blank=True, null=True, on_delete=models.SET_NULL)
@@ -76,9 +80,9 @@ class Post(models.Model):
 
     def __str__(self):
         try:
-         return self.event.title + ' - ' + self.person.profile.instaaccount
+            return self.event.title + ' - ' + self.person.profile.instaAccount
         except:
-         return self.event.title 
+            return self.event.title 
 
     def instaAccount(self):
         return self.person.profile.instaAccount
