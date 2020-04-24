@@ -126,7 +126,6 @@ class ObtainAuthTokenView(APIView):
                 context['active'] = User.active
                 context['staff'] = User.staff
                 context['admin'] = User.admin
-                #context['instaaccount'] = User.instaaccount
                 context['timestamp'] = User.timestamp
                 context['token'] = token.key
         else:
@@ -149,18 +148,16 @@ def account_properties_view(request):
         return Response(context, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-	    try:
-	        profileAux = Profile.objects.get(user=user)
-	        context['email'] = user.email        	
-	        context['full_name'] = user.email
-	        context['instaAccount'] = profileAux.instaAccount
-	    except Profile.DoesNotExist:
-	        context['response'] = 'Error'
-	        context['error_message'] = 'Profile does not exist'
-	        return Response(context, status=status.HTTP_404_NOT_FOUND)
+        try:
+            profileAux = Profile.objects.get(user=user)
+            context['email'] = user.email        	
+            context['full_name'] = user.email
+            context['instaAccount'] = profileAux.instaAccount
+        except Profile.DoesNotExist:
+            context['response'] = 'Error'
+            context['error_message'] = 'Profile does not exist'
+            return Response(context, status=status.HTTP_404_NOT_FOUND)
 
-    	
-    #serializer = AccountPropertiesSerializer(user)
     return Response(context)
 
 # Account update properties
@@ -169,29 +166,18 @@ def account_properties_view(request):
 def update_account_view(request):
     context = {}
     if request.method == 'PUT':
-	    try:
-        	user = request.user
-        	profileAux = Profile.objects.get(user=user)
-        	profileAux.instaAccount = request.data.get('instaAccount')
-        	profileAux.save()
-        	context['response'] = 'InstaAccount successfully changed'
-        	return Response(context, status=status.HTTP_200_OK)
+        try:
+            user = request.user
+            profileAux = Profile.objects.get(user=user)
+            profileAux.instaAccount = request.data.get('instaAccount')
+            profileAux.save()
+            context['response'] = 'InstaAccount successfully changed'
+            return Response(context, status=status.HTTP_200_OK)
 
-	    except User.DoesNotExist:
-	    	context['response'] = 'Error'
-	    	context['error_message'] = 'User does not exist'
-	    	return Response(context, status=status.HTTP_404_NOT_FOUND)
-
-    #if request.method == 'PUT':
-    #    serializer = AccountPropertiesSerializer(User, data=request.data)
-    #    data = {}
-    #    if serializer.is_valid():
-    #        serializer.save()
-    #        data['response'] = 'Account update success'
-    #        return Response(data=data)
-    #    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+        except User.DoesNotExist:
+            context['response'] = 'Error'
+            context['error_message'] = 'User does not exist'
+            return Response(context, status=status.HTTP_404_NOT_FOUND)
 
 
 class ChangePasswordView(UpdateAPIView):
@@ -340,3 +326,36 @@ def get_accounts_general_info(request):
     number_of_users = len(User.objects.all())
     data['number_of_users'] = number_of_users
     return Response(data)
+
+
+@api_view(['POST', 'GET'])
+@permission_classes((IsAuthenticated,))
+def event_watch(request):
+    data = {}
+    event_pk = request.data['event_pk']
+    notToken = request.data['notToken']
+    user_aux = request.user
+    profile = None
+    try:
+        profile = Profile.objects.get(user=user_aux)
+    except (Profile.DoesNotExist, user_aux.DoesNotExist):
+        data['response'] = 'Error'
+        data['error_message'] = 'Código incorrecto'
+        return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'POST':
+        contains = Profile.objects.filter(eventWatchList__contains=[event_pk], user=user_aux)
+        if len(contains) > 0:
+            data['response'] = 'OK'
+            data['message'] = 'Ya agregado'
+            return Response(data=data, status=status.HTTP_200_OK)
+        if len(profile.eventWatchList) < 40:
+            profile.eventWatchList.append(event_pk)
+            profile.notificationToken = notToken
+            profile.save()
+            data['response'] = 'OK'
+            return Response(data=data, status=status.HTTP_200_OK)
+        else:
+            data['response'] = 'Error'
+            data['error_message'] = 'Limite alcanzado'
+            return Response(data=data, status=status.HTTP_405_METHOD_NOT_ALLOWED)

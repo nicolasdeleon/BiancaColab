@@ -8,6 +8,7 @@ from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
+from django.contrib.postgres.fields import ArrayField
 
 
 class usermanager(BaseUserManager):
@@ -169,6 +170,13 @@ class Profile(models.Model):
     birthDate = models.DateTimeField(verbose_name="Fecha de nacimiento", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    eventWatchList = ArrayField(
+            models.CharField(max_length=30, blank=True, default="0"),
+            size=50,
+            blank=True,
+            default=list
+        )
+    notificationToken = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return str(self.user)
