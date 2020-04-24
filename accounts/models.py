@@ -172,7 +172,9 @@ class Profile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     eventWatchList = ArrayField(
             models.CharField(max_length=30, blank=True, default="0"),
-            size=50
+            size=50,
+            blank=True,
+            default=list
         )
     notificationToken = models.CharField(max_length=255, blank=True, null=True)
 
