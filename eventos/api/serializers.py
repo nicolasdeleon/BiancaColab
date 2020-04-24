@@ -31,7 +31,9 @@ class EventsSerializer(serializers.ModelSerializer):
             'image',
             'description',
             'createTime',
-            'status'
+            'status',
+            'benefitDescription',
+            'eventType'
             ]
 
 
