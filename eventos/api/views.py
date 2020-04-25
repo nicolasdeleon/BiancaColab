@@ -1,3 +1,4 @@
+import smtplib
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
@@ -33,6 +34,8 @@ def api_addUser_Event_view(request):
     data = {}
     code = request.data['pk']
     user = request.user
+    EMAIL_ADDRESS = "support@biancaapp.com"
+    EMAIL_PASSWORD = "ndkoeuvetbmxrqgu"
     try:
         event = Event.objects.get(pk=code)
     except (Event.DoesNotExist, user.DoesNotExist):
@@ -56,6 +59,17 @@ def api_addUser_Event_view(request):
                 newPost.save()
                 event.activeParticipants += 1
                 event.save()
+                # --------- Sending mail to us@biancaapp.com ------------------
+                with smtplib.SMTP('smtp-relay.gmail.com', 587) as smtp:
+                    smtp.ehlo()
+                    smtp.starttls()
+                    smtp.ehlo()
+                    smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+                    subject = f'New post: {user.profile.instaAccount}'
+                    body = f'{user.full_name} ha realizado {event.description} con su cuenta de instagram: {user.profile.instaAccount}. Para valdiar, entrar a https://biancaapp-ndlc.herokuapp.com/admin/eventos/post/'
+                    msg = f'Subject: {subject}\n\n{body}'
+                    smtp.sendmail(EMAIL_ADDRESS, EMAIL_ADDRESS, msg)
+                # --------------------------------------------------------------
                 data["success"] = "users belong to the event"
                 if event.stock == event.activeParticipants:
                     event.status = "F"
