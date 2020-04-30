@@ -7,7 +7,7 @@ from accounts.models import Profile
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ['title', 'pk', 'status', 'eventType', 'benefitDescription']
+        fields = ['title', 'pk', 'status', 'eventType', 'benefitDescription', 'image']
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -18,7 +18,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['createTime', 'status', 'event', 'data4Company']
+        fields = ['createTime', 'status', 'event', 'data4Company', 'receivedBenefit']
 
 
 class EventsSerializer(serializers.ModelSerializer):
