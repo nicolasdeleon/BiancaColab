@@ -27,7 +27,7 @@ def set_status_winner(modeladmin, request, queryset):
                 var_token = q.notificationToken
                 messages.success(request, 'Se marcó como winner')
                 try:
-                    send_push_message(token=var_token, message='¡Aprobado! Completa el último paso para recibir tu beneficio')
+                    send_push_message(token=var_token, message='Felicidades! Ingresa y completa el último paso para recibir tu beneficio')
                 except:
                     return
             else:
