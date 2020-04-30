@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 from accounts.models import Profile
+from django.contrib.postgres.fields import ArrayField
+
 USER = settings.AUTH_USER_MODEL
 
 TYPE_EVENT = [
@@ -51,6 +53,13 @@ class Event(models.Model):
     scoring = models.IntegerField(default=0)
     activeParticipants = models.IntegerField(default=0)
     benefitDescription = models.CharField(null=True, blank=True, max_length=255, verbose_name="How to retrieve benefit")
+    tags = ArrayField(
+            models.CharField(max_length=30, blank=True, default="0"),
+            size=50,
+            blank=True,
+            default=list
+        )
+
 
     def __str__(self):
         return self.title
@@ -65,7 +74,8 @@ class Post(models.Model):
     status = models.CharField(choices=STATUS_POST, default="2BA", max_length=3)
     notificationToken = models.CharField(max_length=255, blank=True, null=True)
     instagramStory = models.ForeignKey(InstaStoryPublication, blank=True, null=True, on_delete=models.SET_NULL)
-    data4Company = models.CharField(max_length=26, verbose_name="Data to save", blank=True)
+    data4Company = models.CharField(max_length=26, verbose_name="Data company needs to give benefit", blank=True)
+    receivedBenefit = models.BooleanField(verbose_name="Has received benefit ?", default=False)
 
     class Meta:
         ordering = ['-createTime']
@@ -80,10 +90,7 @@ class Post(models.Model):
         return f"delete/{self.slug}"
 
     def __str__(self):
-        try:
-            return self.event.title + ' - ' + self.person.profile.instaAccount
-        except:
-            return self.event.title 
+        return self.event.title + ' - ' + self.person.profile.instaAccount
 
     def instaAccount(self):
         return self.person.profile.instaAccount
