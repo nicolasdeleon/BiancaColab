@@ -14,17 +14,20 @@ from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
 from eventos.models import Event, Post
 
 
+
+
 @api_view(['POST',])
 @permission_classes((IsAuthenticated,))
 def api_create_Event(request):
     user = request.user
+    print("user")
     st = request.data['status']
     stock = request.data['stock']
     title = request.data['title']
     type = request.data['type']
     newEvent = Event(eventOwner=user, eventType=type, title=title, status=st, stock=stock).save(),
     data={}
-    data["success"] = "create successful"
+    data["success"] = "create event successful"
     return Response(data=data)
 
 
@@ -46,6 +49,8 @@ def api_addUser_Event_view(request):
     if request.method == 'POST':
         if event.stock > event.activeParticipants and event.status == "O":
             try:
+                print(user.email)
+                print(event.title)
                 newPost = Post.objects.get(person=user, event=event)
                 data['response'] = 'Error'
                 data['error_message'] = 'Duplicate association.'
@@ -143,7 +148,7 @@ def api_fin_event_view(request):
         else:
             data['response'] = 'Error'
             data['error_message'] = 'Post is not winner'
-
+            return Response(data=data, status=status.HTTP_404_NOT_FOUND)
     except ObjectDoesNotExist:
         data['response'] = 'Error'
         data['error_message'] = 'EventRelation doesnt exist'
@@ -160,32 +165,14 @@ def api_won_events_view(request):
     bodyResp = {}
     codesW = ""
     codesWArray = []
-    # Busco todos los eventos que tiene el user y no están finalizados.
-    # Person.objects.filter(
-    # ...     group__name='The Beatles',
-    # ...     membership__date_joined__gt=date(1961,1,1))
-    # EventPostsOpen =BarPost.objects.exclude(is_finalized= False).count()
-    # zero = 0
-    # http://mrsenko.com/blog/atodorov/2016/08/30/loading-initial-data-for-many-to-many-fields/
-    # https://stackoverflow.com/questions/24894961/django-meta-many-to-many
-    # if EventPost.objects.filter(is_finalized= False).count()> 0:
     if Event.objects.filter(status="O").count() > 0:
-        # bodyResp["mayor"] ="True"
-        # bodyResp["count "] =  BarPost.objects.filter(is_finalized= False).count()
         PostsOpen = Event.objects.filter(status="O")
-        #bodyResp["barpostOpen"] = barPostsOpen[0].code
-        #i=0
-        #bodyResp["indice0"] = i
         for each in PostsOpen:
-         #   bodyResp["barpostOpeninFOR"] = barPostsOpen[2].code
-         #   bodyResp["indicefor"] = i
             if each.usersWinners.filter(pk=user.pk).exists():
                 codesWArray.append(each.code)
                 #codesW += each.code+","
     else:
         bodyResp["eventsOpen"] = "False"
-    # bodyResp["codeWinner"] = codeWinner
-    # bodyResp["codesW"]   = codesW
     bodyResp["codesWinners"] = codesWArray
     return Response(data=bodyResp)
 

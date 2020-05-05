@@ -63,7 +63,19 @@ class Event(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def create_event(
+                eventOwner,
+                eventType,
+                title,
+                benefitDescription
+                ):
 
+        event.eventOwner = eventOwner
+        event.eventType = eventType
+        event.title = title
+        event.benefitDescription = benefitDescription
+        event.save(using=self._db)
 
 class Post(models.Model):
     person = models.ForeignKey(USER, default=1, blank=True, on_delete=models.CASCADE)

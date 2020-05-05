@@ -123,7 +123,7 @@ CORS_ORIGIN_WHITELIST = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'biancalocal',
+        'NAME': 'postgresv2',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'localhost',

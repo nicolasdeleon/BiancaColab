@@ -332,7 +332,9 @@ def get_accounts_general_info(request):
 @permission_classes((IsAuthenticated,))
 def event_watch(request):
     data = {}
+    print(request.data.get('event_pk'))
     event_pk = request.data['event_pk']
+
     notToken = request.data['notToken']
     user_aux = request.user
     profile = None
