@@ -16,7 +16,7 @@ import dj_database_url
 import django_heroku
 from environs import Env
 
-#Abre y lee la informacion de un archivo .env personal de cada uno
+# Abre y lee la informacion de un archivo .env personal de cada uno
 env = Env()
 env.read_env()
 
@@ -30,9 +30,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'p!z9_bzd_e%0^!i_o&$zj+_*vcd*n*r$6_x7e3td^s9x5vj-h)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#HEROKU CONFIGURES A VARIABLE IN ITS OS KNOWN AS DEBUG_VALUE SO IF IT MATCHES THE VALUE OF IT, IT IS SET
-#WARNING!!!!! ALWAYS SET HEROKU CONFIG VARIABLES TO FALSE
-DEBUG = os.environ.get('DEBUG_VALUE', True) == True
+# HEROKU CONFIGURES A VARIABLE IN ITS OS KNOWN AS DEBUG_VALUE SO IF IT MATCHES THE VALUE OF IT, IT IS SET
+# WARNING!!!!! ALWAYS SET HEROKU CONFIG VARIABLES TO FALSE
+DEBUG_MAP = {
+    "True": True,
+    "False": False
+}
+DEBUG = DEBUG_MAP[os.environ.get("DEBUG_VALUE", "False")]
 
 ALLOWED_HOSTS = ['biancaapp-ndlc.herokuapp.com']
 
@@ -103,7 +107,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backBone_Bianca.wsgi.application'
 
-#CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
        'http://localhost:3000',
        'https://biancaapp.netlify.com'
@@ -160,7 +164,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-#TIME_ZONE = 'UTC'
 TIME_ZONE = 'America/Argentina/Buenos_Aires'
 
 USE_I18N = True
@@ -175,7 +178,7 @@ USE_TZ = True
 
 DEFAULT_FILE_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
 
-DROPBOX_OAUTH2_TOKEN=os.environ.get('DROPBOX_OAUTH2_TOKEN')
+DROPBOX_OAUTH2_TOKEN = os.environ.get('DROPBOX_OAUTH2_TOKEN')
 
 STATIC_URL = '/static/'
 
@@ -193,8 +196,6 @@ STATICFILES_DIR = [
 MEDIA_ROOT = ''
 MEDIA_URL = ''
 
-# Mail configurations
-    # Send grid configurations
 SENDGRID_API_KEY = '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'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey'
@@ -202,7 +203,7 @@ EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    # Personal configurations
+# Personal configurations
 SUPPORT_EMAIL = "Bianca Support Team <support@biancaapp.com>"
 
 django_heroku.settings(locals())

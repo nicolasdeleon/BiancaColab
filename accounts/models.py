@@ -2,28 +2,27 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.postgres.fields import ArrayField
-from django.core.mail import EmailMultiAlternatives, send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
-from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
 
 class usermanager(BaseUserManager):
     """ Standard User Manager """
     def create_user(
-                self,
-                email,
-                first_name,
-                last_name,
-                role=1,
-                password=None,
-                is_active=True,
-                is_staff=False,
-                is_admin=False
-                ):
+        self,
+        email,
+        first_name,
+        last_name,
+        role=1,
+        password=None,
+        is_active=True,
+        is_staff=False,
+        is_admin=False
+    ):
         """ Standard User Fields """
 
         if not email:
@@ -37,7 +36,7 @@ class usermanager(BaseUserManager):
 
         person = self.model(
             email=self.normalize_email(email),
-            )
+        )
         person.first_name = first_name
         person.last_name = last_name
         person.full_name = first_name + ' ' + last_name
@@ -50,13 +49,7 @@ class usermanager(BaseUserManager):
 
         return person
 
-    def create_staffuser(
-                self,
-                email,
-                first_name,
-                last_name,
-                password=None
-                ):
+    def create_staffuser(self, email, first_name, last_name, password=None):
         """ Staff User Fields """
 
         person = self.create_user(
@@ -65,17 +58,11 @@ class usermanager(BaseUserManager):
             last_name=last_name,
             password=password,
             is_staff=True
-            )
+        )
 
         return person
 
-    def create_superuser(
-                self,
-                email,
-                first_name,
-                last_name,
-                password=None,
-                ):
+    def create_superuser(self, email, first_name, last_name, password=None):
         """ Super User / Owner Fields """
 
         person = self.create_user(
@@ -86,7 +73,7 @@ class usermanager(BaseUserManager):
             is_staff=True,
             is_admin=True,
             role=0,
-            )
+        )
         return person
 
 
@@ -97,8 +84,9 @@ ROLES = [
     (3, 'Validator')
 ]
 
+
 class User(AbstractBaseUser):
-    """ Custom user extends abstractBaseUser from django auth.models, see doc. """
+    """ Custom user extends abstractBaseUser from django auth.models"""
     role = models.IntegerField(choices=ROLES, default=1)
     email = models.EmailField(max_length=255, unique=True)
     full_name = models.CharField(max_length=255)
@@ -109,7 +97,11 @@ class User(AbstractBaseUser):
     admin = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    reset_password_token = models.CharField(max_length=22, blank=True, default=0)
+    reset_password_token = models.CharField(
+        max_length=22,
+        blank=True,
+        default=0
+    )
 
     # Remplaza el username field de django default como tmb password.
 
@@ -158,6 +150,7 @@ class Company(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
 class Profile(models.Model):
     """ Extend extra fields of user rather than change user model """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -193,7 +186,7 @@ class EmailConfirmed(models.Model):
         return str(self.user) + ' - confirmed: ' + str(self.confirmed)
 
     def activate_user_email(self):
-        activation_url = "https://biancaapp-ndlc.herokuapp.com/accounts/activate/%s" %(self.activation_key)
+        activation_url = "https://biancaapp-ndlc.herokuapp.com/accounts/activate/%s" % (self.activation_key)
         context = {
             "activation_url": activation_url,
         }
@@ -201,21 +194,16 @@ class EmailConfirmed(models.Model):
         message = render_to_string("activation_message.html", context)
         self.email_user(subject, text_body='', html_body=message, from_email=settings.SUPPORT_EMAIL)
 
-    def email_user(
-                self,
-                subject,
-                text_body,
-                html_body,
-                from_email=None,
-                ):
+    def email_user(self, subject, text_body, html_body, from_email=None):
         msg = EmailMultiAlternatives(
             subject=subject,
             from_email=from_email,
             to=[self.User.email],
             body=text_body
-            )
+        )
         msg.attach_alternative(html_body, "text/html")
         msg.send()
+
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):

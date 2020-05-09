@@ -1,7 +1,8 @@
 from django.conf import settings
-from django.db import models
-from accounts.models import Profile
 from django.contrib.postgres.fields import ArrayField
+from django.db import models
+
+from accounts.models import Profile
 
 USER = settings.AUTH_USER_MODEL
 
@@ -28,7 +29,11 @@ STATUS_POST = [
 
 class InstaStoryPublication(models.Model):
     person = models.ForeignKey(USER, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='Events_Users_Storys/', blank=True, null=True)
+    image = models.ImageField(
+        upload_to='Events_Users_Storys/',
+        blank=True,
+        null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -43,39 +48,83 @@ class Event(models.Model):
     title = models.CharField(max_length=30)
     image = models.ImageField(upload_to='Event_Image/', blank=True, null=True)
     slug = models.SlugField(default=id(True), max_length=255, unique=True)
-    description = models.CharField(null=True, blank=True, max_length=255, verbose_name="Descripción")
+    description = models.CharField(
+        null=True,
+        blank=True,
+        max_length=255,
+        verbose_name="Descripción"
+    )
     createTime = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    posts = models.ManyToManyField(InstaStoryPublication, blank=True, verbose_name="publicaciones")
-    usersWinners = models.ManyToManyField(USER, blank=True, verbose_name="list of users Winners", related_name="+")
-    status = models.CharField(choices=STATUS_EVENT, default="2BO", max_length=3)
+    posts = models.ManyToManyField(
+        InstaStoryPublication,
+        blank=True,
+        verbose_name="publicaciones"
+    )
+    usersWinners = models.ManyToManyField(
+        USER,
+        blank=True,
+        verbose_name="list of users Winners",
+        related_name="+"
+    )
+    status = models.CharField(
+        choices=STATUS_EVENT,
+        default="2BO",
+        max_length=3
+    )
     stock = models.IntegerField(default=50)
     scoring = models.IntegerField(default=0)
     activeParticipants = models.IntegerField(default=0)
-    benefitDescription = models.CharField(null=True, blank=True, max_length=255, verbose_name="How to retrieve benefit")
+    benefitDescription = models.CharField(
+        null=True,
+        blank=True,
+        max_length=255,
+        verbose_name="How to retrieve benefit"
+    )
     tags = ArrayField(
             models.CharField(max_length=30, blank=True, default="0"),
             size=50,
             blank=True,
             default=list
-        )
-
+    )
 
     def __str__(self):
         return self.title
 
 
 class Post(models.Model):
-    person = models.ForeignKey(USER, default=1, blank=True, on_delete=models.CASCADE)
-    profile = models.ForeignKey(Profile, blank=True, null=True, on_delete=models.CASCADE)
+    person = models.ForeignKey(
+        USER,
+        default=1,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+    profile = models.ForeignKey(
+        Profile,
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE
+    )
     event = models.ForeignKey(Event, default=1, on_delete=models.CASCADE)
     createTime = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(choices=STATUS_POST, default="2BA", max_length=3)
     notificationToken = models.CharField(max_length=255, blank=True, null=True)
-    instagramStory = models.ForeignKey(InstaStoryPublication, blank=True, null=True, on_delete=models.SET_NULL)
-    data4Company = models.CharField(max_length=26, verbose_name="Data company needs to give benefit", blank=True)
-    receivedBenefit = models.BooleanField(verbose_name="Has received benefit ?", default=False)
+    instagramStory = models.ForeignKey(
+        InstaStoryPublication,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL
+    )
+    data4Company = models.CharField(
+        max_length=26,
+        verbose_name="Data company needs to give benefit",
+        blank=True
+    )
+    receivedBenefit = models.BooleanField(
+        verbose_name="Has received benefit ?",
+        default=False
+    )
 
     class Meta:
         ordering = ['-createTime']
