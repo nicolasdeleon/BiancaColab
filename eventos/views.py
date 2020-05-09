@@ -4,8 +4,6 @@ from django.shortcuts import Http404, get_object_or_404, redirect, render
 from .forms import EventoModelForm
 from .models import Event
 
-from django.conf import settings
-
 
 @staff_member_required
 def eventpost_alldetail_view(request):
@@ -17,11 +15,12 @@ def eventpost_alldetail_view(request):
         print("ERROR: No hay eventos!")
         raise Http404
     context = {
-        "title" : "Nuestros Eventos",
-        "object_list" : query,
-        "cant_de_posts" : cant_de_posts
+        "title": "Nuestros Eventos",
+        "object_list": query,
+        "cant_de_posts": cant_de_posts
     }
     return render(request, template_name, context)
+
 
 @staff_member_required
 def eventpost_event_view(request, slug):
@@ -33,15 +32,14 @@ def eventpost_event_view(request, slug):
     story_list = []
     for post_relation in post_relations:
         story_list.append(post_relation.story.image)
-    print(story_list[0])
-    print(settings.MEDIA_URL)
     context = {
-        "title" : event.title,
-        "object" : event,
-        "cant_de_activos" : users,
+        "title": event.title,
+        "object": event,
+        "cant_de_activos": users,
         "images": story_list
     }
     return render(request, template_name, context)
+
 
 @staff_member_required
 def blog_post_create_view(request):
@@ -53,9 +51,10 @@ def blog_post_create_view(request):
     template_name = "eventos/create_evento.html"
     context = {
         "title": "create event",
-        'form' : form
+        'form': form
     }
     return render(request, template_name, context)
+
 
 @staff_member_required
 def blog_post_update_view(request, slug):
@@ -68,11 +67,12 @@ def blog_post_update_view(request, slug):
         form.save()
     template_name = "eventos/updateEvento.html"
     context = {
-        'title' : "update event ",
-        'object' : event,
-        'form' : form,
+        'title': "update event ",
+        'object': event,
+        'form': form,
     }
     return render(request, template_name, context)
+
 
 @staff_member_required
 def blog_post_delete_view(request, slug):
@@ -83,7 +83,7 @@ def blog_post_delete_view(request, slug):
         return redirect("/eventos/")
     template_name = "eventos/deleteEvento.html"
     context = {
-        'title' : "delete event",
-        'object' : event,
+        'title': "delete event",
+        'object': event,
     }
     return render(request, template_name, context)

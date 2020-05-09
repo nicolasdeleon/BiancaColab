@@ -1,8 +1,6 @@
 from django.contrib import admin, messages
-from exponent_server_sdk import (DeviceNotRegisteredError, PushClient,
-                                 PushMessage, PushResponseError,
+from exponent_server_sdk import (PushClient, PushMessage,
                                  PushServerError)
-from requests.exceptions import ConnectionError, HTTPError
 
 from .models import Event, InstaStoryPublication, Post
 from import_export import resources
@@ -19,8 +17,10 @@ def send_push_message(token, message, extra=None):
         response = PushClient().publish(
             PushMessage(to=token,
                         body=message))
+        return response
     except PushServerError as exc:
-        raise
+        raise exc
+
 
 def set_status_winner(modeladmin, request, queryset):
     for q in queryset:
@@ -34,9 +34,13 @@ def set_status_winner(modeladmin, request, queryset):
                 var_token = q.notificationToken
                 messages.success(request, 'Se marcó como winner')
                 try:
-                    send_push_message(token=var_token, message='Felicidades! Ingresa y completa el último paso para recibir tu beneficio')
-                except:
-                    return
+                    send_push_message(
+                        token=var_token,
+                        message='Felicidades! Ingresa y \
+                        completá el último paso para recibir tu beneficio'
+                    )
+                except PushServerError as exc:
+                    messages.error(request, str(exc))
             else:
                 messages.error(request, 'Evento concluido')
         else:
@@ -45,6 +49,7 @@ def set_status_winner(modeladmin, request, queryset):
 
 def set_status_refused(modeladmin, request, queryset):
     queryset.update(status='R')
+
 
 def set_status_finished(modeladmin, request, queryset):
     for q in queryset:
@@ -68,6 +73,7 @@ class PostAdmin(ImportExportModelAdmin,admin.ModelAdmin):
 class InstaStoryPublicationAdmin(admin.ModelAdmin):
     list_filter = ('person',)
     list_display = ('person', )
+
 
 admin.site.register(Event)
 admin.site.register(Post, PostAdmin)

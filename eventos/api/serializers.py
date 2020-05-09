@@ -14,7 +14,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     event = EventSerializer(
         read_only=True
-        )
+    )
 
     class Meta:
         model = Post
@@ -34,7 +34,7 @@ class EventsSerializer(serializers.ModelSerializer):
             'status',
             'benefitDescription',
             'eventType'
-            ]
+        ]
 
 
 class IGListSerializer(serializers.ModelSerializer):
@@ -44,9 +44,11 @@ class IGListSerializer(serializers.ModelSerializer):
 
 
 class PostIGSerializer(serializers.ModelSerializer):
+
     profile = IGListSerializer(
             read_only=True
         )
+
     class Meta:
         model = Post
         fields = ['profile']
