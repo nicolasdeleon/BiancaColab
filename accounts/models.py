@@ -116,7 +116,7 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         """ User object name """
-        return self.email
+        return str(self.email)
 
     def get_full_name(self):
         """ References user full name """
