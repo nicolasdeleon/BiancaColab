@@ -19,7 +19,12 @@ jobs:
           command: python manage.py test
   lint_python:
     docker:
-    - image: python:3.7
+    - image: circleci/python:3.7.3  # primary container for the build job
+    - image: postgres:10
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_DB: circle_test
+        POSTGRES_HOST_AUTH_METHOD: trust
     steps:
     - checkout
     - run:
