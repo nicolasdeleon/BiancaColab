@@ -4,8 +4,8 @@ from django.urls import path
 from accounts.api.views import (
     api_registration_view,
     ObtainAuthTokenView,
-	account_properties_view,
-	update_account_view,
+    account_properties_view,
+    update_account_view,
     ChangePasswordView,
     send_feedback_view,
     reset_password,

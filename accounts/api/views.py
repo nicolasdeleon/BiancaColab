@@ -20,15 +20,16 @@ from rest_framework.views import APIView
 from accounts.api.serializers import (AccountPropertiesSerializer,
                                       ChangePasswordSerializer,
                                       RegistrationSerializer)
-from accounts.models import User,Profile,Company
+from accounts.models import User, Profile, Company
 from backBone_Bianca.settings import SUPPORT_EMAIL
 import logging
+
 
 @api_view(['POST', ])
 @permission_classes([])
 @authentication_classes([])
 def api_registration_view(request):
-    logger=logging.getLogger(__name__)
+    logger = logging.getLogger(__name__)
     if request.method == 'POST':
         data = {}
         email = request.data.get('email')
@@ -39,7 +40,7 @@ def api_registration_view(request):
             return Response(data)
 
         instaAccount = request.data.get('instaAccount')
-        if validate_instaacount(instaAccount) is not None: # TODO: Hay que corregir la funcion validate_instaacount()
+        if validate_instaacount(instaAccount) is not None:  # TODO: Hay que corregir la funcion validate_instaacount()
             data['error_message'] = 'That instagram account is already in use.'
             data['response'] = 'Error'
             return Response(data)
@@ -52,15 +53,24 @@ def api_registration_view(request):
             return Response(data)
 
         if serializer.is_valid():
-           
+
             user = serializer.save()
-            if (role=='2'):
-              company = Company(user=user,instaAccount=request.data.get('instaAccount'),phone=request.data.get('phone')).save()
-            elif(role=='1'):
-               if (request.data.get('phone') is None):
-                 profile = Profile(user=user,instaAccount=request.data.get('instaAccount')).save()
-               else:
-                 profile = Profile(user=user,instaAccount=request.data.get('instaAccount'),phone=request.data.get('phone')).save()
+            if (role == '2'):
+                company = Company(
+                    user=user,
+                    instaAccount=request.data.get('instaAccount'),
+                    phone=request.data.get('phone')
+                )
+                company.save()
+            elif(role == '1'):
+                if (request.data.get('phone') is None):
+                    profile = Profile(
+                        user=user,
+                        instaAccount=request.data.get('instaAccount')
+                    )
+                    profile.save()
+                else:
+                    profile = Profile(user=user, instaAccount=request.data.get('instaAccount'), phone=request.data.get('phone')).save()
             data['response'] = 'user registered successfuly'
             data['email'] = user.email
             data['full_name'] = user.full_name
@@ -69,7 +79,7 @@ def api_registration_view(request):
             data['admin'] = user.admin
             data['instaAccount'] = instaAccount
             data['phone'] = request.data.get('phone')
-            data['role'] = role         
+            data['role'] = role
             data['timestamp'] = user.timestamp
             token = Token.objects.get(user=user).key
             data['token'] = token
@@ -79,24 +89,27 @@ def api_registration_view(request):
             return Response(data)
         return Response(data, status=status.HTTP_201_CREATED)
 
+
 def validate_email(email):
     user_aux = None
-    try:        
+    try:
         user_aux = User.objects.get(email=email)
     except User.DoesNotExist:
         return None
     if User is not None:
         return email
 
+
 def validate_instaacount(instaAccount):
     user_aux = None
     try:
-        user_aux=Profile.objects.get(instaAccount=instaAccount)
-        #user_aux = User.profile.get(instaAccount=instaaccount)
+        user_aux = Profile.objects.get(instaAccount=instaAccount)
+        # user_aux = User.profile.get(instaAccount=instaaccount)
     except Profile.DoesNotExist:
         return None
     if Profile is not None:
         return instaAccount
+
 
 class ObtainAuthTokenView(APIView):
 
@@ -150,7 +163,7 @@ def account_properties_view(request):
     if request.method == 'GET':
         try:
             profileAux = Profile.objects.get(user=user)
-            context['email'] = user.email        	
+            context['email'] = user.email
             context['full_name'] = user.email
             context['instaAccount'] = profileAux.instaAccount
         except Profile.DoesNotExist:
@@ -161,7 +174,7 @@ def account_properties_view(request):
     return Response(context)
 
 # Account update properties
-@api_view(['PUT',])
+@api_view(['PUT'])
 @permission_classes((IsAuthenticated, ))
 def update_account_view(request):
     context = {}
@@ -215,7 +228,7 @@ class ChangePasswordView(UpdateAPIView):
 
             context['response'] = 'OK'
             context['error_message'] = 'Contraseña cambiada con éxito.'
-            return Response({"response":"successfully changed password"}, status=status.HTTP_200_OK)
+            return Response({"response": "successfully changed password"}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -223,7 +236,8 @@ class ChangePasswordView(UpdateAPIView):
 EMAIL_ADDRESS = "support@biancaapp.com"
 EMAIL_PASSWORD = "ndkoeuvetbmxrqgu"
 
-@api_view(['POST', ])
+
+@api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 def send_feedback_view(request):
     context = {}
@@ -239,7 +253,7 @@ def send_feedback_view(request):
     puntaje_atencion = request.data.get('puntaje_atencion')
     puntaje_pago = request.data.get('puntaje_pago')
     puntaje_general = request.data.get('puntaje_general')
-    
+
     with smtplib.SMTP('smtp-relay.gmail.com', 587) as smtp:
         smtp.ehlo()
         smtp.starttls()
@@ -267,22 +281,24 @@ def reset_password(request):
         user_aux.save()
 
         subject = "Password Reset"
-        '''context = {
+        '''
+        context = {
             "reset_token": User_aux.reset_password_token
         }
-        message = render_to_string("reset_password.html", context)'''
+        message = render_to_string("reset_password.html", context)
+        '''
 
         body = f'{user_aux.full_name} tu clave de reseteo es: {user_aux.reset_password_token}. \nPor favor colocarla en la aplicacion para su cambiar su password. \n\nSi usted no solicito el cambio de password por favor desestime el email.'
         msg = f'{body}'
-        #context['response'] = "Success"
-
-
+        # context['response'] = "Success"
         from_email = SUPPORT_EMAIL
+
         '''
         mail = EmailMultiAlternatives(subject, from_email, [User_aux.email], '')
         mail.attach_alternative(message, "text/html")
         mail.send()
         '''
+
         with smtplib.SMTP('smtp-relay.gmail.com', 587) as smtp:
             smtp.ehlo()
             smtp.starttls()

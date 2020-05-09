@@ -6,7 +6,6 @@ from .models import Event
 class EventoModelForm(forms.ModelForm):
     class Meta:
         model = Event
-        # Tengo que mapear los campos de mi modelo que quiera actualizar con el form
         fields = ['title', 'slug', 'description']
 
     def clean_slug(self, *args, **kwargs):

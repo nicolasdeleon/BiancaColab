@@ -6,10 +6,14 @@ from .models import Company, EmailConfirmed, Profile
 
 USER = get_user_model()
 
+
 class UserAdmin(admin.ModelAdmin):
+
     search_fields = ['email']
+
     class Meta:
         model = USER
+
 
 admin.site.register(USER, UserAdmin)
 admin.site.register(Profile)

@@ -17,7 +17,27 @@ jobs:
       - run:
           name: Run tests
           command: python manage.py test
+  lint_python:
+    docker:
+    - image: circleci/python:3.7.3  # primary container for the build job
+    - image: postgres:10
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_DB: circle_test
+        POSTGRES_HOST_AUTH_METHOD: trust
+    steps:
+    - checkout
+    - run:
+        name: Install dependencies
+        command: sudo pip install -r requirements.txt
+    - run:
+        name: Run pylint pycodestyle
+        command: pylint accounts eventos backBone_Bianca
+    - run:
+        name: Run pycodestyle
+        command: pycodestyle accounts eventos backBone_Bianca
 workflows:
   main:
     jobs:
       - build
+      - lint_python

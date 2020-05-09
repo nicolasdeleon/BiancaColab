@@ -6,7 +6,7 @@ from .models import EmailConfirmed
 
 SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
-# Create your views here.
+
 def activation_view(request, activation_key):
     """ This view enables the activation of an account when triggered """
     if SHA1_RE.search(activation_key):
