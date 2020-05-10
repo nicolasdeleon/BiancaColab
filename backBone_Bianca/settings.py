@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'storages',
     'corsheaders',
+    'django_celery_beat',
 ]
 
 REST_FRAMEWORK = {
@@ -127,7 +128,7 @@ CORS_ORIGIN_WHITELIST = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'biancalocal',
+        'NAME': 'postgresv2',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'localhost',
@@ -207,3 +208,23 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 SUPPORT_EMAIL = "Bianca Support Team <support@biancaapp.com>"
 
 django_heroku.settings(locals())
+
+
+from celery.schedules import crontab   
+CELERY_BROKER_URL = 'redis://localhost:6379' 
+CELERY_TIMEZONE = 'Europe/Warsaw'   
+# Let's make things happen 
+CELERY_BEAT_SCHEDULE = {
+ 'send-summary-every-hour': {
+       'task': 'summary',
+        # There are 4 ways we can handle time, read further 
+       'schedule': 3600.0,
+        # If you're using any arguments
+       'args': ('We don’t need any',),
+    },
+    # Executes every Friday at 4pm
+    'send-notification-on-friday-afternoon': { 
+         'task': 'my_app.tasks.send_notification', 
+         'schedule': crontab(hour=16, day_of_week=5),
+        },          
+}
