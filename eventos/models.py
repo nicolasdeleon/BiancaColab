@@ -143,7 +143,3 @@ class Post(models.Model):
 
     def instaAccount(self):
         return self.person.profile.instaAccount
-
-
-    def phone(self):
-        return self.person.profile.phone
