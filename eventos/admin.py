@@ -29,8 +29,7 @@ def set_status_winner(modeladmin, request, queryset):
                 try:
                     send_push_message(
                         token=var_token,
-                        message='Felicidades! Ingresa y \
-                        completá el último paso para recibir tu beneficio'
+                        message='Felicidades! Ingresa y completá el último paso para recibir tu beneficio'
                     )
                 except PushServerError as exc:
                     messages.error(request, str(exc))
