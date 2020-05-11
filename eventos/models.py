@@ -39,7 +39,7 @@ class InstaStoryPublication(models.Model):
 
     def __str__(self):
         # TODO: CHECK !!!!!!
-        return "Instagram story from @" + str(self.person.profile_instaAccount)
+        return "Instagram story from @" + str(self.person.profile.instaAccount)
 
 
 class Event(models.Model):
