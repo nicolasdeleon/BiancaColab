@@ -143,4 +143,3 @@ class Post(models.Model):
 
     def instaAccount(self):
         return self.person.profile.instaAccount
-        

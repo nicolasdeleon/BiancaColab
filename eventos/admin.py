@@ -6,11 +6,13 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from .models import Event, InstaStoryPublication, Post
 
+
 class PostResource(resources.ModelResource):
 
     class Meta:
         model = Post
         fields = ('profile__instaAccount', 'event__title', 'status', 'createTime', 'profile__phone')
+
 
 def send_push_message(token, message, extra=None):
     try:
