@@ -5,6 +5,7 @@ from .models import Event
 
 logger = get_task_logger(__name__)
 
+
 @shared_task
 def close_events():
     logger.info("Task close event started")
@@ -16,4 +17,3 @@ def close_events():
     else:
         return "NO events to close"
     return "Events closed"
-    
