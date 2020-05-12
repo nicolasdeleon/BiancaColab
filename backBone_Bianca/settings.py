@@ -210,7 +210,6 @@ SUPPORT_EMAIL = "Bianca Support Team <support@biancaapp.com>"
 
 django_heroku.settings(locals())
 
-
 # from celery.schedules import crontab
 CELERY_IMPORTS = (
 
@@ -225,19 +224,3 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-# Let's make things happen 
-# CELERY_BEAT_SCHEDULE = {
- # 'send-summary-every-hour': {
- #       'task': 'summary',
- #        # There are 4 ways we can handle time, read further 
- #       'schedule': 60.0,
- #        # If you're using any arguments
- #       'args': ('We don’t need any',),
- #    },
-    # Executes every Friday at 4pm
-# 'send-notification-on-friday-afternoon': { 
-#          'task': 'eventos.tasks.send_notification', 
-#          #'schedule': crontab(hour=18),
-#          'schedule': crontab(minute='*/1'),
-#         },          
-# }
