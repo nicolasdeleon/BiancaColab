@@ -1,4 +1,4 @@
-# tring
+# import string
 
 # from django.contrib.auth.models import User
 # from django.utils.crypto import get_random_string
@@ -19,8 +19,6 @@ from celery.decorators import periodic_task
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from accounts.models import User
-from datetime import datetime
-from .models import Event
 
 logger = get_task_logger(__name__)
 
@@ -31,14 +29,16 @@ logger = get_task_logger(__name__)
 # A periodic task that will run every minute (the symbol "*" means every)
 #@periodic_task(run_every=(crontab(hour="*", minute="*", day_of_week="*")))
 @shared_task
-def close_events():
-    logger.info("Task close event started")
-    if Event.objects.filter(status="O").filter(endDate__lte=datetime.now()).count()>0:
-    	queryset = Event.objects.filter(status="O").filter(endDate__lte=datetime.now())
-    	for each in queryset:
-            each.status="F"
-            each.save()
-    else:
-    	return "NO events to close"
-
-    return "Task close event finished"
+def task_example():
+    logger.info("Task started")
+    # add code)
+    User.objects.create_user(
+            email='crontab@email.com',
+            password='password',
+            first_name="oliver",
+            last_name="twist",
+            role="1"
+        )
+    logger.info("Task finished")
+    print("task_example are working fine.")
+ 

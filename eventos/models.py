@@ -87,6 +87,8 @@ class Event(models.Model):
             blank=True,
             default=list
     )
+    startDate = models.DateTimeField(verbose_name="Inicia", blank=True, null=True)
+    endDate = models.DateTimeField(verbose_name="Finaliza", blank=True, null=True)
 
     def __str__(self):
         return str(self.title)

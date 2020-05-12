@@ -36,7 +36,7 @@ DEBUG_MAP = {
     "True": True,
     "False": False
 }
-DEBUG = DEBUG_MAP[os.environ.get("DEBUG_VALUE", "False")]
+DEBUG = DEBUG_MAP[os.environ.get("DEBUG_VALUE", "True")]
 
 ALLOWED_HOSTS = ['biancaapp-ndlc.herokuapp.com']
 
@@ -86,6 +86,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'backBone_Bianca.urls'
@@ -128,7 +129,7 @@ CORS_ORIGIN_WHITELIST = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgresv2',
+        'NAME': 'biancalocal',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'localhost',
@@ -210,21 +211,33 @@ SUPPORT_EMAIL = "Bianca Support Team <support@biancaapp.com>"
 django_heroku.settings(locals())
 
 
-from celery.schedules import crontab   
-CELERY_BROKER_URL = 'redis://localhost:6379' 
-CELERY_TIMEZONE = 'Europe/Warsaw'   
+# from celery.schedules import crontab
+CELERY_IMPORTS = (
+
+    'backBone_Bianca',
+    'backBone_Bianca.tasks',
+    'eventos.tasks'
+)
+CELERY_BROKER_URL = 'amqp://guest@localhost:5672' 
+CELERY_TIMEZONE = 'America/Argentina/Buenos_Aires'
+# for security reasons, mention the list of accepted content-types (in this case json)
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 # Let's make things happen 
-CELERY_BEAT_SCHEDULE = {
- 'send-summary-every-hour': {
-       'task': 'summary',
-        # There are 4 ways we can handle time, read further 
-       'schedule': 3600.0,
-        # If you're using any arguments
-       'args': ('We don’t need any',),
-    },
+# CELERY_BEAT_SCHEDULE = {
+ # 'send-summary-every-hour': {
+ #       'task': 'summary',
+ #        # There are 4 ways we can handle time, read further 
+ #       'schedule': 60.0,
+ #        # If you're using any arguments
+ #       'args': ('We don’t need any',),
+ #    },
     # Executes every Friday at 4pm
-    'send-notification-on-friday-afternoon': { 
-         'task': 'my_app.tasks.send_notification', 
-         'schedule': crontab(hour=16, day_of_week=5),
-        },          
-}
+# 'send-notification-on-friday-afternoon': { 
+#          'task': 'eventos.tasks.send_notification', 
+#          #'schedule': crontab(hour=18),
+#          'schedule': crontab(minute='*/1'),
+#         },          
+# }
