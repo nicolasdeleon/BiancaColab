@@ -217,7 +217,7 @@ CELERY_IMPORTS = (
     'backBone_Bianca.tasks',
     'eventos.tasks'
 )
-CELERY_BROKER_URL = 'amqp://guest@localhost:5672' 
+CELERY_BROKER_URL = 'amqp://guest@localhost:5672'
 CELERY_TIMEZONE = 'America/Argentina/Buenos_Aires'
 # for security reasons, mention the list of accepted content-types (in this case json)
 CELERY_ACCEPT_CONTENT = ['json']
