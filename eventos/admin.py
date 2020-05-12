@@ -2,7 +2,16 @@ from django.contrib import admin, messages
 from exponent_server_sdk import (PushClient, PushMessage,
                                  PushServerError)
 
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 from .models import Event, InstaStoryPublication, Post
+
+
+class PostResource(resources.ModelResource):
+
+    class Meta:
+        model = Post
+        fields = ('profile__instaAccount', 'event__title', 'status', 'createTime', 'profile__phone')
 
 
 def send_push_message(token, message, extra=None):
@@ -55,10 +64,11 @@ def set_status_finished(modeladmin, request, queryset):
             messages.error(request, 'Relación no ganadora')
 
 
-class PostAdmin(admin.ModelAdmin):
-    list_filter = ('status',)
-    list_display = ('instaAccount', 'event', 'status', 'createTime')
-    actions = [set_status_winner, set_status_refused, set_status_finished]
+class PostAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_filter = ('status', 'event__title', )
+    list_display = ('instaAccount', 'event', 'status', 'createTime', 'data4Company',)
+    actions = [set_status_winner, set_status_refused]
+    resource_class = PostResource
 
 
 class InstaStoryPublicationAdmin(admin.ModelAdmin):
