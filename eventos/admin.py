@@ -11,7 +11,7 @@ class PostResource(resources.ModelResource):
 
     class Meta:
         model = Post
-        fields = ('profile__instaAccount', 'event__title', 'status', 'createTime', 'profile__phone')
+        fields = ('profile__instaAccount', 'event__title', 'status', 'createTime', 'data4Company')
 
 
 def send_push_message(token, message, extra=None):
