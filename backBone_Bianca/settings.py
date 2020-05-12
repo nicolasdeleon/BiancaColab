@@ -36,7 +36,7 @@ DEBUG_MAP = {
     "True": True,
     "False": False
 }
-DEBUG = DEBUG_MAP[os.environ.get("DEBUG_VALUE", "False")]
+DEBUG = DEBUG_MAP[os.environ.get("DEBUG_VALUE", "True")]
 
 ALLOWED_HOSTS = ['biancaapp-ndlc.herokuapp.com']
 
@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'storages',
     'corsheaders',
+    'django_celery_beat',
 ]
 
 REST_FRAMEWORK = {
@@ -85,6 +86,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'backBone_Bianca.urls'
@@ -207,3 +209,18 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 SUPPORT_EMAIL = "Bianca Support Team <support@biancaapp.com>"
 
 django_heroku.settings(locals())
+
+# from celery.schedules import crontab
+CELERY_IMPORTS = (
+
+    'backBone_Bianca',
+    'backBone_Bianca.tasks',
+    'eventos.tasks'
+)
+CELERY_BROKER_URL = 'amqp://guest@localhost:5672'
+CELERY_TIMEZONE = 'America/Argentina/Buenos_Aires'
+# for security reasons, mention the list of accepted content-types (in this case json)
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
