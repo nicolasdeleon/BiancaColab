@@ -22,7 +22,8 @@ def api_create_Event(request):
     stock = request.data['stock']
     title = request.data['title']
     type = request.data['type']
-    newEvent = Event(eventOwner=user, eventType=type, title=title, status=st, stock=stock).save(),
+    newEvent = Event(eventOwner=user, eventType=type, title=title, status=st, stock=stock)
+    newEvent.save()
     data = {}
     data["success"] = "create successful"
     return Response(data=data)
@@ -43,44 +44,44 @@ def api_addUser_Event_view(request):
         data['error_message'] = 'Código incorrecto'
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'POST':
-        if event.stock > event.activeParticipants and event.status == "O":
-            try:
-                newPost = Post.objects.get(person=user, event=event)
-                data['response'] = 'Error'
-                data['error_message'] = 'Duplicate association.'
-
-            except ObjectDoesNotExist:
-                newPost = Post()
-                newPost.person = user
-                newPost.profile = user.profile
-                newPost.event = event
-                newPost.notificationToken = request.data['notificationToken']
-                newPost.save()
-                event.activeParticipants += 1
-                event.save()
-                # --------- Sending mail to us@biancaapp.com ------------------
-                with smtplib.SMTP('smtp-relay.gmail.com', 587) as smtp:
-                    smtp.ehlo()
-                    smtp.starttls()
-                    smtp.ehlo()
-                    smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-                    subject = f'New post: {user.profile.instaAccount}'
-                    body = f'{user.full_name} ha realizado {event.description} con su cuenta de instagram: {user.profile.instaAccount}. Para valdiar, entrar a https://biancaapp-ndlc.herokuapp.com/admin/eventos/post/'
-                    msg = f'Subject: {subject}\n\n{body}'
-                    smtp.sendmail(EMAIL_ADDRESS, EMAIL_ADDRESS, msg)
-                # --------------------------------------------------------------
-                data["success"] = "users belong to the event"
-                if event.stock == event.activeParticipants:
-                    event.status = "F"
-                    event.save()
-            return Response(data=data)
-        else:
-            event.status = "F"
-            event.save()
+    if event.stock > event.activeParticipants and event.status == "O":
+        try:
+            newPost = Post.objects.get(person=user, event=event)
             data['response'] = 'Error'
-            data['error_message'] = 'Evento finalizado'
-            return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+            data['error_message'] = 'Duplicate association.'
+            return Response(data=data)
+
+        except ObjectDoesNotExist:
+            newPost = Post()
+            newPost.person = user
+            newPost.profile = user.profile
+            newPost.event = event
+            newPost.notificationToken = request.data['notificationToken']
+            newPost.save()
+            event.activeParticipants += 1
+            event.save()
+            # --------- Sending mail to us@biancaapp.com ------------------
+            with smtplib.SMTP('smtp-relay.gmail.com', 587) as smtp:
+                smtp.ehlo()
+                smtp.starttls()
+                smtp.ehlo()
+                smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+                subject = f'New post: {user.profile.instaAccount}'
+                body = f'{user.full_name} ha realizado {event.description} con su cuenta de instagram: {user.profile.instaAccount}. Para valdiar, entrar a https://biancaapp-ndlc.herokuapp.com/admin/eventos/post/'
+                msg = f'Subject: {subject}\n\n{body}'
+                smtp.sendmail(EMAIL_ADDRESS, EMAIL_ADDRESS, msg)
+            # --------------------------------------------------------------
+            data["success"] = "users belong to the event"
+            if event.stock == event.activeParticipants:
+                event.status = "F"
+                event.save()
+            return Response(data=data)
+    else:
+        event.status = "F"
+        event.save()
+        data['response'] = 'Error'
+        data['error_message'] = 'Evento finalizado'
+        return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
@@ -151,7 +152,6 @@ def api_fin_event_view(request):
 def api_won_events_view(request):
     user = request.user
     bodyResp = {}
-    codesW = ""
     codesWArray = []
 
     if Event.objects.filter(status="O").count() > 0:

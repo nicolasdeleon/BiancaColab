@@ -47,7 +47,7 @@ class Event(models.Model):
     eventType = models.CharField(choices=TYPE_EVENT, default="A", max_length=3)
     title = models.CharField(max_length=30)
     image = models.ImageField(upload_to='Event_Image/', blank=True, null=True)
-    slug = models.SlugField(default=id(True), max_length=255, unique=True)
+    slug = models.SlugField(max_length=255)
     description = models.CharField(
         null=True,
         blank=True,
@@ -92,6 +92,10 @@ class Event(models.Model):
 
     def __str__(self):
         return str(self.title)
+
+    def save(self, **kwargs):
+        self.slug = "%s %s" % (self.title, self.pk)
+        super(Event, self).save(**kwargs)
 
 
 class Post(models.Model):
