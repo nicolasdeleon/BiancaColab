@@ -29,7 +29,7 @@ class ApiEvenCreateTests(APITestCase):
         self.event.save()
 
     def api_Authentication(self):
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key) 
 
     def test_a_for_create_event(self):
         self.api_Authentication()
