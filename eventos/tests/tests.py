@@ -1,10 +1,8 @@
-from django.test import TestCase
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
-from accounts.models import User, EmailConfirmed, Profile, Company
+from accounts.models import User, EmailConfirmed, Profile
 from eventos.models import Event, Post
-from eventos.admin import set_status_winner
 
 
 class ApiEvenCreateTests(APITestCase):
@@ -20,18 +18,21 @@ class ApiEvenCreateTests(APITestCase):
             last_name="twist",
             role="1"
         )
+
         # THIS SHOULD BE CHANGED IF WE ARE USING CONFIRMATION EMAIL FOR USERS
         self.email_confirmed, _ = EmailConfirmed.objects.get_or_create(user=self.user)
         self.email_confirmed.confirmed = True
         self.email_confirmed.save()
         self.token = Token.objects.get(user=self.user)
         self.profile = Profile(user=self.user, instaAccount="insta").save()
+        self.event = Event(eventOwner=self.user, eventType="A", title="title to watch", status="O")
+        self.event.save()
 
     def api_Authentication(self):
         self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
 
     def test_a_for_create_event(self):
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
+        self.api_Authentication()
         end_point = "/api/eventos/create_event/"
         body = {
             "status": "O",
@@ -43,8 +44,7 @@ class ApiEvenCreateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_b_for_get_events(self):
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
-        self.event = Event(eventOwner=self.user, eventType="A", title="title", status="O").save()
+        self.api_Authentication()
 
         end_point = "/api/eventos/all_events/"
 
@@ -52,8 +52,7 @@ class ApiEvenCreateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_c_for_watch_event(self):
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
-        self.event = Event(eventOwner=self.user, eventType="A", title="title to watch", status="O").save()
+        self.api_Authentication()
 
         end_point = "/api/eventos/all_events/"
         response = self.client.get(end_point)
@@ -67,13 +66,7 @@ class ApiEvenCreateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_d_for_add_user_to_event(self):
-        # self.test_for_get_events(self)
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
-        self.event = Event(eventOwner=self.user, eventType="A", title="title add", status="O").save()
-        end_point = "/api/eventos/all_events/"
-
-        response = self.client.get(end_point)
-
+        self.api_Authentication()
         pk = Event.objects.get(eventOwner=self.user).pk
         end_point = "/api/eventos/adduser"
         body = {
@@ -85,7 +78,7 @@ class ApiEvenCreateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_e_for_fin_event(self):
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
+        self.api_Authentication()
         self.test_d_for_add_user_to_event()
         end_point = "/api/eventos/all_events/"
         response = self.client.get(end_point)

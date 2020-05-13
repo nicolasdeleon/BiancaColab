@@ -1,8 +1,9 @@
 import hashlib
 import random
+
 from rest_framework import serializers
-import logging
-from accounts.models import User, EmailConfirmed, Profile, Company
+
+from accounts.models import Company, EmailConfirmed, Profile, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -91,7 +92,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
             email_confirmed.save()
 
     def save(self):
-        logger = logging.getLogger(__name__)
         new_user = User(
             email=self.validated_data['email'],
             first_name=self.validated_data['first_name'],
@@ -136,7 +136,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 def save(self, Company):
-    logger = logging.getLogger(__name__)
     new_company = Company(Company)
     new_company.save()
 

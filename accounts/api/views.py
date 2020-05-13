@@ -1,12 +1,9 @@
 import binascii
+import logging
 import os
-import random
 import smtplib
 
 from django.contrib.auth import authenticate
-from django.core.mail import EmailMultiAlternatives, send_mail
-from django.db.models.signals import post_save
-from django.template.loader import render_to_string
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -17,77 +14,72 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from accounts.api.serializers import (AccountPropertiesSerializer,
-                                      ChangePasswordSerializer,
-                                      RegistrationSerializer)
-from accounts.models import User, Profile, Company
-from backBone_Bianca.settings import SUPPORT_EMAIL
-import logging
+from accounts.api.serializers import ChangePasswordSerializer, RegistrationSerializer
+from accounts.models import Company, Profile, User
 
 
-@api_view(['POST', ])
+@api_view(['POST'])
 @permission_classes([])
 @authentication_classes([])
 def api_registration_view(request):
     logger = logging.getLogger(__name__)
-    if request.method == 'POST':
-        data = {}
-        email = request.data.get('email')
-        role = request.data.get('role')
-        if validate_email(email) is not None:
-            data['error_message'] = 'That email is already in use.'
-            data['response'] = 'Error'
-            return Response(data)
+    data = {}
+    email = request.data.get('email')
+    role = request.data.get('role')
+    if validate_email(email) is not None:
+        data['error_message'] = 'That email is already in use.'
+        data['response'] = 'Error'
+        return Response(data)
 
-        instaAccount = request.data.get('instaAccount')
-        if validate_instaacount(instaAccount) is not None:  # TODO: Hay que corregir la funcion validate_instaacount()
-            data['error_message'] = 'That instagram account is already in use.'
-            data['response'] = 'Error'
-            return Response(data)
+    instaAccount = request.data.get('instaAccount')
+    if validate_instaacount(instaAccount) is not None:  # TODO: Hay que corregir la funcion validate_instaacount()
+        data['error_message'] = 'That instagram account is already in use.'
+        data['response'] = 'Error'
+        return Response(data)
 
-        serializer = RegistrationSerializer(data=request.data)
+    serializer = RegistrationSerializer(data=request.data)
 
-        if request.data.get('password') != request.data.get('password2'):
-            data['error_message'] = 'Passwords must match'
-            data['response'] = 'Error'
-            return Response(data)
+    if request.data.get('password') != request.data.get('password2'):
+        data['error_message'] = 'Passwords must match'
+        data['response'] = 'Error'
+        return Response(data)
 
-        if serializer.is_valid():
+    if serializer.is_valid():
 
-            user = serializer.save()
-            if (role == '2'):
-                company = Company(
+        user = serializer.save()
+        if (role == '2'):
+            company = Company(
+                user=user,
+                instaAccount=request.data.get('instaAccount'),
+                phone=request.data.get('phone')
+            )
+            company.save()
+        elif(role == '1'):
+            if (request.data.get('phone') is None):
+                profile = Profile(
                     user=user,
-                    instaAccount=request.data.get('instaAccount'),
-                    phone=request.data.get('phone')
+                    instaAccount=request.data.get('instaAccount')
                 )
-                company.save()
-            elif(role == '1'):
-                if (request.data.get('phone') is None):
-                    profile = Profile(
-                        user=user,
-                        instaAccount=request.data.get('instaAccount')
-                    )
-                    profile.save()
-                else:
-                    profile = Profile(user=user, instaAccount=request.data.get('instaAccount'), phone=request.data.get('phone')).save()
-            data['response'] = 'user registered successfuly'
-            data['email'] = user.email
-            data['full_name'] = user.full_name
-            data['active'] = user.active
-            data['staff'] = user.staff
-            data['admin'] = user.admin
-            data['instaAccount'] = instaAccount
-            data['phone'] = request.data.get('phone')
-            data['role'] = role
-            data['timestamp'] = user.timestamp
-            token = Token.objects.get(user=user).key
-            data['token'] = token
-            logger.error(data)
-        else:
-            data = serializer.errors
-            return Response(data)
-        return Response(data, status=status.HTTP_201_CREATED)
+                profile.save()
+            else:
+                profile = Profile(user=user, instaAccount=request.data.get('instaAccount'), phone=request.data.get('phone')).save()
+        data['response'] = 'user registered successfuly'
+        data['email'] = user.email
+        data['full_name'] = user.full_name
+        data['active'] = user.active
+        data['staff'] = user.staff
+        data['admin'] = user.admin
+        data['instaAccount'] = instaAccount
+        data['phone'] = request.data.get('phone')
+        data['role'] = role
+        data['timestamp'] = user.timestamp
+        token = Token.objects.get(user=user).key
+        data['token'] = token
+        logger.error(data)
+    else:
+        data = serializer.errors
+        return Response(data)
+    return Response(data, status=status.HTTP_201_CREATED)
 
 
 def validate_email(email):
@@ -96,19 +88,22 @@ def validate_email(email):
         user_aux = User.objects.get(email=email)
     except User.DoesNotExist:
         return None
-    if User is not None:
+    if user_aux is not None:
         return email
+    else:
+        return None
 
 
 def validate_instaacount(instaAccount):
     user_aux = None
     try:
         user_aux = Profile.objects.get(instaAccount=instaAccount)
-        # user_aux = User.profile.get(instaAccount=instaaccount)
     except Profile.DoesNotExist:
         return None
-    if Profile is not None:
+    if user_aux is not None:
         return instaAccount
+    else:
+        return None
 
 
 class ObtainAuthTokenView(APIView):
@@ -178,19 +173,18 @@ def account_properties_view(request):
 @permission_classes((IsAuthenticated, ))
 def update_account_view(request):
     context = {}
-    if request.method == 'PUT':
-        try:
-            user = request.user
-            profileAux = Profile.objects.get(user=user)
-            profileAux.instaAccount = request.data.get('instaAccount')
-            profileAux.save()
-            context['response'] = 'InstaAccount successfully changed'
-            return Response(context, status=status.HTTP_200_OK)
+    try:
+        user = request.user
+        profileAux = Profile.objects.get(user=user)
+        profileAux.instaAccount = request.data.get('instaAccount')
+        profileAux.save()
+        context['response'] = 'InstaAccount successfully changed'
+        return Response(context, status=status.HTTP_200_OK)
 
-        except User.DoesNotExist:
-            context['response'] = 'Error'
-            context['error_message'] = 'User does not exist'
-            return Response(context, status=status.HTTP_404_NOT_FOUND)
+    except User.DoesNotExist:
+        context['response'] = 'Error'
+        context['error_message'] = 'User does not exist'
+        return Response(context, status=status.HTTP_404_NOT_FOUND)
 
 
 class ChangePasswordView(UpdateAPIView):
@@ -206,11 +200,11 @@ class ChangePasswordView(UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         context = {}
-        self.object = self.get_object()
+        instance = self.get_object()
         serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():
-            if not self.object.check_password(serializer.data.get("old_password")):
+            if not instance.check_password(serializer.data.get("old_password")):
                 context['response'] = 'Error'
                 context['error_message'] = 'Contraseña actual errónea.'
                 return Response(context, status=status.HTTP_400_BAD_REQUEST)
@@ -223,8 +217,8 @@ class ChangePasswordView(UpdateAPIView):
                 context['error_message'] = 'Las nuevas contraseñas deben coincidir.'
                 return Response(context, status=status.HTTP_400_BAD_REQUEST)
 
-            self.object.set_password(serializer.data.get("new_password"))
-            self.object.save()
+            instance.set_password(serializer.data.get("new_password"))
+            instance.save()
 
             context['response'] = 'OK'
             context['error_message'] = 'Contraseña cambiada con éxito.'
@@ -281,23 +275,19 @@ def reset_password(request):
         user_aux.save()
 
         subject = "Password Reset"
-        '''
-        context = {
-            "reset_token": User_aux.reset_password_token
-        }
-        message = render_to_string("reset_password.html", context)
-        '''
+
+        # context = {
+        #    "reset_token": User_aux.reset_password_token
+        # }
+        # message = render_to_string("reset_password.html", context)
 
         body = f'{user_aux.full_name} tu clave de reseteo es: {user_aux.reset_password_token}. \nPor favor colocarla en la aplicacion para su cambiar su password. \n\nSi usted no solicito el cambio de password por favor desestime el email.'
         msg = f'{body}'
         # context['response'] = "Success"
-        from_email = SUPPORT_EMAIL
-
-        '''
-        mail = EmailMultiAlternatives(subject, from_email, [User_aux.email], '')
-        mail.attach_alternative(message, "text/html")
-        mail.send()
-        '''
+        # from_email = SUPPORT_EMAIL
+        # mail = EmailMultiAlternatives(subject, from_email, [User_aux.email], '')
+        # mail.attach_alternative(message, "text/html")
+        # mail.send()
 
         with smtplib.SMTP('smtp-relay.gmail.com', 587) as smtp:
             smtp.ehlo()
@@ -344,7 +334,7 @@ def get_accounts_general_info(request):
     return Response(data)
 
 
-@api_view(['POST', 'GET'])
+@api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 def event_watch(request):
     data = {}
@@ -359,19 +349,18 @@ def event_watch(request):
         data['error_message'] = 'Código incorrecto'
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'POST':
-        contains = Profile.objects.filter(eventWatchList__contains=[event_pk], user=user_aux)
-        if len(contains) > 0:
-            data['response'] = 'OK'
-            data['message'] = 'Ya agregado'
-            return Response(data=data, status=status.HTTP_200_OK)
-        if len(profile.eventWatchList) < 40:
-            profile.eventWatchList.append(event_pk)
-            profile.notificationToken = notToken
-            profile.save()
-            data['response'] = 'OK'
-            return Response(data=data, status=status.HTTP_200_OK)
-        else:
-            data['response'] = 'Error'
-            data['error_message'] = 'Limite alcanzado'
-            return Response(data=data, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    contains = Profile.objects.filter(eventWatchList__contains=[event_pk], user=user_aux)
+    if len(contains) > 0:
+        data['response'] = 'OK'
+        data['message'] = 'Ya agregado'
+        return Response(data=data, status=status.HTTP_200_OK)
+    if len(profile.eventWatchList) < 40:
+        profile.eventWatchList.append(event_pk)
+        profile.notificationToken = notToken
+        profile.save()
+        data['response'] = 'OK'
+        return Response(data=data, status=status.HTTP_200_OK)
+    else:
+        data['response'] = 'Error'
+        data['error_message'] = 'Limite alcanzado'
+        return Response(data=data, status=status.HTTP_405_METHOD_NOT_ALLOWED)
