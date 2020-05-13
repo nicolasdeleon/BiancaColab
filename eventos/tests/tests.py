@@ -29,7 +29,7 @@ class ApiEvenCreateTests(APITestCase):
         self.event.save()
 
     def api_Authentication(self):
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key) 
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
 
     def test_a_for_create_event(self):
         self.api_Authentication()
@@ -41,7 +41,7 @@ class ApiEvenCreateTests(APITestCase):
             "type": "A"
         }
         response = self.client.post(end_point, body)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_b_for_get_events(self):
         self.api_Authentication()
