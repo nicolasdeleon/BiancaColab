@@ -47,7 +47,7 @@ class Event(models.Model):
     eventType = models.CharField(choices=TYPE_EVENT, default="A", max_length=3)
     title = models.CharField(max_length=30)
     image = models.ImageField(upload_to='Event_Image/', blank=True, null=True)
-    slug = models.SlugField(max_length=255)
+    slug = models.SlugField(max_length=255, blank=True)
     description = models.CharField(
         null=True,
         blank=True,
@@ -91,10 +91,10 @@ class Event(models.Model):
     endDate = models.DateTimeField(verbose_name="Finaliza", blank=True, null=True)
 
     def __str__(self):
-        return str(self.title)
+        return str(self.slug)
 
     def save(self, **kwargs):
-        self.slug = "%s %s" % (self.title, self.pk)
+        self.slug = "%s-%s" % (self.title.lower(), self.pk)
         super(Event, self).save(**kwargs)
 
 
