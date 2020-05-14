@@ -166,3 +166,19 @@ class CompanyModelTests(TestCase):
         )
         company_profile = Company.objects.get(user=self.company_user)
         self.assertIsNotNone(company_profile)
+        self.assertEqual(company_profile.phone, "5491162956565")
+        self.assertIsNone(company_profile.instaAccount)
+        self.assertEqual(company_profile.companyName, "Wabi")
+
+    def test_company_profile_double_association(self):
+        with self.assertRaises(IntegrityError):
+            Company.objects.create(
+                user=self.company_user,
+                phone=+5491162956565,
+                companyName="Wabi"
+            )
+            Company.objects.create(
+                user=self.company_user,
+                phone=+5491163256565,
+                companyName="Coca"
+            )
