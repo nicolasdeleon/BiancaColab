@@ -35,7 +35,7 @@ class usermanager(BaseUserManager):
             raise ValueError("Users must have a password")
 
         person = self.model(
-            email=self.normalize_email(email),
+            email=self.normalize_email(email).lower(),
         )
         person.first_name = first_name
         person.last_name = last_name
@@ -57,7 +57,8 @@ class usermanager(BaseUserManager):
             first_name=first_name,
             last_name=last_name,
             password=password,
-            is_staff=True
+            is_staff=True,
+            role=3
         )
 
         return person

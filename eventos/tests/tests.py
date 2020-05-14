@@ -16,7 +16,7 @@ class ApiEvenCreateTests(APITestCase):
             password=self.credentials['password'],
             first_name="oliver",
             last_name="twist",
-            role="1"
+            role=1
         )
 
         # THIS SHOULD BE CHANGED IF WE ARE USING CONFIRMATION EMAIL FOR USERS
@@ -24,7 +24,8 @@ class ApiEvenCreateTests(APITestCase):
         self.email_confirmed.confirmed = True
         self.email_confirmed.save()
         self.token = Token.objects.get(user=self.user)
-        self.profile = Profile(user=self.user, instaAccount="insta").save()
+        self.profile = Profile(user=self.user, instaAccount="insta")
+        self.profile.save()
         self.event = Event(eventOwner=self.user, eventType="A", title="title to watch", status="O")
         self.event.save()
 
