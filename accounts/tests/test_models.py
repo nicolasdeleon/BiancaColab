@@ -1,6 +1,7 @@
+from django.db import IntegrityError
 from django.test import TestCase
 
-from accounts.models import User, Token
+from accounts.models import Company, Token, User
 
 
 class UserModelTests(TestCase):
@@ -26,12 +27,13 @@ class UserModelTests(TestCase):
         )
 
     def test_create_super_user(self):
-        super_user = User.objects.create_superuser(
+        User.objects.create_superuser(
             email="Superuser@gmail.com",
             first_name="johnny",
             last_name="Bravo",
             password="SuPeRhAsHeD"
         )
+        super_user = User.objects.get(email="superuser@gmail.com")
         self.common_user_assertions(
             super_user, "superuser@gmail.com", "johnny", "Bravo", "johnny Bravo"
         )
@@ -41,12 +43,13 @@ class UserModelTests(TestCase):
         self.token_created_assertion(super_user)
 
     def test_create_staff_user(self):
-        admin_user = User.objects.create_staffuser(
+        User.objects.create_staffuser(
             email="Staffuser@gmail.com",
             first_name="Joe",
             last_name="King",
             password="SuPeRhAsHeD2"
         )
+        admin_user = User.objects.get(email="staffuser@gmail.com")
         self.common_user_assertions(
         admin_user, "staffuser@gmail.com", "Joe", "King", "Joe King"
         )
@@ -71,20 +74,21 @@ class UserModelTests(TestCase):
         self.token_created_assertion(base_user)
 
     def create_company_user(self):
-        base_user = User.objects.create_user(
+        User.objects.create_user(
             email="CompanyUser@gmail.com",
             first_name="Obey",
             last_name="Fedex",
             password="PA314lpg",
             role=2
         )
+        company_user = User.objects.get(email="companyuser@gmail.com")
         self.common_user_assertions(
-            base_user, "companyuser@gmail.com", "Obey", "Fedex", "Obey Fedex"
+            company_user, "companyuser@gmail.com", "Obey", "Fedex", "Obey Fedex"
         )
-        self.assertEqual(base_user.is_staff, False)
-        self.assertEqual(base_user.is_admin, False)
-        self.assertEqual(base_user.role, 2)
-        self.token_created_assertion(base_user)
+        self.assertEqual(company_user.is_staff, False)
+        self.assertEqual(company_user.is_admin, False)
+        self.assertEqual(company_user.role, 2)
+        self.token_created_assertion(company_user)
 
     def test_create_user_with_missing_field(self):
         with self.assertRaisesMessage(ValueError, "Users must have a password"):
@@ -122,3 +126,43 @@ class UserModelTests(TestCase):
         self.assertEqual(self.user.is_staff, False)
         self.assertEqual(self.user.is_admin, False)
         self.assertEqual(self.user.is_active, True)
+
+    def test_most_similar_permited_user(self):
+        most_similar_permited_user = User.objects.create(
+            email="classuser2@gmail.com",
+            first_name="Golden",
+            last_name="Retriever",
+            password="WuoffWuoff"
+        )
+        self.assertEqual(User.objects.get(email="classuser2@gmail.com"), most_similar_permited_user)
+        self.assertNotEqual(User.objects.get(email="classuser2@gmail.com"), self.user)
+
+    def test_user_has_to_be_unique(self):
+        with self.assertRaises(IntegrityError):
+            User.objects.create(
+                email="classuser@gmail.com",
+                first_name="Golden",
+                last_name="Retriever",
+                password="WuoffWuoff"
+            )
+
+
+class CompanyModelTests(TestCase):
+
+    def setUp(self):
+        self.company_user = User.objects.create_user(
+            email="CompanyUser@gmail.com",
+            first_name="Wabi",
+            last_name="Casa",
+            password="PA314lpg",
+            role=2
+        )
+
+    def test_company_profile_is_created(self):
+        Company.objects.create(
+            user=self.company_user,
+            phone=+5491162956565,
+            companyName="Wabi"
+        )
+        company_profile = Company.objects.get(user=self.company_user)
+        self.assertIsNotNone(company_profile)
