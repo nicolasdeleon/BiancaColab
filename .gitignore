@@ -176,3 +176,5 @@ package-lock.json
 !.vscode/extensions.json
 
 db/
+
+*.dump
