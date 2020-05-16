@@ -35,13 +35,14 @@ def set_status_winner(modeladmin, request, queryset):
                 q.save()
                 var_token = q.notificationToken
                 messages.success(request, 'Se marcó como winner')
-                try:
-                    send_push_message(
-                        token=var_token,
-                        message='Felicidades! Ingresa y completá el último paso para recibir tu beneficio'
-                    )
-                except PushServerError as exc:
-                    messages.error(request, str(exc))
+                if var_token is not None:
+                    try:
+                        send_push_message(
+                            token=var_token,
+                            message='Felicidades! Ingresa y completá el último paso para recibir tu beneficio'
+                        )
+                    except PushServerError as exc:
+                        messages.error(request, str(exc))
             else:
                 messages.error(request, 'Evento concluido')
         else:
