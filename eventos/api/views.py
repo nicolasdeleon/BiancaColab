@@ -60,6 +60,7 @@ def api_addUser_Event_view(request):
             newPost.save()
             event.activeParticipants += 1
             event.save()
+            
             # --------- Sending mail to us@biancaapp.com ------------------
             with smtplib.SMTP('smtp-relay.gmail.com', 587) as smtp:
                 smtp.ehlo()
@@ -82,6 +83,33 @@ def api_addUser_Event_view(request):
         data['response'] = 'Error'
         data['error_message'] = 'Evento finalizado'
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+
+
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def api_removeUser_Event_view(request):
+    data = {}
+    code = request.data['pk']
+    user = request.user
+    try:
+        event = Event.objects.get(pk=code)
+    except (Event.DoesNotExist, user.DoesNotExist):
+        data['response'] = 'Error'
+        data['error_message'] = 'Event not found.'
+        return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        newPost = Post.objects.get(person=user, event=event, status="2BA")
+        newPost.delete()
+        data['response'] = 'Success'
+        data['error_message'] = 'User sucessfully removed.'
+        return Response(data=data)
+
+    except ObjectDoesNotExist:
+        data['response'] = 'Error'
+        data['error_message'] = 'User does not belong to event or not in status 2BA'
+        return Response(data=data)
 
 
 @api_view(['POST'])
