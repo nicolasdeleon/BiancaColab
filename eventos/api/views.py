@@ -60,7 +60,6 @@ def api_addUser_Event_view(request):
             newPost.save()
             event.activeParticipants += 1
             event.save()
-            
             # --------- Sending mail to us@biancaapp.com ------------------
             with smtplib.SMTP('smtp-relay.gmail.com', 587) as smtp:
                 smtp.ehlo()
@@ -83,7 +82,6 @@ def api_addUser_Event_view(request):
         data['response'] = 'Error'
         data['error_message'] = 'Evento finalizado'
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
-
 
 
 @api_view(['POST'])
