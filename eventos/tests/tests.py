@@ -16,7 +16,7 @@ class ApiEvenCreateTests(APITestCase):
             password=self.credentials['password'],
             first_name="oliver",
             last_name="twist",
-            role="1"
+            role=1
         )
 
         # THIS SHOULD BE CHANGED IF WE ARE USING CONFIRMATION EMAIL FOR USERS
@@ -24,7 +24,8 @@ class ApiEvenCreateTests(APITestCase):
         self.email_confirmed.confirmed = True
         self.email_confirmed.save()
         self.token = Token.objects.get(user=self.user)
-        self.profile = Profile(user=self.user, instaAccount="insta").save()
+        self.profile = Profile(user=self.user, instaAccount="insta")
+        self.profile.save()
         self.event = Event(eventOwner=self.user, eventType="A", title="title to watch", status="O")
         self.event.save()
 
@@ -95,3 +96,66 @@ class ApiEvenCreateTests(APITestCase):
         post = Post.objects.get(person=self.user)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(post.status, "F")
+
+
+class ValidateCupons(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='email',
+            password='password',
+            first_name="oliver",
+            last_name="twist",
+            role="1"
+        )
+        self.profile = Profile.objects.create(user=self.user, instaAccount="insta")
+        self.short_event = Event.objects.create(
+            eventOwner=self.user,
+            eventType="A",
+            title="Evento tipo Local",
+            status="O"
+        )
+        self.short_post = Post.objects.create(
+            person=self.user,
+            profile=self.profile,
+            event=self.short_event,
+            status='W'
+        )
+        self.exchange_code_in_short_event = self.short_post.exchange_code
+        self.long_event = Event.objects.create(
+            eventOwner=self.user,
+            eventType="B",
+            title="Event tipo Wabi",
+            status="O"
+        )
+        self.long_post = Post.objects.create(
+            person=self.user,
+            profile=self.profile,
+            event=self.long_event,
+            status='W'
+        )
+        self.exchange_code_in_long_event = self.long_post.exchange_code
+
+    def test_exchange_code_correct_usage(self):
+        end_point = "/api/eventos/code-validation"
+        body = {
+            'code': self.exchange_code_in_short_event
+        }
+        response = self.client.post(end_point, body)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['success'], "succesfuly exchanged")
+
+        post = Post.objects.get(pk=self.short_post.pk)
+        self.assertEqual(post.status, 'F')
+        self.assertEqual(post.receivedBenefit, True)
+
+    def test_not_finishing_long_event_post(self):
+        end_point = "/api/eventos/code-validation"
+        body = {
+            'code': self.exchange_code_in_long_event
+        }
+        response = self.client.post(end_point, body)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['error'], "Código invalido o ya canjeado")
+        post = Post.objects.get(pk=self.long_post.pk)
+        self.assertEqual(post.status, 'W')
+        self.assertEqual(post.receivedBenefit, False)

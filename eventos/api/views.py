@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
@@ -192,6 +192,27 @@ def api_won_events_view(request):
         bodyResp["eventsOpen"] = "False"
     bodyResp["codesWinners"] = codesWArray
     return Response(data=bodyResp)
+
+
+@api_view(['POST'])
+@permission_classes((AllowAny, ))
+def api_validate_cupon(request):
+    res = {}
+    exchange_code = request.data['code']
+    try:
+        post = Post.objects.get(exchange_code=exchange_code)
+    except (Post.MultipleObjectsReturned, Post.DoesNotExist):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    event = post.event
+    if post and event.eventType == 'A' \
+    and post.receivedBenefit is False and post.status == 'W':
+        post.status = 'F'
+        post.receivedBenefit = True
+        post.save()
+        res["success"] = "succesfuly exchanged"
+    else:
+        res["error"] = "Código invalido o ya canjeado"
+    return Response(data=res)
 
 
 class DeliverActiveContracts(ListAPIView):

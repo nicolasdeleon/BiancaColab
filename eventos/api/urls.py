@@ -10,6 +10,7 @@ from eventos.api.views import (
     api_create_Event,
     DeliverIGforEvent,
     api_removeUser_Event_view,
+    api_validate_cupon,
 )
 
 urlpatterns = [
@@ -22,4 +23,5 @@ urlpatterns = [
     path('finalize_event/', api_fin_event_view, name='finalize_event'),
     path('event2BAIGs/', DeliverIGforEvent.as_view(), name='event2BAIGs'),
     path('removeUser', api_removeUser_Event_view, name='removeUuser'),
+    path('code-validation', api_validate_cupon, name='code-validation'),
 ]
