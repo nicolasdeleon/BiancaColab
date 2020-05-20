@@ -1,6 +1,9 @@
+import secrets
+
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models.signals import post_save
 
 from accounts.models import Profile
 
@@ -131,6 +134,12 @@ class Post(models.Model):
         verbose_name="Has received benefit ?",
         default=False
     )
+    exchange_code = models.CharField(
+        verbose_name="Code to recieve benefit",
+        max_length=8,
+        blank=True,
+        null=True
+    )
 
     class Meta:
         ordering = ['-createTime']
@@ -149,3 +158,15 @@ class Post(models.Model):
 
     def instaAccount(self):
         return self.person.profile.instaAccount
+
+    @classmethod
+    def post_create(cls, sender, instance, created, *args, **kwargs):
+        if created:
+            id_string = str(instance.id)
+            upper_alpha = "ABCDEFGHJKLMNPQRSTVWXYZ"
+            random_str = "".join(secrets.choice(upper_alpha) for i in range(8))
+            instance.exchange_code = (random_str + id_string)[-8:]
+            instance.save()
+
+
+post_save.connect(Post.post_create, sender=Post)
