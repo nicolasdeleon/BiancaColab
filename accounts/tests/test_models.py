@@ -13,7 +13,6 @@ class UserModelTests(TestCase):
         self.assertEqual(instance.full_name, full_name)
         self.assertEqual(instance.is_active, True)
 
-
     def token_created_assertion(self, instance):
         token = Token.objects.get(user=instance)
         self.assertIsNotNone(token)

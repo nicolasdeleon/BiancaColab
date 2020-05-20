@@ -53,7 +53,6 @@ class ApiAccountAuthenticationTests(APITestCase):
         self.token = Token.objects.get(user=self.user)
         self.api_authentication()
 
-
     def test_log_in_and_response_token(self):
         end_point = "/api/accounts/login"
         log_in_data = {
