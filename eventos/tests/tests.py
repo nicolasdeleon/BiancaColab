@@ -155,7 +155,7 @@ class ValidateCupons(APITestCase):
         }
         response = self.client.post(end_point, body)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['error'], "Couldn't exchange")
+        self.assertEqual(response.data['error'], "Código invalido o ya canjeado")
         post = Post.objects.get(pk=self.long_post.pk)
         self.assertEqual(post.status, 'W')
         self.assertEqual(post.receivedBenefit, False)
