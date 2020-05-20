@@ -29,14 +29,16 @@ def api_create_Event(request):
     return Response(data=data)
 
 
+EMAIL_ADDRESS = "support@biancaapp.com"
+EMAIL_PASSWORD = "ndkoeuvetbmxrqgu"
+
+
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 def api_addUser_Event_view(request):
     data = {}
     code = request.data['pk']
     user = request.user
-    EMAIL_ADDRESS = "support@biancaapp.com"
-    EMAIL_PASSWORD = "ndkoeuvetbmxrqgu"
     try:
         event = Event.objects.get(pk=code)
     except (Event.DoesNotExist, user.DoesNotExist):
@@ -70,6 +72,7 @@ def api_addUser_Event_view(request):
                 body = f'{user.full_name} ha realizado {event.description} con su cuenta de instagram: {user.profile.instaAccount}. Para valdiar, entrar a https://biancaapp-ndlc.herokuapp.com/admin/eventos/post/'
                 msg = f'Subject: {subject}\n\n{body}'
                 smtp.sendmail(EMAIL_ADDRESS, EMAIL_ADDRESS, msg)
+
             # --------------------------------------------------------------
             data["success"] = "users belong to the event"
             if event.stock == event.activeParticipants:
@@ -82,6 +85,32 @@ def api_addUser_Event_view(request):
         data['response'] = 'Error'
         data['error_message'] = 'Evento finalizado'
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def api_removeUser_Event_view(request):
+    data = {}
+    code = request.data['pk']
+    user = request.user
+    try:
+        event = Event.objects.get(pk=code)
+    except (Event.DoesNotExist, user.DoesNotExist):
+        data['response'] = 'Error'
+        data['error_message'] = 'Event not found.'
+        return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        newPost = Post.objects.get(person=user, event=event, status="2BA")
+        newPost.delete()
+        data['response'] = 'Success'
+        data['error_message'] = 'User sucessfully removed.'
+        return Response(data=data)
+
+    except ObjectDoesNotExist:
+        data['response'] = 'Error'
+        data['error_message'] = 'User does not belong to event or not in status 2BA'
+        return Response(data=data)
 
 
 @api_view(['POST'])
