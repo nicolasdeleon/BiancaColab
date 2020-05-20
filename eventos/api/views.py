@@ -29,14 +29,15 @@ def api_create_Event(request):
     return Response(data=data)
 
 
+EMAIL_ADDRESS = "support@biancaapp.com"
+EMAIL_PASSWORD = "ndkoeuvetbmxrqgu"
+
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 def api_addUser_Event_view(request):
     data = {}
     code = request.data['pk']
     user = request.user
-    EMAIL_ADDRESS = "support@biancaapp.com"
-    EMAIL_PASSWORD = "ndkoeuvetbmxrqgu"
     try:
         event = Event.objects.get(pk=code)
     except (Event.DoesNotExist, user.DoesNotExist):
@@ -70,7 +71,6 @@ def api_addUser_Event_view(request):
                 body = f'{user.full_name} ha realizado {event.description} con su cuenta de instagram: {user.profile.instaAccount}. Para valdiar, entrar a https://biancaapp-ndlc.herokuapp.com/admin/eventos/post/'
                 msg = f'Subject: {subject}\n\n{body}'
                 smtp.sendmail(EMAIL_ADDRESS, EMAIL_ADDRESS, msg)
-                smtp.sendmail(EMAIL_ADDRESS, "flororsi@gmail.com", msg)
             # --------------------------------------------------------------
             data["success"] = "users belong to the event"
             if event.stock == event.activeParticipants:
