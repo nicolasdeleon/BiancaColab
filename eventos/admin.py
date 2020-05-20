@@ -11,7 +11,7 @@ class PostResource(resources.ModelResource):
 
     class Meta:
         model = Post
-        fields = ('profile__instaAccount', 'event__title', 'status', 'createTime', 'data4Company')
+        fields = ('profile__instaAccount', 'event__title', 'status', 'createTime', 'data4Company', 'receivedBenefit')
 
 
 def send_push_message(token, message, extra=None):
@@ -66,7 +66,7 @@ def set_status_finished(modeladmin, request, queryset):
 
 class PostAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_filter = ('status', 'event__title', )
-    list_display = ('instaAccount', 'event', 'status', 'createTime', 'data4Company',)
+    list_display = ('instaAccount', 'event', 'status', 'createTime', 'data4Company', 'receivedBenefit')
     actions = [set_status_winner, set_status_refused]
     resource_class = PostResource
 
