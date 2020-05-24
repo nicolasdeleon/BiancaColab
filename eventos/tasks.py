@@ -1,11 +1,10 @@
 from datetime import datetime
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from .models import Event, Post
-from accounts.models import User
-from django.contrib import admin, messages
 from exponent_server_sdk import (PushClient, PushMessage,
                                  PushServerError)
+from accounts.models import User
+from .models import Event, Post
 
 logger = get_task_logger(__name__)
 

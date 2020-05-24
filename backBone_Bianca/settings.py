@@ -226,7 +226,7 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 
 #20_05 AWS S3
-# bianca-django 
+# bianca-django
 # user id: AKIAUNNQ4CTL47Z2AAOI
 # secret key : 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
 
@@ -240,4 +240,3 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
