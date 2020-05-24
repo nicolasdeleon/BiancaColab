@@ -33,7 +33,12 @@ STATUS_POST = [
 class InstaStoryPublication(models.Model):
     person = models.ForeignKey(USER, on_delete=models.CASCADE)
     image = models.ImageField(
-        upload_to='Events_Users_Storys/',
+        upload_to='to_process/',
+        blank=True,
+        null=True
+    )
+    processedImage = models.ImageField(
+        upload_to='processed/',
         blank=True,
         null=True
     )
@@ -49,7 +54,7 @@ class Event(models.Model):
     eventOwner = models.ForeignKey(USER, on_delete=models.CASCADE, default=1)
     eventType = models.CharField(choices=TYPE_EVENT, default="A", max_length=3)
     title = models.CharField(max_length=30)
-    image = models.ImageField(upload_to='to_process/', blank=True, null=True)
+    image = models.ImageField(upload_to='events/', blank=True, null=True)
     slug = models.SlugField(max_length=255, blank=True)
     description = models.CharField(
         null=True,
