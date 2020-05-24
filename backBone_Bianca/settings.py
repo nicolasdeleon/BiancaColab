@@ -225,13 +225,13 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 
-#20_05 AWS S3
+# 20_05 AWS S3
 # bianca-django
 # user id: AKIAUNNQ4CTL47Z2AAOI
 # secret key : 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
 
 
-#S3 BUCKETS CONFIG
+# S3 BUCKETS CONFIG
 
 AWS_ACCESS_KEY_ID = 'AKIAUNNQ4CTL47Z2AAOI'
 AWS_SECRET_ACCESS_KEY = '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'

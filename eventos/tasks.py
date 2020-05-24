@@ -21,6 +21,7 @@ def close_events():
         return "NO events to close"
     return "Events closed"
 
+
 @shared_task
 def send_message():
     logger.info("Task close event started")
