@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
@@ -195,12 +195,16 @@ def api_won_events_view(request):
 
 
 @api_view(['POST'])
-@permission_classes((AllowAny, ))
+@permission_classes((IsAuthenticated, ))
 def api_validate_cupon(request):
+    user = request.user
     res = {}
     exchange_code = request.data['code']
     try:
         post = Post.objects.get(exchange_code=exchange_code)
+        user_event = Event.objects.filter(eventOwner=user)
+        if post.event not in user_event:
+            return Response(status=status.HTTP_404_NOT_FOUND)
     except (Post.MultipleObjectsReturned, Post.DoesNotExist):
         return Response(status=status.HTTP_404_NOT_FOUND)
     event = post.event
@@ -211,7 +215,7 @@ def api_validate_cupon(request):
         post.save()
         res["success"] = "succesfuly exchanged"
     else:
-        res["error"] = "Código invalido o ya canjeado"
+        return Response(status=status.HTTP_404_NOT_FOUND)
     return Response(data=res)
 
 
