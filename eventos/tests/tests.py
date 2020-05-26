@@ -105,7 +105,7 @@ class ValidateCupons(APITestCase):
             password='password',
             first_name="oliver",
             last_name="twist",
-            role="1"
+            role=1
         )
         self.profile = Profile.objects.create(user=self.user, instaAccount="insta")
         self.short_event = Event.objects.create(
@@ -135,7 +135,12 @@ class ValidateCupons(APITestCase):
         )
         self.exchange_code_in_long_event = self.long_post.exchange_code
 
+    def api_Authentication(self):
+        token = Token.objects.get(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + token.key)
+
     def test_exchange_code_correct_usage(self):
+        self.api_Authentication()
         end_point = "/api/eventos/code-validation"
         body = {
             'code': self.exchange_code_in_short_event
@@ -149,13 +154,15 @@ class ValidateCupons(APITestCase):
         self.assertEqual(post.receivedBenefit, True)
 
     def test_not_finishing_long_event_post(self):
+        self.api_Authentication()
         end_point = "/api/eventos/code-validation"
         body = {
             'code': self.exchange_code_in_long_event
         }
         response = self.client.post(end_point, body)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['error'], "Código invalido o ya canjeado")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         post = Post.objects.get(pk=self.long_post.pk)
         self.assertEqual(post.status, 'W')
         self.assertEqual(post.receivedBenefit, False)
+
+    # TODO: Check company finishing event that isn't his
