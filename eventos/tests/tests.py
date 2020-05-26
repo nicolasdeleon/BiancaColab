@@ -105,7 +105,7 @@ class ValidateCupons(APITestCase):
             password='password',
             first_name="oliver",
             last_name="twist",
-            role=1
+            role="1"
         )
         self.profile = Profile.objects.create(user=self.user, instaAccount="insta")
         self.short_event = Event.objects.create(
