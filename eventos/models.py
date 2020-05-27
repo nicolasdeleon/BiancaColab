@@ -1,5 +1,6 @@
 import secrets
-
+import os
+#from uuid import uuid4
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -7,8 +8,7 @@ from django.db.models.signals import post_save
 
 from accounts.models import Profile
 
-import os
-from uuid import uuid4
+
 
 USER = settings.AUTH_USER_MODEL
 
@@ -37,7 +37,7 @@ def path_and_rename(instance, filename):
     upload_to = 'to_process'
     # get filename
     #if instance.pk:
-    filenameAux = '{}.{}'.format(str(instance.person.id), instance.person.profile.instaAccount)
+    filenameAux = '{}.{}.{}'.format(str(instance.pk), str(instance.person.id), instance.person.profile.instaAccount)
     #else:
         # set filename as random string
      #   filename = '{}.{}'.format(uuid4().hex)
