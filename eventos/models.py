@@ -1,6 +1,6 @@
 import secrets
 import os
-#from uuid import uuid4
+# from uuid import uuid4
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -36,11 +36,11 @@ STATUS_POST = [
 def path_and_rename(instance, filename):
     upload_to = 'to_process'
     # get filename
-    #if instance.pk:
+    # if instance.pk:
     filenameAux = '{}.{}.{}'.format(str(instance.pk), str(instance.person.id), instance.person.profile.instaAccount)
-    #else:
-        # set filename as random string
-     #   filename = '{}.{}'.format(uuid4().hex)
+    # else:
+    # set filename as random string
+    #   filename = '{}.{}'.format(uuid4().hex)
     # return the whole path to the file
     return os.path.join(upload_to, filenameAux)
 
