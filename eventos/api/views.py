@@ -132,6 +132,7 @@ def api_eventrel_state(request):
             try:
                 post = Post.objects.get(person=user, event=obj)
                 data['status'] = post.status
+                data['cupon'] = post.exchange_code
                 data['response'] = 'OK'
             except ObjectDoesNotExist:
                 data['status'] = 'N'
