@@ -132,7 +132,6 @@ def api_eventrel_state(request):
             try:
                 post = Post.objects.get(person=user, event=obj)
                 data['status'] = post.status
-                data['cupon'] = post.exchange_code
                 data['response'] = 'OK'
             except ObjectDoesNotExist:
                 data['status'] = 'N'
@@ -208,7 +207,7 @@ def api_validate_cupon(request):
         if post.event not in user_event:
             res["error"] = "Código no corresponde a eventos del local."
             return Response(status=status.HTTP_404_NOT_FOUND)
-    except (Post.MultipleObjectsReturned, Post.DoesNotExist):        
+    except (Post.MultipleObjectsReturned, Post.DoesNotExist):
         res["error"] = "No existe el post"
         return Response(res,status=status.HTTP_404_NOT_FOUND)
     event = post.event
