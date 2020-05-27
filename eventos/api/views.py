@@ -208,7 +208,7 @@ def api_validate_cupon(request):
             return Response(status=status.HTTP_404_NOT_FOUND)
     except (Post.MultipleObjectsReturned, Post.DoesNotExist):        
         res["error"] = "No existe el post"
-        return Response(res,status=status.HTTP_404_NOT_FOUND)
+        return Response(res, status=status.HTTP_404_NOT_FOUND)
     event = post.event
     if post and event.eventType == 'A' \
     and post.receivedBenefit is False and post.status == 'W':
@@ -218,7 +218,7 @@ def api_validate_cupon(request):
         res["success"] = "succesfuly exchanged"
     else:
         res["error"] = "Codigo no válido o ya canjeado."
-        return Response(res,status=status.HTTP_404_NOT_FOUND)
+        return Response(res, status=status.HTTP_404_NOT_FOUND)
     return Response(data=res)
 
 
