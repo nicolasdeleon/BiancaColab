@@ -7,6 +7,9 @@ from django.db.models.signals import post_save
 
 from accounts.models import Profile
 
+import os
+from uuid import uuid4
+
 USER = settings.AUTH_USER_MODEL
 
 TYPE_EVENT = [
@@ -30,10 +33,22 @@ STATUS_POST = [
 ]
 
 
+def path_and_rename(instance, filename):
+    upload_to = 'to_process'
+    # get filename
+    #if instance.pk:
+    filenameAux = '{}.{}'.format(str(instance.person.id), instance.person.profile.instaAccount)
+    #else:
+        # set filename as random string
+     #   filename = '{}.{}'.format(uuid4().hex)
+    # return the whole path to the file
+    return os.path.join(upload_to, filenameAux)
+
+
 class InstaStoryPublication(models.Model):
     person = models.ForeignKey(USER, on_delete=models.CASCADE)
     image = models.ImageField(
-        upload_to='to_process/',
+        upload_to=path_and_rename,
         blank=True,
         null=True
     )
