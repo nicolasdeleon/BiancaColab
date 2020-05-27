@@ -130,8 +130,9 @@ def api_eventrel_state(request):
         user = request.user
         if request.method == 'POST':
             try:
-                event = Post.objects.get(person=user, event=obj)
-                data['status'] = event.status
+                post = Post.objects.get(person=user, event=obj)
+                data['status'] = post.status
+                data['cupon'] = post.exchange_code
                 data['response'] = 'OK'
             except ObjectDoesNotExist:
                 data['status'] = 'N'
@@ -197,6 +198,7 @@ def api_won_events_view(request):
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 def api_validate_cupon(request):
+    print("La reconoci")
     user = request.user
     res = {}
     exchange_code = request.data['code']
@@ -204,8 +206,10 @@ def api_validate_cupon(request):
         post = Post.objects.get(exchange_code=exchange_code)
         user_event = Event.objects.filter(eventOwner=user)
         if post.event not in user_event:
+            print("QUE")
             return Response(status=status.HTTP_404_NOT_FOUND)
     except (Post.MultipleObjectsReturned, Post.DoesNotExist):
+        print("HOla")
         return Response(status=status.HTTP_404_NOT_FOUND)
     event = post.event
     if post and event.eventType == 'A' \
