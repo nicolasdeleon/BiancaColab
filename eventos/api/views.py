@@ -204,9 +204,11 @@ def api_validate_cupon(request):
         post = Post.objects.get(exchange_code=exchange_code)
         user_event = Event.objects.filter(eventOwner=user)
         if post.event not in user_event:
+            res["error"] = "Código no corresponde a eventos del local."
             return Response(status=status.HTTP_404_NOT_FOUND)
-    except (Post.MultipleObjectsReturned, Post.DoesNotExist):
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    except (Post.MultipleObjectsReturned, Post.DoesNotExist):        
+        res["error"] = "No existe el post"
+        return Response(res,status=status.HTTP_404_NOT_FOUND)
     event = post.event
     if post and event.eventType == 'A' \
     and post.receivedBenefit is False and post.status == 'W':
@@ -215,7 +217,8 @@ def api_validate_cupon(request):
         post.save()
         res["success"] = "succesfuly exchanged"
     else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        res["error"] = "Codigo no válido o ya canjeado."
+        return Response(res,status=status.HTTP_404_NOT_FOUND)
     return Response(data=res)
 
 
