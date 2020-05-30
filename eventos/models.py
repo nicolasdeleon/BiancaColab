@@ -8,8 +8,6 @@ from django.db.models.signals import post_save
 
 from accounts.models import Profile
 
-
-
 USER = settings.AUTH_USER_MODEL
 
 TYPE_EVENT = [
