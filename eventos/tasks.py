@@ -1,10 +1,7 @@
 from datetime import datetime
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from exponent_server_sdk import (PushClient, PushMessage,
-                                 PushServerError)
-from accounts.models import User
-from .models import Event, Post
+from .models import Event
 
 logger = get_task_logger(__name__)
 
@@ -20,18 +17,3 @@ def close_events():
     else:
         return "NO events to close"
     return "Events closed"
-
-
-@shared_task
-def send_message():
-    logger.info("Task close event started")
-    user = User.objects.filter(email="damianedona@gmail.com")
-    post = Post.objects.filter(person=user)
-
-    try:
-        response = PushClient().publish(
-            PushMessage(to=post.notificationToken,
-                        body="send_message"))
-        return response
-    except PushServerError as exc:
-        raise exc

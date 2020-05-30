@@ -1,6 +1,5 @@
 import secrets
-import os
-# from uuid import uuid4
+
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -31,27 +30,10 @@ STATUS_POST = [
 ]
 
 
-def path_and_rename(instance, filename):
-    upload_to = 'to_process'
-    # get filename
-    # if instance.pk:
-    filenameAux = '{}.{}.{}'.format(str(instance.pk), str(instance.person.id), instance.person.profile.instaAccount)
-    # else:
-    # set filename as random string
-    #   filename = '{}.{}'.format(uuid4().hex)
-    # return the whole path to the file
-    return os.path.join(upload_to, filenameAux)
-
-
 class InstaStoryPublication(models.Model):
     person = models.ForeignKey(USER, on_delete=models.CASCADE)
     image = models.ImageField(
-        upload_to=path_and_rename,
-        blank=True,
-        null=True
-    )
-    processedImage = models.ImageField(
-        upload_to='processed/',
+        upload_to='Events_Users_Storys/',
         blank=True,
         null=True
     )
@@ -67,7 +49,7 @@ class Event(models.Model):
     eventOwner = models.ForeignKey(USER, on_delete=models.CASCADE, default=1)
     eventType = models.CharField(choices=TYPE_EVENT, default="A", max_length=3)
     title = models.CharField(max_length=30)
-    image = models.ImageField(upload_to='events/', blank=True, null=True)
+    image = models.ImageField(upload_to='Event_Image/', blank=True, null=True)
     slug = models.SlugField(max_length=255, blank=True)
     description = models.CharField(
         null=True,
