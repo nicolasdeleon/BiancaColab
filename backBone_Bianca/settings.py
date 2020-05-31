@@ -113,7 +113,8 @@ WSGI_APPLICATION = 'backBone_Bianca.wsgi.application'
 # CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
        'http://localhost:3000',
-       'https://biancaapp.netlify.com'
+       'https://biancaapp.netlify.com',
+       'https://biancaapp.netlify.app'
     )
 
 # Database
