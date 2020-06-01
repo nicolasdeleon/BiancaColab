@@ -29,6 +29,7 @@ STATUS_POST = [
     ('R', 'Refused')
 ]
 
+
 def path_and_rename(instance, filename):
     upload_to = 'to_process'
     # get filename
@@ -39,6 +40,7 @@ def path_and_rename(instance, filename):
     #   filename = '{}.{}'.format(uuid4().hex)
     # return the whole path to the file
     return os.path.join(upload_to, filenameAux)
+
 
 class InstaStoryPublication(models.Model):
     person = models.ForeignKey(USER, on_delete=models.CASCADE)
