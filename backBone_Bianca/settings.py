@@ -131,7 +131,7 @@ CORS_ORIGIN_WHITELIST = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'biancalocal',
+        'NAME': 'awss3',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'localhost',
@@ -180,9 +180,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-DEFAULT_FILE_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
+# DEFAULT_FILE_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
 
-DROPBOX_OAUTH2_TOKEN = os.environ.get('DROPBOX_OAUTH2_TOKEN')
+# DROPBOX_OAUTH2_TOKEN = os.environ.get('DROPBOX_OAUTH2_TOKEN')
 
 STATIC_URL = '/static/'
 
@@ -215,8 +215,8 @@ django_heroku.settings(locals())
 # from celery.schedules import crontab
 CELERY_IMPORTS = (
 
-    'backBone_Bianca',
-    'backBone_Bianca.tasks',
+    # 'backBone_Bianca',
+    # 'backBone_Bianca.tasks',
     'eventos.tasks'
 )
 CELERY_BROKER_URL = 'amqp://guest@localhost:5672'
@@ -226,3 +226,16 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+
+# S3 BUCKETS CONFIG
+
+AWS_ACCESS_KEY_ID = 'AKIAUNNQ4CTL47Z2AAOI'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'aws-images-posts-bianca'
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_S3_REGION_NAME = 'us-east-2'
