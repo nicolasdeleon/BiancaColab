@@ -54,7 +54,7 @@ def api_addUser_Event_view(request):
             return Response(data=data)
 
         except ObjectDoesNotExist:
-            newInstaStory = InstaStoryPublication(person = user).save
+            newInstaStory = InstaStoryPublication(person = user).save()
             newPost = Post()
             newPost.person = user
             newPost.profile = user.profile
