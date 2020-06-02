@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
                                      PostSerializer)
-from eventos.models import Event, Post
+from eventos.models import Event, Post, InstaStoryPublication
 
 
 @api_view(['POST'])
@@ -54,11 +54,13 @@ def api_addUser_Event_view(request):
             return Response(data=data)
 
         except ObjectDoesNotExist:
+            newInstaStory = InstaStoryPublication(person = user).save
             newPost = Post()
             newPost.person = user
             newPost.profile = user.profile
             newPost.event = event
             newPost.notificationToken = request.data['notificationToken']
+            newPost.instagramStory = newInstaStory
             newPost.save()
             event.activeParticipants += 1
             event.save()
