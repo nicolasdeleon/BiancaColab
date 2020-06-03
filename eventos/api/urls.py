@@ -11,6 +11,7 @@ from eventos.api.views import (
     DeliverIGforEvent,
     api_removeUser_Event_view,
     api_validate_cupon,
+    api_validate_image_post,
 )
 
 urlpatterns = [
@@ -24,4 +25,6 @@ urlpatterns = [
     path('event2BAIGs/', DeliverIGforEvent.as_view(), name='event2BAIGs'),
     path('removeUser', api_removeUser_Event_view, name='removeUuser'),
     path('code-validation', api_validate_cupon, name='code-validation'),
+    path('image-post-validation', api_validate_image_post, name='image-post-validation'),
+
 ]

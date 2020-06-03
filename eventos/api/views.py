@@ -225,6 +225,28 @@ def api_validate_cupon(request):
     return Response(data=res)
 
 
+@api_view(['POST'])
+@permission_classes((IsAuthenticated, ))
+# {
+#    "time":"123",
+#    "fotos":{
+#       "foto1":[
+#          "tag1",
+#          "tag2"
+#       ],
+#       "foto2":[
+#          "tag3",
+#          "tag4"
+#       ]
+#    }
+# }
+def api_validate_image_post(request):
+    user = request.user
+    res = {}
+    # exchange_code = request.data['code']
+    fotos = request.data["fotos"]
+    print(fotos)
+
 class DeliverActiveContracts(ListAPIView):
     serializer_class = PostSerializer
     permission_classes = (IsAuthenticated,)
