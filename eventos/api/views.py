@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
                                      PostSerializer)
 from eventos.models import Event, Post, InstaStoryPublication
-
+import json
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
@@ -240,12 +240,32 @@ def api_validate_cupon(request):
 #       ]
 #    }
 # }
+# https://django.cowhite.com/blog/different-cases-of-sending-data-in-ajax-request-in-django/
 def api_validate_image_post(request):
     user = request.user
     res = {}
+    #fotos = []
     # exchange_code = request.data['code']
-    fotos = request.data["fotos"]
-    print(fotos)
+    #fotos = request.POST.getlist("images[]")
+    fotos = json.loads(request.body)
+    for each in fotos['images']:
+       publi_id = each['publi_id']
+       person_id = each['person_id']
+       for tag in each['tags']:
+        res["tags"] = tag
+        print(tag)
+    # for (i in fotos) {
+     #    print(fotos[1])
+     # for (j in myObj.rights[i]) {
+          
+     #    x = myObj.rights[i][j];
+ 
+     #    console.log(x);
+     #      }
+    #}
+    print (fotos['images'])
+    return Response(data=res)
+    #print(fotos[0].data['person_id'])
 
 class DeliverActiveContracts(ListAPIView):
     serializer_class = PostSerializer
