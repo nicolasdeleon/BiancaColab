@@ -242,7 +242,6 @@ def api_validate_cupon(request):
 # }
 # https://django.cowhite.com/blog/different-cases-of-sending-data-in-ajax-request-in-django/
 def api_validate_image_post(request):
-    user = request.user
     res = {}
     #fotos = []
     # exchange_code = request.data['code']
@@ -251,18 +250,38 @@ def api_validate_image_post(request):
     for each in fotos['images']:
        publi_id = each['publi_id']
        person_id = each['person_id']
+       #instaStory = InstaStoryPublication.objects.get(pk= publi_id)
+       #print(instaStory.person)
+       #user = User.objects.get(pk= person_id)
+       #user = person_id
+
+       #post = Post.objects.get(instagramStory= publi_id)
+       post = Post.objects.get(person= person_id, instagramStory= publi_id)
+       print(post.pk)
+       tags= request.POST.getlist('tags')
+       event = Event.objects.get(posts= publi_id)
+       print(event.status)
+       eventTags = event.tags
+
+       try:
+          event = Event.objects.filter(posts= publi_id, tags__contained_by= [tags])
+          print(event.status)
+        #event.objects.filter(tags__contained_by=['thoughts', 'django', 'tutorial'])
+       except Exception as e:
+           print("No se encontro el array completo")
+
        for tag in each['tags']:
+        try:
+          # event = Event.objects.get(tags__overlap= 'hola')
+           event = Event.objects.get(posts= publi_id, tags__contained_by= [tag])
+           print("se encontro "+tag)
+       #    print(event.status)
+       #  #event.objects.filter(tags__contained_by=['thoughts', 'django', 'tutorial'])
+        except Exception as e:
+           print("No se encontro")
         res["tags"] = tag
         print(tag)
-    # for (i in fotos) {
-     #    print(fotos[1])
-     # for (j in myObj.rights[i]) {
-          
-     #    x = myObj.rights[i][j];
- 
-     #    console.log(x);
-     #      }
-    #}
+
     print (fotos['images'])
     return Response(data=res)
     #print(fotos[0].data['person_id'])
