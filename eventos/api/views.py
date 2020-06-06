@@ -1,4 +1,5 @@
 import smtplib
+import json
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
@@ -12,7 +13,6 @@ from rest_framework.response import Response
 from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
                                      PostSerializer)
 from eventos.models import Event, Post, InstaStoryPublication
-import json
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
@@ -54,7 +54,7 @@ def api_addUser_Event_view(request):
             return Response(data=data)
 
         except ObjectDoesNotExist:
-            newInstaStory = InstaStoryPublication(person = user).save()
+            newInstaStory = InstaStoryPublication(person=user).save()
             newPost = Post()
             newPost.person = user
             newPost.profile = user.profile
@@ -248,34 +248,27 @@ def api_validate_image_post(request):
     #fotos = request.POST.getlist("images[]")
     fotos = json.loads(request.body)
     for each in fotos['images']:
-       publi_id = each['publi_id']
-       person_id = each['person_id']
-       is_found = False
-       for tag in each['tags']:
-        if is_found == False:
-         try:
-          # event = Event.objects.get(tags__overlap= 'hola')
-           event = Event.objects.get(posts= publi_id, tags__contained_by= [tag])
-           print("se encontro "+ tag)
-           post = Post.objects.get(person= person_id, instagramStory= publi_id)
-           post.status = 'W'
-           post.save()
-           res[publi_id] = "W"
-           is_found = True
-       #    print(event.status)
-       #  #event.objects.filter(tags__contained_by=['thoughts', 'django', 'tutorial'])
-         except Exception as e:
-           print("No se encontro "+ tag)
-           post = Post.objects.get(person= person_id, instagramStory= publi_id)
-           post.status = 'R'
-           post.save()
-           res[publi_id] = "R"
-        else:
-         break
-
-        print(tag)
-
-    print (fotos['images'])
+        publi_id = each['publi_id']
+        person_id = each['person_id']
+        is_found = False
+        for tag in each['tags']:
+            if is_found is False:
+                try:
+                    event = Event.objects.get(posts=publi_id, tags__contained_by=[tag])
+                   # print("se encontro "+ tag)
+                    post = Post.objects.get(person=person_id, instagramStory=publi_id)
+                    post.status = 'W'
+                    post.save()
+                    res[publi_id] = "W"
+                    is_found = True
+                except:
+                   # print("No se encontro "+ tag)
+                    post = Post.objects.get(person=person_id, instagramStory=publi_id)
+                    post.status = 'R'
+                    post.save()
+                    res[publi_id] = "R"
+            else:
+               break
     return Response(data=res)
 
 
