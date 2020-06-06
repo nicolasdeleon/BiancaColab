@@ -256,19 +256,20 @@ def api_validate_image_post(request):
                 try:
                     event = Event.objects.get(posts=publi_id, tags__contained_by=[tag])
                    # print("se encontro "+ tag)
-                    post = Post.objects.get(person=person_id, instagramStory=publi_id)
-                    post.status = 'W'
-                    post.save()
-                    res[publi_id] = "W"
-                    is_found = True
-                except:
+                    if event.status == 'O':
+                        post = Post.objects.get(person=person_id, instagramStory=publi_id)
+                        post.status = 'W'
+                        post.save()
+                        res[publi_id] = "W"
+                        is_found = True
+                except Exception as e:
                    # print("No se encontro "+ tag)
                     post = Post.objects.get(person=person_id, instagramStory=publi_id)
                     post.status = 'R'
                     post.save()
                     res[publi_id] = "R"
             else:
-               break
+                break
     return Response(data=res)
 
 
