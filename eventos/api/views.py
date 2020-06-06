@@ -1,4 +1,5 @@
 import smtplib
+import json
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
@@ -11,8 +12,7 @@ from rest_framework.response import Response
 
 from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
                                      PostSerializer)
-from eventos.models import Event, Post
-
+from eventos.models import Event, Post, InstaStoryPublication
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
@@ -54,11 +54,13 @@ def api_addUser_Event_view(request):
             return Response(data=data)
 
         except ObjectDoesNotExist:
+            newInstaStory = InstaStoryPublication(person=user).save()
             newPost = Post()
             newPost.person = user
             newPost.profile = user.profile
             newPost.event = event
             newPost.notificationToken = request.data['notificationToken']
+            newPost.instagramStory = newInstaStory
             newPost.save()
             event.activeParticipants += 1
             event.save()
@@ -220,6 +222,54 @@ def api_validate_cupon(request):
     else:
         res["error"] = "Codigo no válido o ya canjeado."
         return Response(res, status=status.HTTP_404_NOT_FOUND)
+    return Response(data=res)
+
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated, ))
+# {
+#    "time":"123",
+#    "fotos":{
+#       "foto1":[
+#          "tag1",
+#          "tag2"
+#       ],
+#       "foto2":[
+#          "tag3",
+#          "tag4"
+#       ]
+#    }
+# }
+# https://django.cowhite.com/blog/different-cases-of-sending-data-in-ajax-request-in-django/
+def api_validate_image_post(request):
+    res = {}
+    #fotos = []
+    # exchange_code = request.data['code']
+    #fotos = request.POST.getlist("images[]")
+    fotos = json.loads(request.body)
+    for each in fotos['images']:
+        publi_id = each['publi_id']
+        person_id = each['person_id']
+        is_found = False
+        for tag in each['tags']:
+            if is_found is False:
+                try:
+                    event = Event.objects.get(posts=publi_id, tags__contained_by=[tag])
+                   # print("se encontro "+ tag)
+                    if event.status == 'O':
+                        post = Post.objects.get(person=person_id, instagramStory=publi_id)
+                        post.status = 'W'
+                        post.save()
+                        res[publi_id] = "W"
+                        is_found = True
+                except Exception as e:
+                   # print("No se encontro "+ tag)
+                    post = Post.objects.get(person=person_id, instagramStory=publi_id)
+                    post.status = 'R'
+                    post.save()
+                    res[publi_id] = "R"
+            else:
+                break
     return Response(data=res)
 
 
