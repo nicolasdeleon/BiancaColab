@@ -54,7 +54,8 @@ def api_addUser_Event_view(request):
             return Response(data=data)
 
         except ObjectDoesNotExist:
-            newInstaStory = InstaStoryPublication(person=user).save()
+            newInstaStory = InstaStoryPublication(person=user)
+            newInstaStory.save()
             newPost = Post()
             newPost.person = user
             newPost.profile = user.profile
@@ -227,20 +228,6 @@ def api_validate_cupon(request):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
-# {
-#    "time":"123",
-#    "fotos":{
-#       "foto1":[
-#          "tag1",
-#          "tag2"
-#       ],
-#       "foto2":[
-#          "tag3",
-#          "tag4"
-#       ]
-#    }
-# }
-# https://django.cowhite.com/blog/different-cases-of-sending-data-in-ajax-request-in-django/
 def api_validate_image_post(request):
     res = {}
     #fotos = []
@@ -257,16 +244,16 @@ def api_validate_image_post(request):
                     event = Event.objects.get(posts=publi_id, tags__contained_by=[tag])
                    # print("se encontro "+ tag)
                     if event.status == 'O':
-                        post = Post.objects.get(person=person_id, instagramStory=publi_id)
-                        post.status = 'W'
-                        post.save()
+                        # post = Post.objects.get(person=person_id, instagramStory=publi_id)
+                        # post.status = 'W'
+                        # post.save()
                         res[publi_id] = "W"
                         is_found = True
                 except Exception as e:
                    # print("No se encontro "+ tag)
-                    post = Post.objects.get(person=person_id, instagramStory=publi_id)
-                    post.status = 'R'
-                    post.save()
+                    # post = Post.objects.get(person=person_id, instagramStory=publi_id)
+                    # post.status = 'R'
+                    # post.save()
                     res[publi_id] = "R"
             else:
                 break
