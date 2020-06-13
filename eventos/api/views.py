@@ -63,6 +63,7 @@ def api_addUser_Event_view(request):
             newPost.notificationToken = request.data['notificationToken']
             newPost.instagramStory = newInstaStory
             newPost.save()
+            event.posts.add(newInstaStory)
             event.activeParticipants += 1
             event.save()
             # --------- Sending mail to us@biancaapp.com ------------------
@@ -230,33 +231,32 @@ def api_validate_cupon(request):
 @permission_classes((IsAuthenticated, ))
 def api_validate_image_post(request):
     res = {}
-    #fotos = []
-    # exchange_code = request.data['code']
-    #fotos = request.POST.getlist("images[]")
     fotos = json.loads(request.body)
     for each in fotos['images']:
         publi_id = each['publi_id']
         person_id = each['person_id']
+        listaTags = each['tags']
         is_found = False
-        for tag in each['tags']:
-            if is_found is False:
-                try:
-                    event = Event.objects.get(posts=publi_id, tags__contained_by=[tag])
-                   # print("se encontro "+ tag)
-                    if event.status == 'O':
-                        # post = Post.objects.get(person=person_id, instagramStory=publi_id)
-                        # post.status = 'W'
-                        # post.save()
+        tagsArray = []
+        instaStory = InstaStoryPublication.objects.get(pk=publi_id)
+        #post = Post.objects.get(person=person_id, instagramStory=publi_id)
+        if Event.objects.filter(posts=instaStory).exists():
+            evento = Event.objects.filter(posts=publi_id)
+            tagsArray = evento[0].tags
+            for tagEvent in tagsArray:
+                if is_found is False:
+                    if tagEvent in listaTags:
                         res[publi_id] = "W"
+                        #post.status = 'W'
                         is_found = True
-                except Exception as e:
-                   # print("No se encontro "+ tag)
-                    # post = Post.objects.get(person=person_id, instagramStory=publi_id)
-                    # post.status = 'R'
-                    # post.save()
-                    res[publi_id] = "R"
-            else:
-                break
+                    else:
+                        #post.status = 'R'
+                        res[publi_id] = "R"
+                else:
+                    break
+        else:
+            res["publi_id"] = "False"
+        #post.save()
     return Response(data=res)
 
 
