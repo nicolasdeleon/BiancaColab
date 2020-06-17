@@ -231,6 +231,7 @@ def api_validate_cupon(request):
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 def api_validate_image_post(request):
+    # https://stackoverflow.com/questions/1308386/programmatically-saving-image-to-django-imagefield
     res = {}
     fotos = json.loads(request.body)
     for each in fotos['images']:
