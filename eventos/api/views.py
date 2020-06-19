@@ -14,6 +14,8 @@ from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
                                      PostSerializer)
 from eventos.models import Event, Post, InstaStoryPublication
 import boto3
+from django.conf import settings
+from botocore.exceptions import ClientError
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
@@ -243,7 +245,10 @@ def api_validate_image_post(request):
         instaStory = InstaStoryPublication.objects.get(pk=publi_id)
         #post = Post.objects.get(person=person_id, instagramStory=publi_id)
         if Event.objects.filter(posts=instaStory).exists():
-            s3_resource = boto3.resource("s3", aws_access_key_id='AKIAUNNQ4CTL47Z2AAOI', aws_secret_access_key= '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')
+            buckets3 = settings.AWS_STORAGE_BUCKET_NAME
+            print(buckets3)
+
+            s3_resource = boto3.resource("s3", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key= settings.AWS_SECRET_ACCESS_KEY)
             evento = Event.objects.filter(posts=publi_id)
             tagsArray = evento[0].tags
             for tagEvent in tagsArray:
@@ -267,23 +272,26 @@ def api_validate_image_post(request):
                 else:
                     break
             newPath = "processed/"+publi_id+"."+person_id
-            print(newPath)
-            oldPath = 'aws-images-posts-bianca/'+str(instaStory.image)
-            print(oldPath)
+            oldPath = buckets3+"/"+str(instaStory.image)
             if (is_found):
                 newPath=newPath+".W"
                 res[publi_id] = "W"
-                instaStory.processed=publi_id+"."+person_id+".W"
+                instaStory.processedImage="processed/"+publi_id+"."+person_id+".W"
                 #post.status = 'W'
             else:
                 newPath=newPath+".R"
                 res[publi_id] = "R"
-                instaStory.processed=publi_id+"."+person_id+".R"
+                instaStory.processedImage="processed/"+publi_id+"."+person_id+".R"
                 #post.status = 'R'
+            
+            instaStory.image=""
             instaStory.save()
-            s3_resource.Object('aws-images-posts-bianca', newPath).copy_from(
+            try:
+                s3_resource.Object(buckets3, newPath).copy_from(
                 CopySource=oldPath)
-            s3_resource.Object('aws-images-posts-bianca', oldPath).delete()
+                s3_resource.Object(buckets3, str(instaStory.image)).delete()
+            except ClientError as ex:
+                res["publi_id_movefile"] = "Error"
         else:
             res["publi_id"] = "False"
         #post.save()
