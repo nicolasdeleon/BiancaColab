@@ -13,6 +13,9 @@ from rest_framework.response import Response
 from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
                                      PostSerializer)
 from eventos.models import Event, Post, InstaStoryPublication
+import boto3
+from django.conf import settings
+from botocore.exceptions import ClientError
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
@@ -230,6 +233,7 @@ def api_validate_cupon(request):
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 def api_validate_image_post(request):
+    # https://stackoverflow.com/questions/1308386/programmatically-saving-image-to-django-imagefield
     res = {}
     fotos = json.loads(request.body)
     for each in fotos['images']:
@@ -241,19 +245,53 @@ def api_validate_image_post(request):
         instaStory = InstaStoryPublication.objects.get(pk=publi_id)
         #post = Post.objects.get(person=person_id, instagramStory=publi_id)
         if Event.objects.filter(posts=instaStory).exists():
+            buckets3 = settings.AWS_STORAGE_BUCKET_NAME
+            print(buckets3)
+
+            s3_resource = boto3.resource("s3", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key= settings.AWS_SECRET_ACCESS_KEY)
             evento = Event.objects.filter(posts=publi_id)
             tagsArray = evento[0].tags
             for tagEvent in tagsArray:
                 if is_found is False:
                     if tagEvent in listaTags:
-                        res[publi_id] = "W"
+                        # res[publi_id] = "W"
                         #post.status = 'W'
+                        # Copy object A as object B
+                        # s3_resource.Object(“bucket_name”, “newpath/to/object_B.txt”).copy_from(
+                        # CopySource=”path/to/your/object_A.txt”)
+
+                        # print(instaStory.processed)
+                        # instaStory.save()
+
+                        # Delete the former object A
+
                         is_found = True
-                    else:
+                    # else:
                         #post.status = 'R'
-                        res[publi_id] = "R"
+                        # res[publi_id] = "R"
                 else:
                     break
+            newPath = "processed/"+publi_id+"."+person_id
+            oldPath = buckets3+"/"+str(instaStory.image)
+            if (is_found):
+                newPath=newPath+".W"
+                res[publi_id] = "W"
+                instaStory.processedImage="processed/"+publi_id+"."+person_id+".W"
+                #post.status = 'W'
+            else:
+                newPath=newPath+".R"
+                res[publi_id] = "R"
+                instaStory.processedImage="processed/"+publi_id+"."+person_id+".R"
+                #post.status = 'R'
+            
+            instaStory.image=""
+            instaStory.save()
+            try:
+                s3_resource.Object(buckets3, newPath).copy_from(
+                CopySource=oldPath)
+                s3_resource.Object(buckets3, str(instaStory.image)).delete()
+            except ClientError as ex:
+                res["publi_id_movefile"] = "Error"
         else:
             res["publi_id"] = "False"
         #post.save()
