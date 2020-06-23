@@ -234,16 +234,25 @@ def api_validate_cupon(request):
 @permission_classes((IsAuthenticated, ))
 def api_validate_image_post(request):
     # https://stackoverflow.com/questions/1308386/programmatically-saving-image-to-django-imagefield
-    res = {}
+    resImage = {}
     fotos = json.loads(request.body)
+    resList = {}
+    resList["imagesRes"] = []
     for each in fotos['images']:
         publi_id = each['publi_id']
         person_id = each['person_id']
         listaTags = each['tags']
         is_found = False
         tagsArray = []
-        instaStory = InstaStoryPublication.objects.get(pk=publi_id)
-        #post = Post.objects.get(person=person_id, instagramStory=publi_id)
+
+        try:
+            instaStory = InstaStoryPublication.objects.get(pk=publi_id)
+            #post = Post.objects.get(person=person_id, instagramStory=publi_id)
+        except InstaStoryPublication.DoesNotExist:
+            resImage[publi_id] = "Event doesnt exist"
+            resList["imagesRes"].append(resImage)
+            break
+        
         if Event.objects.filter(posts=instaStory).exists():
             buckets3 = settings.AWS_STORAGE_BUCKET_NAME
             print(buckets3)
@@ -275,27 +284,31 @@ def api_validate_image_post(request):
             oldPath = buckets3+"/"+str(instaStory.image)
             if (is_found):
                 newPath=newPath+".W"
-                res[publi_id] = "W"
+                resImage[publi_id] = "W"
                 instaStory.processedImage="processed/"+publi_id+"."+person_id+".W"
                 #post.status = 'W'
             else:
                 newPath=newPath+".R"
-                res[publi_id] = "R"
+                resImage[publi_id] = "R"
                 instaStory.processedImage="processed/"+publi_id+"."+person_id+".R"
                 #post.status = 'R'
-            
-            instaStory.image=""
-            instaStory.save()
             try:
                 s3_resource.Object(buckets3, newPath).copy_from(
                 CopySource=oldPath)
-                s3_resource.Object(buckets3, str(instaStory.image)).delete()
             except ClientError as ex:
-                res["publi_id_movefile"] = "Error"
+                resImage["movefile"] = "Error"
+            try:
+                s3_resource.Object(buckets3, str(instaStory.image)).delete()
+                instaStory.image=""
+                instaStory.save()
+            except ClientError as ex:
+                resImage["delete"] = "Error"
+            resList["imagesRes"].append(resImage)                
         else:
-            res["publi_id"] = "False"
+            resImage[publi_id] = "Event doesnt exist"
+            resList["imagesRes"].append(resImage)
         #post.save()
-    return Response(data=res)
+    return Response(data=resList)
 
 
 class DeliverActiveContracts(ListAPIView):
