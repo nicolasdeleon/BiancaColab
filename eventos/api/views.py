@@ -244,67 +244,51 @@ def api_validate_image_post(request):
         listaTags = each['tags']
         is_found = False
         tagsArray = []
-
         try:
             instaStory = InstaStoryPublication.objects.get(pk=publi_id)
-            #post = Post.objects.get(person=person_id, instagramStory=publi_id)
         except InstaStoryPublication.DoesNotExist:
             resImage[publi_id] = "Event doesnt exist"
             resList["imagesRes"].append(resImage)
             break
-        
         if Event.objects.filter(posts=instaStory).exists():
             buckets3 = settings.AWS_STORAGE_BUCKET_NAME
             print(buckets3)
-
-            s3_resource = boto3.resource("s3", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key= settings.AWS_SECRET_ACCESS_KEY)
+            s3_resource = boto3.resource("s3", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY)
             evento = Event.objects.filter(posts=publi_id)
             tagsArray = evento[0].tags
             for tagEvent in tagsArray:
                 if is_found is False:
                     if tagEvent in listaTags:
-                        # res[publi_id] = "W"
-                        #post.status = 'W'
-                        # Copy object A as object B
-                        # s3_resource.Object(“bucket_name”, “newpath/to/object_B.txt”).copy_from(
-                        # CopySource=”path/to/your/object_A.txt”)
-
                         # print(instaStory.processed)
                         # instaStory.save()
-
-                        # Delete the former object A
-
                         is_found = True
-                    # else:
-                        #post.status = 'R'
-                        # res[publi_id] = "R"
                 else:
                     break
             newPath = "processed/"+publi_id+"."+person_id
             oldPath = buckets3+"/"+str(instaStory.image)
             if (is_found):
-                newPath=newPath+".W"
+                newPath = newPath+".W"
                 resImage[publi_id] = "W"
-                instaStory.processedImage="processed/"+publi_id+"."+person_id+".W"
+                instaStory.processedImage = "processed/"+publi_id+"."+person_id+".W"
                 #post.status = 'W'
             else:
-                newPath=newPath+".R"
+                newPath = newPath+".R"
                 resImage[publi_id] = "R"
-                instaStory.processedImage="processed/"+publi_id+"."+person_id+".R"
+                instaStory.processedImage = "processed/"+publi_id+"."+person_id+".R"
                 #post.status = 'R'
             try:
                 s3_resource.Object(buckets3, newPath).copy_from(
                 CopySource=oldPath)
             except ClientError as ex:
                 resImage["movefile"] = "Error"
+                print(ex)
             try:
                 s3_resource.Object(buckets3, str(instaStory.image)).delete()
-                instaStory.image=""
+                instaStory.image = ""
                 instaStory.save()
             except ClientError as ex:
                 resImage["delete"] = "Error"
-            resList["imagesRes"].append(resImage)                
-        else:
+            resList["imagesRes"].append(resImage)
             resImage[publi_id] = "Event doesnt exist"
             resList["imagesRes"].append(resImage)
         #post.save()
