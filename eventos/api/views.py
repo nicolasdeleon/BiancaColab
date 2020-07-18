@@ -11,13 +11,10 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 import boto3
-
-from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
-                                     PostSerializer)
-from eventos.models import Event, Post, InstaStoryPublication
-
-
 from botocore.exceptions import ClientError
+from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
+                                   PostSerializer)
+from eventos.models import Event, Post, InstaStoryPublication
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
