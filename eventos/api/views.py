@@ -1,6 +1,7 @@
 import smtplib
 import json
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, permission_classes
@@ -9,12 +10,13 @@ from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
+import boto3
 
 from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
                                      PostSerializer)
 from eventos.models import Event, Post, InstaStoryPublication
-import boto3
-from django.conf import settings
+
+
 from botocore.exceptions import ClientError
 
 @api_view(['POST'])
@@ -253,7 +255,7 @@ def api_validate_image_post(request):
         if Event.objects.filter(posts=instaStory).exists():
             buckets3 = settings.AWS_STORAGE_BUCKET_NAME
             print(buckets3)
-            s3_resource = boto3.resource("s3", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY)
+            s3_resource = boto3.resource("s3", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
             evento = Event.objects.filter(posts=publi_id)
             tagsArray = evento[0].tags
             for tagEvent in tagsArray:
