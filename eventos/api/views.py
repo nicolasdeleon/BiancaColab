@@ -12,9 +12,9 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 import boto3
 from botocore.exceptions import ClientError
-from eventos.api.serializers import (EventsSerializer, PostIGSerializer,
-                                   PostSerializer)
+from eventos.api.serializers import (EventsSerializer, PostIGSerializer, PostSerializer)
 from eventos.models import Event, Post, InstaStoryPublication
+
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
@@ -229,10 +229,10 @@ def api_validate_cupon(request):
     return Response(data=res)
 
 
+# https://stackoverflow.com/questions/1308386/programmatically-saving-image-to-django-imagefield
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 def api_validate_image_post(request):
-    # https://stackoverflow.com/questions/1308386/programmatically-saving-image-to-django-imagefield
     resImage = {}
     fotos = json.loads(request.body)
     resList = {}
@@ -242,7 +242,6 @@ def api_validate_image_post(request):
         person_id = each['person_id']
         listaTags = each['tags']
         is_found = False
-        tagsArray = []
         try:
             instaStory = InstaStoryPublication.objects.get(pk=publi_id)
         except InstaStoryPublication.DoesNotExist:
@@ -254,30 +253,24 @@ def api_validate_image_post(request):
             print(buckets3)
             s3_resource = boto3.resource("s3", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
             evento = Event.objects.filter(posts=publi_id)
-            tagsArray = evento[0].tags
-            for tagEvent in tagsArray:
+            for tagEvent in evento[0].tags:
                 if is_found is False:
                     if tagEvent in listaTags:
-                        # print(instaStory.processed)
-                        # instaStory.save()
                         is_found = True
                 else:
                     break
-            newPath = "processed/"+publi_id+"."+person_id
-            oldPath = buckets3+"/"+str(instaStory.image)
+            newPath = "processed/" + publi_id + "." + person_id
+            oldPath = buckets3 + "/" + str(instaStory.image)
             if (is_found):
-                newPath = newPath+".W"
+                newPath = newPath + ".W"
                 resImage[publi_id] = "W"
-                instaStory.processedImage = "processed/"+publi_id+"."+person_id+".W"
-                #post.status = 'W'
+                instaStory.processed_image = "processed/" + publi_id + "." + person_id + ".W"
             else:
-                newPath = newPath+".R"
+                newPath = newPath + ".R"
                 resImage[publi_id] = "R"
-                instaStory.processedImage = "processed/"+publi_id+"."+person_id+".R"
-                #post.status = 'R'
+                instaStory.processed_image = "processed/" + publi_id + "." + person_id + ".R"
             try:
-                s3_resource.Object(buckets3, newPath).copy_from(
-                CopySource=oldPath)
+                s3_resource.Object(buckets3, newPath).copy_from(CopySource=oldPath)
             except ClientError as ex:
                 resImage["movefile"] = "Error"
                 print(ex)
@@ -290,7 +283,6 @@ def api_validate_image_post(request):
             resList["imagesRes"].append(resImage)
             resImage[publi_id] = "Event doesnt exist"
             resList["imagesRes"].append(resImage)
-        #post.save()
     return Response(data=resList)
 
 
