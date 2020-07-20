@@ -242,7 +242,6 @@ def api_validate_image_post(request):
         person_id = each['person_id']
         listaTags = each['tags']
         is_found = False
-        tagsArray = []
         try:
             instaStory = InstaStoryPublication.objects.get(pk=publi_id)
         except InstaStoryPublication.DoesNotExist:
@@ -254,8 +253,7 @@ def api_validate_image_post(request):
             print(buckets3)
             s3_resource = boto3.resource("s3", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
             evento = Event.objects.filter(posts=publi_id)
-            tagsArray = evento[0].tags
-            for tagEvent in tagsArray:
+            for tagEvent in evento[0].tags:
                 if is_found is False:
                     if tagEvent in listaTags:
                         is_found = True
