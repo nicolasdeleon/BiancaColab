@@ -49,7 +49,7 @@ class InstaStoryPublication(models.Model):
         blank=True,
         null=True
     )
-    processedImage = models.ImageField(
+    processed_image = models.ImageField(
         upload_to='processed/',
         blank=True,
         null=True
