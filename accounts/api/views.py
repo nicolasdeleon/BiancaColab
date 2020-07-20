@@ -24,10 +24,10 @@ from accounts.models import Company, Profile, User
 def api_registration_view(request):
     logger = logging.getLogger(__name__)
     data = {}
-    email = request.data.get('email').lower()
-    request.data.email = request.data.get('email').lower()
+    email = request.data.get('email')
+    request.data.email = request.data.get('email')
     role = request.data.get('role')
-    if validate_email(email.lower()) is not None:
+    if validate_email(email) is not None:
         data['error_message'] = 'That email is already in use.'
         data['response'] = 'Error'
         return Response(data)
@@ -115,7 +115,7 @@ class ObtainAuthTokenView(APIView):
     def post(self, request):
         context = {}
 
-        email = request.data.get('username').lower()
+        email = request.data.get('username')
         password = request.data.get('password')
         User = authenticate(email=email, password=password)
         if User:
