@@ -93,7 +93,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     def save(self):
         new_user = User(
-            email=self.validated_data['email'],
+            email=self.validated_data['email'].lower(),
             first_name=self.validated_data['first_name'],
             last_name=self.validated_data['last_name'],
             role=self.validated_data['role'],
