@@ -14,7 +14,7 @@ import boto3
 from botocore.exceptions import ClientError
 from eventos.api.serializers import (EventsSerializer, PostIGSerializer, PostSerializer)
 from eventos.models import Event, Post, InstaStoryPublication
-
+from fuzzywuzzy import process
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
@@ -240,7 +240,7 @@ def api_validate_image_post(request):
     for each in fotos['images']:
         publi_id = each['publi_id']
         person_id = each['person_id']
-        listaTags = each['tags']
+        listaTagsML = each['tags']
         is_found = False
         try:
             instaStory = InstaStoryPublication.objects.get(pk=publi_id)
@@ -250,12 +250,14 @@ def api_validate_image_post(request):
             break
         if Event.objects.filter(posts=instaStory).exists():
             buckets3 = settings.AWS_STORAGE_BUCKET_NAME
-            print(buckets3)
-            s3_resource = boto3.resource("s3", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
+            #s3_resource = boto3.resource("s3", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
             evento = Event.objects.filter(posts=publi_id)
             for tagEvent in evento[0].tags:
+                listaTagsML = listaTagsML.split(" ")
                 if is_found is False:
-                    if tagEvent in listaTags:
+                    output = process.extract(tagEvent, listaTagsML, limit=1)
+                    output = output[0]
+                    if output[1] > 80:
                         is_found = True
                 else:
                     break
@@ -270,12 +272,13 @@ def api_validate_image_post(request):
                 resImage[publi_id] = "R"
                 instaStory.processed_image = "processed/" + publi_id + "." + person_id + ".R"
             try:
-                s3_resource.Object(buckets3, newPath).copy_from(CopySource=oldPath)
+                print("descomentar")
+                #s3_resource.Object(buckets3, newPath).copy_from(CopySource=oldPath)
             except ClientError as ex:
                 resImage["movefile"] = "Error"
                 print(ex)
             try:
-                s3_resource.Object(buckets3, str(instaStory.image)).delete()
+                #s3_resource.Object(buckets3, str(instaStory.image)).delete()
                 instaStory.image = ""
                 instaStory.save()
             except ClientError as ex:
