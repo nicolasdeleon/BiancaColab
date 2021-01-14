@@ -109,11 +109,11 @@ CORS_ORIGIN_WHITELIST = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get("DB_NAME"),
-        'USER': os.environ.get("DB_USER"),
-        'PASSWORD': os.environ.get("DB_PASSWORD"),
-        'HOST': os.environ.get("DB_HOST") if os.environ.get("PROD") == "True" else "localhost",
-        'PORT': os.environ.get("DB_PORT"),
+        'NAME': os.environ.get("DB_NAME", "biancalocal"),
+        'USER': os.environ.get("DB_USER", "postgres"),
+        'PASSWORD': os.environ.get("DB_PASSWORD", "postgres"),
+        'HOST': os.environ.get("DB_HOST", "localhost"),
+        'PORT': os.environ.get("DB_PORT", "5432"),
     }
 }
 
