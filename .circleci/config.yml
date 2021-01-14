@@ -12,6 +12,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: "Check env vars correctly set. "
+          command: echo ${CHECK}
+      - run:
           name: Install dependencies
           command: sudo pip install -r requirements.txt
       - run:
