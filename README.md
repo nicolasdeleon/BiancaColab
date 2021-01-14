@@ -1,5 +1,9 @@
 # Bianca's Back End
 
+
+[![CircleCI](https://circleci.com/gh/nicolasdeleon/BiancaColab.svg?style=shield&circle-token=f6d6a58ac2745ac3a06ed8dab85299b7cd59c3c8)](<LINK>)
+
+
 ## Requirements
 
 - Python 3.7.5
