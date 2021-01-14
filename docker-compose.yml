@@ -1,0 +1,37 @@
+version: '3.7'
+volumes:
+  pgdata: {}
+  static_files: {}
+services:
+  bianca_web:
+    # image: python:3.7.5
+    build: .
+#    command: python manage.py runserver 0.0.0.0:8000 --verbosity 2
+    command: gunicorn -w 4 backBone_Bianca.wsgi -b 0.0.0.0:8000 # 4 workers binded to 0.0.0.0:8000
+    container_name: bianca_web
+    volumes:
+      - .:/app
+      - static_files:/static_files
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    env_file: ./.env
+
+  postgres:
+    image: postgres:11
+    container_name: bianca_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=biancalocal
+    volumes:
+      # To persist postgres data in a volume of our choice (pgdata)
+      - pgdata:/var/lib/postgresql/data/
+
+  nginx:
+    build: ./nginx
+    depends_on:
+      - bianca_web
+    ports:
+      - 8080:80
